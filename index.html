@@ -66,9 +66,20 @@ async function venue(id){
   try{
     const rows=await cloudReports(id);
     if(rows && rows.length){
-      const avg=Math.round(rows.reduce((a,r)=>a+Number(r.crowd_percent),0)/rows.length);
-      let l=avg>=76?"Packed":avg>=51?"Busy":avg>=26?"Moderate":"Quiet";
-      d={p:avg,l,n:rows.length};
+  const now=Date.now();
+  let total=0,weight=0;
+
+  rows.forEach(r=>{
+    const age=Math.max(0,now-new Date(r.created_at).getTime());
+    const w=Math.max(0.1,1-age/(2*60*60*1000));
+    total+=Number(r.crowd_percent)*w;
+    weight+=w;
+  });
+
+  const avg=Math.round(total/weight);
+  let l=avg>=76?"Packed":avg>=51?"Busy":avg>=26?"Moderate":"Quiet";
+  d={avg:avg,l:l,n:rows.length};
+}
     }
   }catch(e){console.error(e)}
   app.innerHTML=`<div class=screen><button class=back onclick=home()>‹ Back</button><div class=title>${v.n}</div><div class=sub>${v.t} · ${v.s}</div><div class=status><div class=sub>${d?"LIVE COMMUNITY REPORTS":"NO LIVE REPORTS YET"}</div><div class=big style="color:${d?C[d.l]:"#9aa8b2"}">${d?d.p+"% · "+d.l:"No live crowd data"}</div><div class=sub>${d?d.n+" reports in the last 2 hours":"Be the first to report this venue."}</div></div><div class=row><span>Address</span><b>${v.a}</b></div><button class=action onclick=report(${id})>📊 Report crowd</button><button class=action onclick="window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('${v.a}, ${v.s}, NSW'))">🧭 Directions</button><button class=action onclick="save(${id})">♡ Save venue</button></div>`;

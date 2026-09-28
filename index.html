@@ -41,14 +41,45 @@ async function cloudReport(venueId, percent, label, queueLabel=null){
   }
 }
 async function cloudReports(venueId){
-  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){
+    console.error("Supabase configuration missing");
+    return [];
+  }
+
   try{
-    const since=new Date(Date.now()-7200000).toISOString();
-    const u=SUPABASE_URL+"/rest/v1/venue_reports?venue_id=eq."+venueId+"&created_at=gte."+encodeURIComponent(since)+"&select=crowd_percent,crowd_label,created_at&order=created_at.desc";
-    const r=await fetch(u,{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});
-    if(!r.ok) return null;
-    return await r.json();
-  }catch(e){ return null; }
+    const since = new Date(Date.now()-7200000).toISOString();
+
+    const u =
+      SUPABASE_URL +
+      "/rest/v1/venue_reports?venue_id=eq." +
+      encodeURIComponent(venueId) +
+      "&created_at=gte." +
+      encodeURIComponent(since);
+
+    const r = await fetch(u,{
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer " + SUPABASE_ANON_KEY
+      }
+    });
+
+    if(!r.ok){
+      const errorText = await r.text();
+      console.error("Supabase error:",r.status,errorText);
+      return [];
+    }
+
+    const result = await r.json();
+
+    console.log("Supabase reports:",result);
+
+    return Array.isArray(result) ? result : [];
+
+  }catch(e){
+    console.error("cloudReports failed:",e);
+    return [];
+  }
+}
 }
 const data=[
 ["King Street","Club","Newcastle West","15 Steel St"],["Great Northern Hotel Newcastle","Pub","Newcastle","83-89 Scott St"],["The Lucky Hotel","Pub","Newcastle","237 Hunter St"],["Queens Wharf Hotel","Pub","Newcastle","150 Wharf Rd"],["Customs House Hotel","Pub","Newcastle","1 Bond St"],["George Darby Hotel","Pub","Cooks Hill","21 Darby St"],["The Exchange Hotel","Pub","Hamilton","125 Denison St"],["Crown & Anchor Hotel","Pub","Newcastle","189 Hunter St"],["Wests City","Club","Newcastle West","King St & Union St"],["The Underground","Live Music","Newcastle","32 Church St"],["The Rogue Scholar","Live Music","Newcastle West","4-6 Union St"],["Bernie's Bar","Bar","Newcastle West","410 King St"],["Maru HiFi","Live Music","Newcastle West","10 Union St"],["Jams Karaoke & Bar","Bar","Newcastle West","8 Union St"],["Coal & Cedar","Bar","Newcastle","380-382 Hunter St"],["Uptowns Bar","Bar","Newcastle","23 Watt St"],["The Koutetsu","Bar","Newcastle West","555 Hunter St"],["MoneyPenny","Bar","Honeysuckle","1 Honeysuckle Dr"],["Flamingos Live","Live Music","Lambton","31 Morehead St"],["Stag & Hunter Hotel","Pub","Mayfield","187 Maitland Rd"],["Wickham Park Hotel","Pub","Wickham","61 Union St"],["Kent Hotel","Pub","Hamilton","59 Beaumont St"],["Greenroof Hotel","Pub","Hamilton","71 Tudor St"],["Delany Hotel","Pub","Cooks Hill","134 Darby St"],["Commonwealth Hotel","Pub","Cooks Hill","35 Union St"],["Prince of Merewether","Pub","Merewether","1 Morgan St"],["Modus Merewether","Brewery","Merewether","2 Glebe Rd"],["Foghorn Brewery","Brewery","Newcastle","218 King St"],["Earp Distilling Co","Bar","Carrington","41 Darling St"],["Shout Brewing","Brewery","Islington","6 Steel St"],["Charlie's Rooftop","Bar","Newcastle West","537 Hunter St"],["Granddad's Bar Experience","Bar","Newcastle","515 Hunter St"],["Merewether Surfhouse","Bar","Merewether","5 Henderson Pde"],["Belmont 16s","Club","Belmont","The Parade"],["Warners Bay Hotel","Pub","Warners Bay","5 King St"],["Jewells Tavern","Pub","Jewells","Wommara Ave"],["Pippi's at the Point Hotel","Pub","Speers Point","The Esplanade"],["Lake Macquarie Tavern","Pub","Mount Hutton","1 Murray St"],["Toronto Hotel","Pub","Toronto","74 Victory Row"],["Swansea Workers Club","Club","Swansea","228 Pacific Hwy"],["Swansea RSL","Club","Swansea","2 Bridge St"],["Hotel Wangi","Pub","Wangi Wangi","295 Watkins Rd"],["Lake Macquarie Yacht Club","Club","Belmont","Ada St"]

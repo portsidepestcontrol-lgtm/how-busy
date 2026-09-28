@@ -78,7 +78,7 @@ async function venue(id){
 
   const avg=Math.round(total/weight);
   let l=avg>=76?"Packed":avg>=51?"Busy":avg>=26?"Moderate":"Quiet";
-  d={avg:avg,l:avg>=76?"Packed":avg>=51?"Busy":avg>=26?"Moderate":"Quiet",n:rows.length,c:rows.length>=10?"High confidence":rows.length>=5?"Moderate confidence":"Low confidence"};
+  d={avg:avg,l:l,n:rows.length,c:rows.length>=10?"High confidence":rows.length>=5?"Moderate confidence":"Low confidence"};
 }
     }
   }catch(e){console.error(e)}

@@ -9,61 +9,43 @@
    Until configured, the app continues using the local phone-only reports.
 */
 const SUPABASE_URL = "https://muabpzculmygamxanqzq.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_fWxLAiiN658fOlsCdiCZpQ_UFfIaJua";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im11YWJwemN1bG15Z2FteGFucXpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1MDAwMzAsImV4cCI6MjEwNjA3NjAzMH0.nop62gIjMtIKj6lxz6-447PVwFzJIS7mb2GxnP0MHjE";
 
-async function cloudReport(venueId, percent, label, queueLabel = null) {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    return false;
-  }
-
-  try {
-    const r = await fetch(
-      SUPABASE_URL + "/rest/v1/venue_reports",
-      {
-        method: "POST",
-        headers: {
-          "apikey": SUPABASE_ANON_KEY,
-          "Authorization": "Bearer " + SUPABASE_ANON_KEY,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify({
-          venue_id: venueId,
-          crowd_percent: percent,
-          crowd_label: label,
-          queue_label: queueLabel
-        })
-      }
-    );
-
-    if (!r.ok) {
-      const errorText = await r.text();
-      console.error("Supabase report error:", r.status, errorText);
-
-      return {
-        ok: false,
-        error: "Supabase " + r.status + ": " + errorText
-      };
+async function cloudReport(venueId, percent, label, queueLabel=null){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return {ok:false,status:0,error:"Supabase configuration missing"};
+  try{
+    const r=await fetch(SUPABASE_URL+"/rest/v1/venue_reports",{
+      method:"POST",
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+        "Content-Type":"application/json",
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({
+        venue_id:Number(venueId),
+        crowd_percent:Number(percent),
+        crowd_label:label,
+        queue_label:queueLabel
+      })
+    });
+    if(!r.ok){
+      const text=await r.text();
+      console.error("How Busy Supabase error",r.status,text);
+      return {ok:false,status:r.status,error:text};
     }
-
-    return { ok: true };
-
-  } catch (e) {
-    console.error("Supabase connection error:", e);
-
-    return {
-      ok: false,
-      error: e.message || "Connection error"
-    };
+    return {ok:true,status:r.status};
+  }catch(e){
+    console.error("How Busy network error",e);
+    return {ok:false,status:0,error:String(e)};
   }
 }
-
 async function cloudReports(venueId){
   if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
   try{
     const since=new Date(Date.now()-7200000).toISOString();
     const u=SUPABASE_URL+"/rest/v1/venue_reports?venue_id=eq."+venueId+"&created_at=gte."+encodeURIComponent(since)+"&select=crowd_percent,crowd_label,created_at&order=created_at.desc";
-    const r=await fetch(u,{headers:{"apikey":SUPABASE_ANON_KEY}});
+    const r=await fetch(u,{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});
     if(!r.ok) return null;
     return await r.json();
   }catch(e){ return null; }
@@ -78,16 +60,35 @@ function home(){let x=V.filter(v=>(filter=="All"||v.t==filter)&&(area=="All"||v.
 function bindSearch(){const el=document.getElementById("venueSearch");if(!el)return;el.addEventListener("input",e=>{q=e.target.value;renderVenueResults()})}
 function renderVenueResults(){const old=document.getElementById("venueSearch");if(!old)return;const cards=[...document.querySelectorAll(".card")];const x=V.filter(v=>(filter=="All"||v.t==filter)&&(area=="All"||v.s==area)&&(`${v.n} ${v.s} ${v.a}`).toLowerCase().includes(q.toLowerCase()));const parent=old.parentElement;let marker=document.getElementById("venueResults");if(!marker){marker=document.createElement("div");marker.id="venueResults";old.after(marker)}marker.innerHTML=x.map(card).join("");}
 function card(v){let d=live(v);return `<button class=card onclick="venue(${v.id})"><div class=ico>${v.t=="Pub"?"🍻":v.t=="Club"?"🕺":v.t=="Bar"?"🍸":v.t=="Brewery"?"🍺":"🎵"}</div><div class=info><div class=name>${v.n}</div><div class=meta>${v.t} · ${v.s}</div><div class=meta>${v.a} · ${d?d.n+" live report"+(d.n>1?"s":""):"No live crowd data"}</div></div><div><div class=badge style="background:${d?C[d.l]:"#667784"}">${d?d.l:"No data"}</div><div class=pct>${d?d.p+"%":"—"}</div></div></button>`}
-function venue(id){let v=V[id],d=live(v);app.innerHTML=`<div class=screen><button class=back onclick=home()>‹ Back</button><div class=title>${v.n}</div><div class=sub>${v.t} · ${v.s}</div><div class=status><div class=sub>${d?"LIVE COMMUNITY REPORTS":"NO LIVE REPORTS YET"}</div><div class=big style="color:${d?C[d.l]:"#9aa8b2"}">${d?d.p+"% · "+d.l:"No live crowd data"}</div><div class=sub>${d?d.n+" reports in the last 2 hours":"Be the first to report this venue."}</div></div><div class=row><span>Address</span><b>${v.a}</b></div><button class=action onclick=report(${id})>📊 Report crowd</button><button class=action onclick="window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('${v.a}, ${v.s}, NSW'))">🧭 Directions</button><button class=action onclick="save(${id})">♡ Save venue</button></div>`}
+async function venue(id){
+  let v=V[id];
+  let d=live(v);
+  try{
+    const rows=await cloudReports(id);
+    if(rows && rows.length){
+      const avg=Math.round(rows.reduce((a,r)=>a+Number(r.crowd_percent),0)/rows.length);
+      let l=avg>=76?"Packed":avg>=51?"Busy":avg>=26?"Moderate":"Quiet";
+      d={p:avg,l,n:rows.length};
+    }
+  }catch(e){console.error(e)}
+  app.innerHTML=`<div class=screen><button class=back onclick=home()>‹ Back</button><div class=title>${v.n}</div><div class=sub>${v.t} · ${v.s}</div><div class=status><div class=sub>${d?"LIVE COMMUNITY REPORTS":"NO LIVE REPORTS YET"}</div><div class=big style="color:${d?C[d.l]:"#9aa8b2"}">${d?d.p+"% · "+d.l:"No live crowd data"}</div><div class=sub>${d?d.n+" reports in the last 2 hours":"Be the first to report this venue."}</div></div><div class=row><span>Address</span><b>${v.a}</b></div><button class=action onclick=report(${id})>📊 Report crowd</button><button class=action onclick="window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('${v.a}, ${v.s}, NSW'))">🧭 Directions</button><button class=action onclick="save(${id})">♡ Save venue</button></div>`;
+}
 function report(id){app.innerHTML=`<div class=screen><button class=back onclick="venue(${id})">‹ Back</button><div class=title>Report crowd</div><div class=sub>Your report helps everyone know before they go.</div><h3>How busy?</h3><div class=grid>${["Quiet","Moderate","Busy","Packed"].map(x=>`<button class=report onclick="send(${id},'${x}')">${x}</button>`).join("")}</div><h3>Queue</h3><div class=grid>${["None","Short","Long"].map(x=>`<button class=report onclick="send(${id},'${x}')">${x}</button>`).join("")}</div></div>`}
 async function send(id,x){
-let p={Quiet:15,Moderate:38,Busy:63,Packed:88,None:10,Short:50,Long:85}[x];
-let label=["None","Short","Long"].includes(x)?"Moderate":x;
-reports[id]=reports[id]||[];reports[id].push({p,t:Date.now()});
-localStorage.setItem(key,JSON.stringify(reports));
-let ok=await cloudReport(id,p,label,["None","Short","Long"].includes(x)?x:null);
-toast(ok ? "Report sent live" : "Report saved on this device");
-setTimeout(()=>venue(id),500)
+  let p={Quiet:15,Moderate:38,Busy:63,Packed:88,None:10,Short:50,Long:85}[x];
+  let label=["None","Short","Long"].includes(x)?"Moderate":x;
+  reports[id]=reports[id]||[];
+  reports[id].push({p,t:Date.now()});
+  localStorage.setItem(key,JSON.stringify(reports));
+
+  let result=await cloudReport(id,p,label,["None","Short","Long"].includes(x)?x:null);
+  if(result.ok){
+    toast("Report sent live");
+  }else{
+    console.error("Report was not sent:",result);
+    toast(result.status?("Supabase error "+result.status):"Saved on this device");
+  }
+  setTimeout(()=>venue(id),700);
 }
 function locate(){navigator.geolocation?.getCurrentPosition(()=>toast("Location permission granted"),()=>toast("Location permission not allowed"))}
 function map(){app.innerHTML=`<div class=screen><button class=back onclick=home()>‹ Back</button><div class=title>Venue map</div><div class=map><div style="text-align:center;font-size:50px">🗺️</div><p class=sub>${V.length} venues loaded. Live map integration is next.</p>${V.slice(0,15).map(v=>`<button class=pin onclick="venue(${v.id})">📍 ${v.n}<br><span class=sub>${v.s}</span></button>`).join("")}</div></div>`}

@@ -67,7 +67,7 @@ let label=["None","Short","Long"].includes(x)?"Moderate":x;
 reports[id]=reports[id]||[];reports[id].push({p,t:Date.now()});
 localStorage.setItem(key,JSON.stringify(reports));
 let ok=await cloudReport(id,p,label,["None","Short","Long"].includes(x)?x:null);
-toast(ok?"Report sent live":"Report saved on this device");
+toast(ok?"Report sent live":"Report saved on");
 setTimeout(()=>venue(id),500)
 }
 function locate(){navigator.geolocation?.getCurrentPosition(()=>toast("Location permission granted"),()=>toast("Location permission not allowed"))}

@@ -69,7 +69,7 @@ async function cloudReport(venueId, percent, label, queueLabel = null) {
       console.error("Supabase report error", r.status, await r.text());
       return false;
     }
-    return { ok: true {;
+    return true;
   }catch(e){
     console.error("Supabase connection error", e);
     return false;

@@ -75,7 +75,7 @@ async function venue(id){
 }
 function report(id){app.innerHTML=`<div class=screen><button class=back onclick="venue(${id})">‹ Back</button><div class=title>Report crowd</div><div class=sub>Your report helps everyone know before they go.</div><h3>How busy?</h3><div class=grid>${["Quiet","Moderate","Busy","Packed"].map(x=>`<button class=report onclick="send(${id},'${x}')">${x}</button>`).join("")}</div><h3>Queue</h3><div class=grid>${["None","Short","Long"].map(x=>`<button class=report onclick="send(${id},'${x}')">${x}</button>`).join("")}</div></div>`}
 async function send(id,x){
-  let p={Quiet:15,Moderate:38,Busy:63,Packed:88,None:10,Short:50,Long:85}[x];
+  let p={Quiet:15,Moderate:40,Busy:65,Packed:90,None:0,Short:50,Long:85}[x];
   let label=["None","Short","Long"].includes(x)?"Moderate":x;
   reports[id]=reports[id]||[];
   reports[id].push({p,t:Date.now()});

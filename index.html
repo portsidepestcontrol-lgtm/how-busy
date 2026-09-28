@@ -64,21 +64,28 @@ async function venue(id){
   let v=V[id];
   let d=live(v);
   try{
-    const rows=await cloudReports(id);
-    if(rows && rows.length){
-  const now=Date.now();
-  let total=0,weight=0;
+  const rows = await cloudReports(id);
 
-  rows.forEach(r=>{
-    const age=Math.max(0,now-new Date(r.created_at).getTime());
-    const w=Math.max(0.1,1-age/(2*60*60*1000));
-    total+=Number(r.crowd_percent)*w;
-    weight+=w;
-  });
+  if(rows && rows.length){
+    const avg = Math.round(
+      rows.reduce((sum,r) => sum + Number(r.crowd_percent || 0), 0) /
+      rows.length
+    );
 
-  const avg=Math.round(total/weight);
-  let l=avg>=76?"Packed":avg>=51?"Busy":avg>=26?"Moderate":"Quiet";
-  d={avg:avg,l:l,n:rows.length,c:rows.length>=10?"High confidence":rows.length>=5?"Moderate confidence":"Low confidence"};
+    const label =
+      avg >= 76 ? "Packed" :
+      avg >= 51 ? "Busy" :
+      avg >= 26 ? "Moderate" :
+      "Quiet";
+
+    d = {
+      avg: avg,
+      l: label,
+      n: rows.length
+    };
+  }
+}catch(e){
+  console.error(e);
 }
     }
   }catch(e){console.error(e)}

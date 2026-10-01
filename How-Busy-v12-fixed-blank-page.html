@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071522">
+<title>How Busy?</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071522;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{border:0;cursor:pointer}.wrap{padding-bottom:85px}.top{padding:20px;display:flex;justify-content:space-between}.logo{font-size:28px;font-weight:900}.gold{color:#ffd21a}.sub,.meta{color:#91a3b3;font-size:13px}.search{margin:0 18px 12px;width:calc(100% - 36px);padding:14px;border:0;border-radius:14px;background:#112536;color:#fff}.chips{display:flex;gap:8px;overflow:auto;padding:0 18px 12px}.chip{padding:9px 15px;border-radius:20px;background:#112536;color:#ccd5dc;white-space:nowrap}.on{background:#ffd21a;color:#111;font-weight:800}.hero{display:flex;justify-content:space-between;align-items:center;padding:8px 18px}.hero h2{margin:0;font-size:20px}.card{margin:0 18px 9px;width:calc(100% - 36px);padding:13px;background:#0e2030;border-radius:16px;color:#fff;display:flex;gap:12px;text-align:left;align-items:center}.ico{width:48px;height:48px;border-radius:12px;background:#172d3f;display:grid;place-items:center;font-size:23px}.info{flex:1}.name{font-weight:800}.meta{font-size:11px;margin-top:4px}.badge{padding:5px 8px;border-radius:9px;font-size:11px;font-weight:800}.pct{text-align:right;font-size:12px;margin-top:4px}.loc{margin:0 18px 12px;padding:12px;background:#10283a;border-radius:14px;display:flex;justify-content:space-between;align-items:center}.yellow{background:#ffd21a;color:#111;padding:9px 12px;border-radius:10px;font-weight:800}.cta{margin:15px 18px;padding:18px;background:#162b3b;border-radius:16px}.action{width:100%;padding:15px;margin-top:12px;border-radius:13px;background:#ffd21a;font-weight:900}.screen{padding:22px 18px}.back{background:none;color:#fff;padding:4px}.title{font-size:29px;font-weight:900;margin:12px 0}.status{margin-top:18px;padding:18px;border:2px solid #7d8b96;border-radius:18px;background:#0e2030}.big{font-size:28px;font-weight:900;margin:7px 0}.row{padding:16px 0;border-bottom:1px solid #1d3343;display:flex;justify-content:space-between;gap:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.report{padding:17px;border-radius:13px;background:#102334;color:#fff}.report.selected{outline:3px solid #ffd21a}.map{background:#102334;border-radius:18px;padding:14px;min-height:55vh}.pin{width:100%;padding:13px;margin:4px 0;background:#172d3f;color:#fff;border-radius:12px;text-align:left}.bottom{position:fixed;bottom:0;left:0;right:0;height:76px;background:#091b2a;border-top:1px solid #1d3343;display:flex;justify-content:space-around;align-items:center}.nav{background:none;color:#718597}.toast{position:fixed;z-index:9999;bottom:90px;left:18px;right:18px;background:#183044;padding:14px;border-radius:12px;text-align:center}.error{margin:15px 18px;padding:12px;background:#3a2020;border:1px solid #a54b4b;border-radius:12px;color:#ffdede}.premiumHero{padding:18px;background:#162b3b;border-radius:18px;margin:14px 0}.premiumPrice{font-size:26px;font-weight:900;color:#ffd21a}.optional{font-size:11px;color:#91a3b3;margin-left:5px}.privacyNote{font-size:12px;color:#91a3b3;line-height:1.45}.premiumFeature{padding:11px 0;border-bottom:1px solid #1d3343}.activityBox{margin:15px 18px;padding:16px;background:#10283a;border-radius:16px}.activityOn{color:#63e6a2;font-weight:900}.whosOut{margin:15px 18px;padding:16px;background:#1a2330;border-radius:16px;text-align:center}.whosOutTitle{font-weight:900;font-size:18px}.whosOutMsg{font-size:16px;font-weight:800;margin-top:8px}.whosOutStats{font-size:12px;color:#91a3b3;margin-top:7px}.activityOff{color:#91a3b3}.smallBtn{padding:10px 12px;border-radius:10px;background:#ffd21a;color:#111;font-weight:900;margin-top:10px}.dangerBtn{background:#273d4c;color:#fff}.premiumLock{margin:15px 0;padding:16px;background:#162b3b;border:1px solid #31495b;border-radius:16px}.relationshipPanel{margin:15px 0;padding:16px;background:#10283a;border-radius:16px}.relationshipTitle{font-weight:900;font-size:18px}.relationshipBig{font-size:24px;font-weight:900;margin-top:8px}.lockIcon{font-size:22px;margin-right:6px}.ageGate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#071522}.ageCard{width:min(520px,100%);padding:28px 22px;background:#0e2030;border-radius:22px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3)}.ageIcon{font-size:56px;margin-bottom:8px}.ageTitle{font-size:32px;font-weight:900;margin:4px 0 10px}.ageNotice{font-size:14px;line-height:1.55;color:#d5dde3;margin:14px 0}.ageLegal{font-size:11px;line-height:1.5;color:#91a3b3;margin-top:14px}.ageTerms{color:#ffd21a;text-decoration:underline;cursor:pointer;background:none;padding:0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+
+const HB_STORAGE = (() => {
+  try { return window.localStorage; } catch (e) { return null; }
+})();
+function hbGet(key, fallback=null){
+  try {
+    if(!HB_STORAGE) return fallback;
+    const v = HB_STORAGE.getItem(key);
+    return v === null ? fallback : v;
+  } catch(e) {
+    console.warn("Storage read unavailable", e);
+    return fallback;
+  }
+}
+function hbSet(key, value){
+  try {
+    if(HB_STORAGE) HB_STORAGE.setItem(key, value);
+  } catch(e) {
+    console.warn("Storage write unavailable", e);
+  }
+}
+/* HOW BUSY? — UPDATE V10 MASTER VENUE SWEEP: WHO'S OUT READS venue_whos_out */
+const SUPABASE_URL = "https://muabpzculmygamxanqzq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_fWxLAiiN658fOlsCdiCZpQ_UFfIaJua";
+
+const data=[
+["King Street","Club","Newcastle West","15 Steel St"],["Great Northern Hotel Newcastle","Pub","Newcastle","83-89 Scott St"],["The Lucky Hotel","Pub","Newcastle","237 Hunter St"],["Queens Wharf Hotel","Pub","Newcastle","150 Wharf Rd"],["Customs House Hotel","Pub","Newcastle","1 Bond St"],["George Darby Hotel","Pub","Cooks Hill","21 Darby St"],["The Exchange Hotel","Pub","Hamilton","125 Denison St"],["Crown & Anchor Hotel","Pub","Newcastle","189 Hunter St"],["Wests City","Club","Newcastle West","King St & Union St"],["The Underground","Live Music","Newcastle","32 Church St"],["The Rogue Scholar","Live Music","Newcastle West","4-6 Union St"],["Bernie's Bar","Bar","Newcastle West","410 King St"],["Maru HiFi","Live Music","Newcastle West","10 Union St"],["Jams Karaoke & Bar","Bar","Newcastle West","8 Union St"],["Coal & Cedar","Bar","Newcastle","380-382 Hunter St"],["Uptowns Bar","Bar","Newcastle","23 Watt St"],["The Koutetsu","Bar","Newcastle West","555 Hunter St"],["MoneyPenny","Bar","Honeysuckle","1 Honeysuckle Dr"],["Flamingos Live","Live Music","Lambton","31 Morehead St"],["Stag & Hunter Hotel","Pub","Mayfield","187 Maitland Rd"],["Wickham Park Hotel","Pub","Wickham","61 Union St"],["Kent Hotel","Pub","Hamilton","59 Beaumont St"],["Greenroof Hotel","Pub","Hamilton","71 Tudor St"],["Delany Hotel","Pub","Cooks Hill","134 Darby St"],["Commonwealth Hotel","Pub","Cooks Hill","35 Union St"],["Prince of Merewether","Pub","Merewether","1 Morgan St"],["Modus Merewether","Brewery","Merewether","2 Glebe Rd"],["Foghorn Brewery","Brewery","Newcastle","218 King St"],["Earp Distilling Co","Bar","Carrington","41 Darling St"],["Shout Brewing","Brewery","Islington","6 Steel St"],["Charlie's Rooftop","Bar","Newcastle West","537 Hunter St"],["Granddad's Bar Experience","Bar","Newcastle","515 Hunter St"],["Merewether Surfhouse","Bar","Merewether","5 Henderson Pde"],["Belmont 16s","Club","Belmont","The Parade"],["Warners Bay Hotel","Pub","Warners Bay","5 King St"],["Jewells Tavern","Pub","Jewells","Wommara Ave"],["Pippi's at the Point Hotel","Pub","Speers Point","The Esplanade"],["Lake Macquarie Tavern","Pub","Mount Hutton","1 Murray St"],["Toronto Hotel","Pub","Toronto","74 Victory Row"],["Swansea Workers Club","Club","Swansea","228 Pacific Hwy"],["Swansea RSL","Club","Swansea","2 Bridge St"],["Hotel Wangi","Pub","Wangi Wangi","295 Watkins Rd"],["Lake Macquarie Yacht Club","Club","Belmont","Ada St"]
+];
+
+
+/* MASTER VENUE SWEEP — Newcastle, Lake Macquarie, Sydney and Brisbane.
+   Existing venue order/IDs above are intentionally preserved so existing
+   Supabase report IDs keep working. New venues are appended below. */
+const extraVenues = [
+  // NEWCASTLE
+  ["The Happy Wombat","Bar","Newcastle West","575 Hunter St","Newcastle"],
+  ["The Sunnyside Tavern","Pub","Broadmeadow","20 Broadmeadow Rd","Newcastle"],
+  ["The Maryville Tavern","Pub","Maryville","71 Lewis St","Newcastle"],
+  ["Grand Hotel Newcastle","Pub","Newcastle","32 Church St","Newcastle"],
+  ["The Family Hotel","Pub","Newcastle West","635 Hunter St","Newcastle"],
+  ["Clarendon Hotel","Pub","Newcastle","347 Hunter St","Newcastle"],
+  ["Finnegan's Hotel","Pub","Newcastle","21 Church St","Newcastle"],
+  ["Hotel CBD Newcastle","Pub","Newcastle","282 King St","Newcastle"],
+  ["King St Hotel","Club","Newcastle","89 King St","Newcastle"],
+  ["M Bar","Bar","Newcastle","Hunter St","Newcastle"],
+  ["Wine Centre Tavern","Pub","Newcastle","Hunter St","Newcastle"],
+  ["The Argyle House","Live Music","Newcastle","Murray St","Newcastle"],
+  ["Gateway Hotel","Pub","Islington","Cnr Maitland Rd & Beaumont St","Newcastle"],
+  ["Cambridge Hotel","Live Music","Newcastle West","789 Hunter St","Newcastle"],
+  ["Honeysuckle Hotel","Pub","Honeysuckle","Honeysuckle Dr","Newcastle"],
+  ["The Bennett Hotel","Pub","Hamilton","146 Denison St","Newcastle"],
+  ["Cross Keys Hotel","Pub","Hamilton","Clyde St","Newcastle"],
+  ["Ori Hotel","Pub","Cooks Hill","Crn Bull & Darby Sts","Newcastle"],
+  ["Cricketers Arms Hotel","Pub","Cooks Hill","Cnr Union & Bruce Sts","Newcastle"],
+  ["Blackbutt Hotel","Pub","New Lambton","80 Orchardtown Rd","Newcastle"],
+  ["General Roberts Hotel","Pub","New Lambton","6-8 Regent St","Newcastle"],
+  ["Royal Inn Hotel","Pub","Waratah","74 Station St","Newcastle"],
+  ["Town Hall Hotel","Pub","Waratah","45 Station St","Newcastle"],
+  ["Shortland Hotel Motel","Pub","Shortland","Cnr Sandgate Rd & Vale St","Newcastle"],
+  ["Boatrowers Hotel","Pub","Stockton","198 Fullerton St","Newcastle"],
+  ["General Washington Hotel","Pub","Stockton","1 Mitchell St","Newcastle"],
+  ["Gladstone Hotel","Pub","Stockton","1 Mitchell St","Newcastle"],
+  ["Junction Tavern","Pub","The Junction","Cnr Union & Glebe Rd","Newcastle"],
+  ["Royal Oak Hotel","Pub","Tighes Hill","5 Elizabeth St","Newcastle"],
+  ["Colliery Inn Hotel","Pub","Wallsend","44 Nelson St","Newcastle"],
+  ["Fire Station Hotel","Pub","Wallsend","182 Nelson St","Newcastle"],
+  ["Lemon Grove Hotel","Pub","Wallsend","50 Nelson St","Newcastle"],
+  ["Racecourse Hotel","Pub","Wallsend","Wallsend Rd","Newcastle"],
+  ["Winners Circle Tavern","Pub","Wallsend","Nelson St","Newcastle"],
+  ["Clyde Inn Hotel","Pub","Wallsend West","Clyde St","Newcastle"],
+  ["Museum Hotel","Pub","Wallsend West","Nelson St","Newcastle"],
+
+  // LAKE MACQUARIE
+  ["Gateshead Tavern & Motel","Pub","Gateshead","9 Pacific Hwy","Lake Macquarie"],
+  ["Gunyah Hotel","Pub","Belmont","644 Pacific Hwy","Lake Macquarie"],
+  ["The Belmont Hotel","Pub","Belmont","483 Pacific Hwy","Lake Macquarie"],
+  ["Hotel Metro Belmont","Pub","Belmont","498 Pacific Hwy","Lake Macquarie"],
+  ["Squid's Ink","Bar","Belmont","Lake Macquarie","Lake Macquarie"],
+  ["Belmont 16s Sailing Club","Club","Belmont","The Parade","Lake Macquarie"],
+  ["Warners at the Bay","Pub","Warners Bay","320 Hillsborough Rd","Lake Macquarie"],
+  ["Warners Bay Sports Club","Club","Warners Bay","Tudor St","Lake Macquarie"],
+  ["Bayside Tavern Hotel","Pub","Warners Bay","The Esplanade","Lake Macquarie"],
+  ["Club Charlestown","Club","Charlestown","17 James St","Lake Macquarie"],
+  ["Charlestown Tavern","Pub","Charlestown","Pacific Hwy","Lake Macquarie"],
+  ["Mercure Charlestown","Bar","Charlestown","109 Madison Dr","Lake Macquarie"],
+  ["Cardiff RSL Club","Club","Cardiff","45 Macquarie Rd","Lake Macquarie"],
+  ["Cardiff Bowling Club","Club","Cardiff","12A Harrison St","Lake Macquarie"],
+  ["Club Macquarie","Club","Argenton","458 Lake Rd","Lake Macquarie"],
+  ["Argenton Hotel","Pub","Argenton","Cnr Lake Rd & New England Hwy","Lake Macquarie"],
+  ["Dora Creek Workers Club","Club","Dora Creek","Dora Creek","Lake Macquarie"],
+  ["Kahibah Sports Club","Club","Kahibah","Kahibah Rd","Lake Macquarie"],
+  ["Marks Point Sports Club","Club","Marks Point","Marks Point Rd","Lake Macquarie"],
+  ["Pelican RSL Club","Club","Pelican","Lake Rd","Lake Macquarie"],
+  ["Swansea Hotel","Pub","Swansea","196 Pacific Hwy","Lake Macquarie"],
+  ["Toronto Workers Club","Club","Toronto","Don St","Lake Macquarie"],
+  ["Toronto Diggers","Club","Toronto","Victory Row","Lake Macquarie"],
+  ["Toronto Royal Motor Yacht Club","Club","Toronto","Cary St","Lake Macquarie"],
+  ["Wangi RSL","Club","Wangi Wangi","Watkins Rd","Lake Macquarie"],
+  ["Wangi Workers","Club","Wangi Wangi","Watkins Rd","Lake Macquarie"],
+  ["Windale Gateshead Bowling Club","Club","Windale","Lake St","Lake Macquarie"],
+  ["Caves Beach Hotel","Pub","Caves Beach","Caves Beach Rd","Lake Macquarie"],
+  ["Orana Hotel","Pub","Blacksmiths","Orana Rd","Lake Macquarie"],
+  ["Pippi's at the Point","Pub","Speers Point","The Esplanade","Lake Macquarie"],
+  ["Speers Point Hotel Motel","Pub","Speers Point","Main Rd","Lake Macquarie"],
+  ["Harrigan's Cameron Park","Pub","Cameron Park","Lambton Rd","Lake Macquarie"],
+  ["Hotel Elermore","Pub","Elermore Vale","Elermore Vale","Lake Macquarie"],
+  ["Wallsend Diggers","Club","Wallsend","51 Lake Rd","Lake Macquarie"],
+  ["Club Lambton","Club","Lambton","Elder St","Lake Macquarie"],
+  ["Lake Macquarie Yacht Club","Club","Belmont","Ada St","Lake Macquarie"],
+  ["Dora Creek Sailing Club","Club","Dora Creek","Dora Creek","Lake Macquarie"],
+  ["Wangi Hotel","Pub","Wangi Wangi","295 Watkins Rd","Lake Macquarie"],
+  ["Lake Macquarie Hotel-Motel","Pub","Morisset","83 Dora St","Lake Macquarie"],
+  ["Bay Hotel Motel","Pub","Bonnells Bay","330 Fishery Point Rd","Lake Macquarie"],
+  ["Swansea Workers Club","Club","Swansea","228 Pacific Hwy","Lake Macquarie"],
+  ["Swansea RSL Club","Club","Swansea","2 Bridge St","Lake Macquarie"],
+
+  // SYDNEY — current pub/bar/hotel directory sweep
+  ["Agincourt Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Ambar Bar","Bar","Sydney","Sydney CBD","Sydney"],["AMORA HOTEL JAMISON","Pub","Sydney","Sydney CBD","Sydney"],["Angel Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Aurora Bar","Bar","Sydney","Sydney CBD","Sydney"],["Aurora Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Avillion Hotel, Sydney","Pub","Sydney","Sydney CBD","Sydney"],["Bar 333","Bar","Sydney","Sydney CBD","Sydney"],["Bar Ace","Bar","Sydney","Sydney CBD","Sydney"],["Bar Broadway","Bar","Sydney","Broadway","Sydney"],["Bar Century","Bar","Sydney","Sydney CBD","Sydney"],["Bar Europa","Bar","Sydney","Sydney CBD","Sydney"],["Bar Luca","Bar","Sydney","Sydney CBD","Sydney"],["BAR100","Bar","Sydney","Sydney CBD","Sydney"],["Bavarian Bier Cafe O'Connell","Bar","Sydney","Sydney CBD","Sydney"],["Bells Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Bohem Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Brooklyn Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Burdekin Hotel","Pub","Sydney","Darlinghurst","Sydney"],["Captain Cook Hotel","Pub","Sydney","Millers Point","Sydney"],["Cargo Bar","Bar","Sydney","Darling Harbour","Sydney"],["Carrington Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Castles on Castlereagh","Bar","Sydney","Sydney CBD","Sydney"],["Chamberlain Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Charlie Chan's Bar and Bottle Shop","Bar","Sydney","Sydney CBD","Sydney"],["Cheers Bar and Grill","Bar","Sydney","Sydney CBD","Sydney"],["City Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Civic Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Clare Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Coolabar Bar/Restaurant","Bar","Sydney","Sydney CBD","Sydney"],["Coronation Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Court House Hotel","Pub","Sydney","Newtown","Sydney"],["Covent Garden Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Criterion Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Crown Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Crowne Plaza Darling Harbour","Pub","Sydney","Darling Harbour","Sydney"],["Cruise Bar","Bar","Sydney","Circular Quay","Sydney"],["Crystal Palace Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Dolphin Hotel","Pub","Sydney","Surry Hills","Sydney"],["East Sydney Hotel","Pub","Sydney","Darlinghurst","Sydney"],["Edinburgh Castle Hotel","Pub","Sydney","Surry Hills","Sydney"],["Equilibrium Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Establishment Hotel","Bar","Sydney","Sydney CBD","Sydney"],["Evening Star Hotel","Pub","Sydney","Surry Hills","Sydney"],["Forbes Tavern Hotel","Pub","Sydney","Darlinghurst","Sydney"],["Forresters Hotel","Pub","Sydney","Surry Hills","Sydney"],["Four Points Hotel, Sydney","Pub","Sydney","Sydney CBD","Sydney"],["Four Seasons Hotel","Pub","Sydney","The Rocks","Sydney"],["Gaslight Inn Hotel","Pub","Sydney","Potts Point","Sydney"],["Glenmore Hotel","Pub","Sydney","The Rocks","Sydney"],["GPO Sydney","Bar","Sydney","Sydney CBD","Sydney"],["Grand Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Great Southern Hotel","Pub","Sydney","Haymarket","Sydney"],["Harbour View Hotel","Pub","Sydney","The Rocks","Sydney"],["Hopetoun Hotel","Pub","Sydney","Surry Hills","Sydney"],["Hotel CBD","Pub","Sydney","Sydney CBD","Sydney"],["Hotel Chambers","Pub","Sydney","Sydney CBD","Sydney"],["Hotel Harry","Pub","Sydney","Surry Hills","Sydney"],["Hotel Inter-Continental","Pub","Sydney","Circular Quay","Sydney"],["Hotel Sweeney's","Pub","Sydney","Sydney CBD","Sydney"],["Jacksons on George","Pub","Sydney","The Rocks","Sydney"],["Keg & Brew","Pub","Sydney","Surry Hills","Sydney"],["King Street Brewhouse","Brewery","Sydney","Sydney CBD","Sydney"],["Lord Nelson Hotel","Pub","Sydney","The Rocks","Sydney"],["Maloney's Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Maritime Rosie O'Gradys","Pub","Sydney","Sydney CBD","Sydney"],["Martin Place Bar","Bar","Sydney","Sydney CBD","Sydney"],["Menzies Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Mercantile Hotel","Pub","Sydney","The Rocks","Sydney"],["Metropolitan Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Minus 5","Bar","Sydney","Sydney CBD","Sydney"],["Mountbatten Hotel","Pub","Sydney","Sydney CBD","Sydney"],["New Windsor Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Novotel Rockford Darling Harbour","Pub","Sydney","Darling Harbour","Sydney"],["O'Donoghue's Irish Pub, Sydney","Pub","Sydney","Sydney CBD","Sydney"],["Observer Hotel","Pub","Sydney","The Rocks","Sydney"],["Occidental Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Old Sydney Holiday Inn","Pub","Sydney","The Rocks","Sydney"],["Oxford Hotel","Pub","Sydney","Darlinghurst","Sydney"],["Paddy Maguires Pub","Pub","Sydney","Sydney CBD","Sydney"],["Palace Hotel Sydney","Pub","Sydney","Sydney CBD","Sydney"],["Paragon Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Pavillion Tavern","Pub","Sydney","Sydney CBD","Sydney"],["Pontoon Bar","Bar","Sydney","Darling Harbour","Sydney"],["Pullman Quay Grand","Pub","Sydney","Circular Quay","Sydney"],["QT Sydney","Bar","Sydney","Sydney CBD","Sydney"],["Radisson Hotel & Suites","Pub","Sydney","Sydney CBD","Sydney"],["Radisson Plaza Hotel Sydney","Pub","Sydney","Sydney CBD","Sydney"],["Retro Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Royal Albert Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Royal Standard Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Ryan's Bar","Bar","Sydney","Sydney CBD","Sydney"],["Scruffy Murphy's","Pub","Sydney","Sydney CBD","Sydney"],["Scubar Down Under","Bar","Sydney","Sydney CBD","Sydney"],["Shark Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Shelbourne Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Sheraton on the Park","Bar","Sydney","Sydney CBD","Sydney"],["Ship Inn","Pub","Sydney","Sydney CBD","Sydney"],["Shirt Bar","Bar","Sydney","Sydney CBD","Sydney"],["Side Bar","Bar","Sydney","Sydney CBD","Sydney"],["Sir John Young Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Sir Stamford at Circular Quay","Bar","Sydney","Circular Quay","Sydney"],["Slip Inn","Bar","Sydney","Sydney CBD","Sydney"],["Sofitel Wentworth Hotel Sydney","Bar","Sydney","Sydney CBD","Sydney"],["St James Hotel","Pub","Sydney","Sydney CBD","Sydney"],["St Patrick's Tavern","Pub","Sydney","Sydney CBD","Sydney"],["Star Bar & Grill","Bar","Sydney","Sydney CBD","Sydney"],["Star Hotel","Pub","Sydney","Sydney CBD","Sydney"],["State Theatre Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Strand Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Strattons Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Strawberry Hills Hotel","Pub","Sydney","Strawberry Hills","Sydney"],["Swissotel Sydney on Market Street","Bar","Sydney","Sydney CBD","Sydney"],["Sydney Harbour Marriott","Bar","Sydney","Circular Quay","Sydney"],["Sydney Hilton Hotel","Bar","Sydney","Sydney CBD","Sydney"],["Syds Champagne Bar","Bar","Sydney","Sydney CBD","Sydney"],["The 3 Wise Monkeys Pub","Pub","Sydney","Sydney CBD","Sydney"],["The Abercrombie Hotel","Pub","Sydney","Chippendale","Sydney"],["The Arthouse Hotel","Pub","Sydney","Sydney CBD","Sydney"],["The Assembly Bar","Bar","Sydney","Sydney CBD","Sydney"],["The Barber Shop","Bar","Sydney","Sydney CBD","Sydney"],["The Baxter Inn","Bar","Sydney","Sydney CBD","Sydney"],["The Blacket Hotel","Pub","Sydney","Sydney CBD","Sydney"],["The Cuckoo's Perch","Bar","Sydney","Sydney CBD","Sydney"],["The Diamond Hotel","Pub","Sydney","Sydney CBD","Sydney"],["The Dove and Olive","Pub","Sydney","Surry Hills","Sydney"],["The Flynn","Bar","Sydney","Sydney CBD","Sydney"],["The Fox Hole","Bar","Sydney","Sydney CBD","Sydney"],["The Fullerton Hotel Sydney","Bar","Sydney","Sydney CBD","Sydney"],["The Grace Hotel","Bar","Sydney","Sydney CBD","Sydney"],["The Harbour Rocks Hotel","Bar","Sydney","The Rocks","Sydney"],["The Mercure Hotel Sydney","Bar","Sydney","Sydney CBD","Sydney"],["The Mojo Record Bar","Bar","Sydney","Sydney CBD","Sydney"],["The Republic Hotel","Pub","Sydney","Sydney CBD","Sydney"],["The Riley Hotel","Bar","Sydney","Surry Hills","Sydney"],["The Rooftop","Bar","Sydney","Sydney CBD","Sydney"],["The Small Bar","Bar","Sydney","Sydney CBD","Sydney"],["The Sugarmill","Bar","Sydney","Sydney CBD","Sydney"],["The Sussex Hotel","Pub","Sydney","Sydney CBD","Sydney"],["The Verandah Bar & Bistro","Bar","Sydney","Sydney CBD","Sydney"],["The Wanderer","Bar","Sydney","Sydney CBD","Sydney"],["Trades Hall Inn","Pub","Sydney","Sydney CBD","Sydney"],["Trinity Bar","Bar","Sydney","Sydney CBD","Sydney"],["Triple 8 Bar","Bar","Sydney","Sydney CBD","Sydney"],["Triple Ace Bar","Bar","Sydney","Sydney CBD","Sydney"],["Trumps Tavern","Pub","Sydney","Sydney CBD","Sydney"],["Vault Hotel","Pub","Sydney","Sydney CBD","Sydney"],["Winebanc","Bar","Sydney","Sydney CBD","Sydney"],["Wynyard Hotel","Pub","Sydney","Sydney CBD","Sydney"],["York Bar","Bar","Sydney","Sydney CBD","Sydney"],["Zupano","Bar","Sydney","Sydney CBD","Sydney"],
+
+  // BRISBANE — current city directory sweep
+  ["At Sixes and Sevens","Pub","Fortitude Valley","Brunswick St","Brisbane"],["Beach House Bar & Grill CBD","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Belgian Beer Cafe Brussels","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Berkley's On Ann","Bar","Brisbane CBD","Ann St","Brisbane"],["Criterion Tavern","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Down Under Bar & Grill","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["DRAGONFLY","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Exchange Hotel","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Friday's Riverside","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Gilhooley's","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Grand Central Hotel Brisbane","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Greenhill Bar","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Hilton International Brisbane","Bar","Brisbane CBD","Queen St","Brisbane"],["Hotel Embassy","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Irish Murphy's","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Jade Buddha","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["L'Academie Hotel","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Lands Office Tavern","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Libertine Bar and Restaurant","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["NEXT Hotel","Bar","Brisbane CBD","Queen St","Brisbane"],["Novotel Brisbane","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["O'Malley's Irish Pub","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Orient Hotel","Pub","Brisbane CBD","Woolloongabba","Brisbane"],["Pig 'n' Whistle","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Port Office Hotel","Pub","Brisbane CBD","Edward St","Brisbane"],["Riverbar and Kitchen","Bar","Brisbane CBD","Eagle St","Brisbane"],["Sofitel Brisbane","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Stamford Plaza Brisbane","Bar","Brisbane CBD","Edward St","Brisbane"],["The Brewhouse Brewery, Sports Bar & Grill","Brewery","Brisbane CBD","Brisbane CBD","Brisbane"],["The Crosstown","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["The Grosvenor On George","Pub","Brisbane CBD","George St","Brisbane"],["The Sebel King George Sq","Bar","Brisbane CBD","King George Sq","Brisbane"],["The Tank Hotel","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["The Villager","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Traders Hotel","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],["Transcontinental Hotel","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Union Jacks Ale House","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Victory Hotel","Pub","Brisbane CBD","Brisbane CBD","Brisbane"],["Vino's Restaurant & Bar","Bar","Brisbane CBD","Brisbane CBD","Brisbane"],
+  // High-use Brisbane nightlife venues identified in 2026 guides
+  ["The Wickham","Pub","Fortitude Valley","Brunswick St","Brisbane"],["The Prince Consort","Pub","Fortitude Valley","Brunswick St","Brisbane"],["The Osbourne Hotel","Pub","Fortitude Valley","Ann St","Brisbane"],["Ric's Bar","Bar","Fortitude Valley","Brunswick St","Brisbane"],["Cloudland","Bar","Fortitude Valley","Ann St","Brisbane"],["Netherworld","Bar","Fortitude Valley","Ann St","Brisbane"],["Death & Taxes","Bar","Fortitude Valley","Brisbane","Brisbane"],["Iris Rooftop","Bar","Fortitude Valley","James St","Brisbane"],["Eleven Rooftop","Bar","Fortitude Valley","Ann St","Brisbane"],["Savile Row","Bar","Fortitude Valley","Ann St","Brisbane"],["Finney Isles","Bar","Fortitude Valley","James St","Brisbane"],["At Sixes and Sevens","Pub","Fortitude Valley","James St","Brisbane"],["Felons Brewing Co","Brewery","Brisbane CBD","Howard Smith Wharves","Brisbane"],["Mr Percival's","Bar","Brisbane CBD","Howard Smith Wharves","Brisbane"],["The Plough Inn","Pub","South Brisbane","Stanley St","Brisbane"],["The Boundary Hotel","Pub","West End","Boundary St","Brisbane"],["Montague Hotel","Pub","West End","Montague Rd","Brisbane"],["Hotel West End","Pub","West End","Boundary St","Brisbane"],["The Pineapple Hotel","Pub","Kangaroo Point","Main St","Brisbane"],["Norman Hotel","Pub","Woolloongabba","Ipswich Rd","Brisbane"],["Story Bridge Hotel","Pub","Kangaroo Point","Main St","Brisbane"],["Shafston Hotel","Pub","East Brisbane","Woolloongabba","Brisbane"],["Australian National Hotel","Pub","East Brisbane","Woolloongabba","Brisbane"],["Lord Stanley Hotel","Pub","East Brisbane","Stanley St","Brisbane"],["The Scratch Bar","Bar","Milton","Milton","Brisbane"],["Breakfast Creek Hotel","Pub","Albion","Kingsford Smith Dr","Brisbane"],["Crown Hotel","Pub","Lutwyche","Lutwyche Rd","Brisbane"],["The Brunswick Hotel","Pub","New Farm","Brunswick St","Brisbane"],["Hotel Carrington","Pub","New Farm","New Farm","Brisbane"],["Felons Barrel Hall","Brewery","Brisbane CBD","Howard Smith Wharves","Brisbane"]
+  // GOLD COAST
+  ["The Avenue","Pub","Surfers Paradise","3-5 Cavill Ave","Gold Coast"],["The Island Gold Coast","Bar","Surfers Paradise","3128 Surfers Paradise Blvd","Gold Coast"],["D'Arcy Arms Irish Pub","Pub","Surfers Paradise","2923 Gold Coast Hwy","Gold Coast"],["Waxy's Irish Pub","Pub","Surfers Paradise","34 Orchid Ave","Gold Coast"],["The Avenue Surfers Paradise","Club","Surfers Paradise","3-5 Cavill Ave","Gold Coast"],["The Clock Hotel","Pub","Surfers Paradise","Victoria Ave","Gold Coast"],["SinCity Nightclub","Club","Surfers Paradise","22 Orchid Ave","Gold Coast"],["Elsewhere Bar","Bar","Surfers Paradise","8 Cavill Ave","Gold Coast"],["Cocktails Nightclub","Club","Surfers Paradise","23 Orchid Ave","Gold Coast"],["The Bedroom","Club","Surfers Paradise","26 Orchid Ave","Gold Coast"],["Lost Kingdom","Club","Surfers Paradise","Surfers Paradise","Gold Coast"],["Broadbeach Tavern","Pub","Broadbeach","17 Oracle Blvd","Gold Coast"],["The Star Gold Coast","Club","Broadbeach","8 Casino Dr","Gold Coast"],["The Loose Moose Tap & Grill House","Bar","Broadbeach","75 Surf Pde","Gold Coast"],["The Pink Flamingo Spiegelclub","Live Music","Broadbeach","88 Surf Pde","Gold Coast"],["The Lucky Squire","Pub","Broadbeach","28-30 Oracle Blvd","Gold Coast"],["The Collective Palm Beach","Bar","Palm Beach","5/15 Palm Beach Ave","Gold Coast"],["The Scottish Prince","Pub","Palm Beach","5-9 Palm Beach Ave","Gold Coast"],["Balter Brewing Taproom","Brewery","Currumbin","14 Traders Way","Gold Coast"],["Burleigh Town Hotel","Pub","Burleigh Waters","1740 Gold Coast Hwy","Gold Coast"],["Burleigh Pavilion","Bar","Burleigh Heads","43 Goodwin Tce","Gold Coast"],["The Tropic","Bar","Burleigh Heads","43 Goodwin Tce","Gold Coast"],["Rick Shores","Bar","Burleigh Heads","43 Goodwin Tce","Gold Coast"],["Burleigh Heads Hotel","Pub","Burleigh Heads","4 Gold Coast Hwy","Gold Coast"],["Miami Marketta","Live Music","Miami","23 Hillcrest Pde","Gold Coast"],["North Burleigh Surf Club","Club","Miami","293 The Esplanade","Gold Coast"],["The Parklands Tavern","Pub","Parkwood","1 Sports Dr","Gold Coast"],["Southport Sharks","Club","Southport","1 Sports Dr","Gold Coast"],["Queen's Arms Hotel","Pub","Southport","133 Queen St","Gold Coast"],["Southport Yacht Club","Club","Main Beach","1 Macarthur Pde","Gold Coast"],["The Loose Moose","Bar","Broadbeach","75 Surf Pde","Gold Coast"],["Duke's Parlour","Bar","Surfers Paradise","6 Beach Rd","Gold Coast"],
+
+  // TOWNSVILLE
+  ["The Ville Resort-Casino","Club","Townsville City","Sir Leslie Thiess Dr","Townsville"],["The Brewery","Bar","Townsville City","252 Walker St","Townsville"],["The Seaview Hotel","Pub","South Townsville","2-4 The Strand","Townsville"],["The Ville Resort Pool Bar","Bar","Townsville City","Sir Leslie Thiess Dr","Townsville"],["The Metropole Hotel","Pub","Townsville City","81 Palmer St","Townsville"],["The Sovereign Hotel","Pub","Townsville City","46 Palmer St","Townsville"],["The Cowboys Leagues Club","Club","Kirwan","500 Ross River Rd","Townsville"],["Riverview Tavern","Pub","Douglas","72 Bowen Rd","Townsville"],["The Dalrymple Hotel","Pub","Mundingburra","310 Ross River Rd","Townsville"],["The Sun Hotel","Pub","Mundingburra","1-3 Palmerston St","Townsville"],["Hermit Park Hotel","Pub","Hermit Park","PO Box 2020","Townsville"],["The Kirwan Tavern","Pub","Kirwan","Cnr Thuringowa Dr & Burnda St","Townsville"],["Upper Ross Hotel","Pub","Rasmussen","Cnr Riverway Dr & High Range Dr","Townsville"],["The Royal Hotel","Pub","North Ward","1-3 Eyre St","Townsville"],["The Seagulls Club","Club","Belgian Gardens","74 The Esplanade","Townsville"],["Townsville Yacht Club","Club","Townsville City","1 Plume St","Townsville"],["The Australian Hotel","Pub","South Townsville","11 Palmer St","Townsville"],["The Ranch Hotel","Pub","Rasmussen","Townsville","Townsville"],["The Queens Hotel","Pub","North Ward","Queens Rd","Townsville"],["Cactus Jack's","Bar","Townsville City","Flinders St","Townsville"],["The TapHouse Townsville","Bar","Townsville City","Flinders St","Townsville"],["The Balcony Restaurant & Bar","Bar","Townsville City","Flinders St","Townsville"],["Irish Finnegan's","Pub","Townsville City","Flinders St","Townsville"],["The Grand Central","Bar","Townsville City","Flinders St","Townsville"],["The Exchange Hotel","Pub","Townsville City","Flinders St","Townsville"],
+
+  // CAIRNS
+  ["The Woolshed","Club","Cairns City","24 Shields St","Cairns"],["Gilligan's","Club","Cairns City","89 Grafton St","Cairns"],["The Pier Bar","Bar","Cairns City","Pier Shopping Centre","Cairns"],["Three Wolves","Bar","Cairns City","32 Abbott St","Cairns"],["The Conservatory Bar","Bar","Cairns City","12/12 Abbott St","Cairns"],["The Chambers","Bar","Cairns City","21 Spence St","Cairns"],["Salt House","Bar","Cairns City","6/6-8 Wharf St","Cairns"],["P.J. O'Brien's Cairns","Pub","Cairns City","87 Lake St","Cairns"],["The Jack","Pub","Cairns City","Cnr Spence St & Sheridan St","Cairns"],["The Pier Cairns","Bar","Cairns City","1 Pierpoint Rd","Cairns"],["Hemingway's Brewery Cairns Wharf","Brewery","Cairns City","4 Wharf St","Cairns"],["Wolf Lane Distillery","Bar","Cairns City","24 Shields St","Cairns"],["The Benson Hotel","Pub","Cairns City","50 Grafton St","Cairns"],["Rocco by Crystalbrook","Bar","Cairns City","Level 5/85 Esplanade","Cairns"],["The Backyard Cairns","Bar","Cairns City","18/20 Abbott St","Cairns"],["The Conservatory","Bar","Cairns City","12 Abbott St","Cairns"],["Salt House Marina","Bar","Cairns City","6/6-8 Wharf St","Cairns"],["The Red Beret","Bar","Cairns City","Cairns City","Cairns"],["The Edge Hill Tavern","Pub","Edge Hill","351 Sheridan St","Cairns"],["The Bluewater","Pub","Trinity Park","Cnr Captain Cook Hwy & Aplin Rd","Cairns"],["Trinity Beach Tavern","Pub","Trinity Beach","81-85 Vasey Esplanade","Cairns"],["Palm Cove Tavern","Pub","Palm Cove","Cnr Williams Esplanade & Veivers Rd","Cairns"],["Hemingway's Brewery Port Douglas","Brewery","Port Douglas","44 Wharf St","Cairns"],["Macalister Brewing Company","Brewery","Smithfield","2/16-20 Redlynch Intake Rd","Cairns"],["Barrier Reef Brewing Co","Brewery","Smithfield","Cairns","Cairns"],["Edmonton Hotel","Pub","Edmonton","1 Bruce Hwy","Cairns"],["The Westcourt Hotel","Pub","Westcourt","Cnr Mulgrave Rd & Westcourt Rd","Cairns"],
+
+  // MELBOURNE
+  ["The Espy","Pub","St Kilda","11 The Esplanade","Melbourne"],["The Local Taphouse","Pub","St Kilda East","184 Carlisle St","Melbourne"],["The Prince Alfred Hotel","Pub","Port Melbourne","355 Bay St","Melbourne"],["The Grosvenor Hotel","Pub","St Kilda East","10 Brighton Rd","Melbourne"],["The Tote","Live Music","Collingwood","67-71 Johnston St","Melbourne"],["The Corner Hotel","Live Music","Richmond","57 Swan St","Melbourne"],["The Palace Hotel","Pub","South Melbourne","505 City Rd","Melbourne"],["The Standard Hotel","Pub","Fitzroy","293 Fitzroy St","Melbourne"],["Naked for Satan","Bar","Fitzroy","285 Brunswick St","Melbourne"],["The Provincial Hotel","Pub","Fitzroy","299 Brunswick St","Melbourne"],["The Everleigh","Bar","Fitzroy","150 Gertrude St","Melbourne"],["Black Pearl","Bar","Fitzroy","304 Brunswick St","Melbourne"],["Marquis of Lorne","Pub","Fitzroy","411 George St","Melbourne"],["The Birmingham Hotel","Pub","Collingwood","333 Smith St","Melbourne"],["The Stomping Ground Brewery","Brewery","Collingwood","100 Gipps St","Melbourne"],["The Retreat Hotel","Pub","Brunswick","280 Sydney Rd","Melbourne"],["Howler","Live Music","Brunswick","7-11 Dawson St","Melbourne"],["The Railway Club Hotel","Pub","Port Melbourne","59 Bay St","Melbourne"],["The Lincoln","Pub","Carlton","91 Cardigan St","Melbourne"],["The Clyde Hotel","Pub","Carlton","385 Cardigan St","Melbourne"],["The Curtin Hotel","Live Music","Carlton","29 Swanston St","Melbourne"],["Garden State Hotel","Bar","Melbourne CBD","101 Flinders Ln","Melbourne"],["StoryVille","Bar","Melbourne CBD","185 Lonsdale St","Melbourne"],["Eau-de-Vie Melbourne","Bar","Melbourne CBD","1 Malthouse Ln","Melbourne"],["Beneath Driver Lane","Bar","Melbourne CBD","3 Driver Ln","Melbourne"],["Arlechin","Bar","Melbourne CBD","Flinders Ln","Melbourne"],["The Toff in Town","Club","Melbourne CBD","252 Swanston St","Melbourne"],["Revolver Upstairs","Club","Prahran","229 Chapel St","Melbourne"],["The Night Cat","Live Music","Fitzroy","137-141 Johnston St","Melbourne"],["Howler","Live Music","Brunswick","7-11 Dawson St","Melbourne"],["Northcote Social Club","Pub","Northcote","301 High St","Melbourne"],["The Railway Hotel","Pub","South Melbourne","280 Ferrars St","Melbourne"],
+
+  // SOUTH AUSTRALIA
+  ["The Exeter","Pub","Adelaide","246 Rundle St","South Australia"],["The Austral","Pub","Adelaide","205 Rundle St","South Australia"],["The Crown & Anchor","Pub","Adelaide","196 Grenfell St","South Australia"],["The Grace Emily Hotel","Pub","Adelaide","232 Waymouth St","South Australia"],["The Wheatsheaf Hotel","Pub","Thebarton","39 George St","South Australia"],["The Edinburgh Hotel","Pub","Mitcham","7 High St","South Australia"],["The Lion Hotel","Pub","North Adelaide","161 Melbourne St","South Australia"],["The Gov","Live Music","Hindmarsh","59 Port Rd","South Australia"],["The Arkaba Hotel","Pub","Fullarton","150 Glen Osmond Rd","South Australia"],["The Highway","Pub","Plympton","290 Anzac Hwy","South Australia"],["The Maid Hotel","Pub","Stepney","1 Magill Rd","South Australia"],["The Stag Public House","Pub","Hindmarsh","299 Port Rd","South Australia"],["The Exeter Hotel","Pub","Adelaide","246 Rundle St","South Australia"],["Bank Street Social","Bar","Adelaide","48-50 Bank St","South Australia"],["2KW Bar & Restaurant","Bar","Adelaide","2 King William St","South Australia"],["Maybe Mae","Bar","Adelaide","15 Peel St","South Australia"],["Hindley Street Country Club","Club","Adelaide","Adelaide","South Australia"],["Rocket Bar & Rooftop","Bar","Adelaide","142 Hindley St","South Australia"],["Cry Baby","Bar","Adelaide","11 Peel St","South Australia"],["Hains & Co","Bar","Adelaide","23 Gilbert Pl","South Australia"],["Udaberri","Bar","Adelaide","11-13 Leigh St","South Australia"],["West Oak Hotel","Pub","Adelaide","208 Hindley St","South Australia"],["The Unley","Pub","Unley","29 Unley Rd","South Australia"],["Marion Hotel","Pub","Mitchell Park","849 Marion Rd","South Australia"],["Seacliff Beach Hotel","Pub","Seacliff","277 Esplanade","South Australia"],["The Moseley","Pub","Glenelg","11 Moseley Sq","South Australia"],["The Holdy","Pub","Holden Hill","82 Beovich Rd","South Australia"],["The Edinburgh Cellars","Bar","Adelaide","1-3 High St","South Australia"],
+
+  // HOBART
+  ["New Sydney Hotel","Pub","Hobart","87 Bathurst St","Hobart"],["The Winston","Pub","North Hobart","381 Elizabeth St","Hobart"],["Preachers","Bar","Battery Point","5 Knopwood's Retreat","Hobart"],["The Brunswick Hotel","Pub","Hobart","67 Liverpool St","Hobart"],["The Telegraph Hotel","Pub","Hobart","19 Morrison St","Hobart"],["The Hope & Anchor Tavern","Pub","Hobart","65 Macquarie St","Hobart"],["The Shipwright's Arms","Pub","Battery Point","29 Trumpeter St","Hobart"],["The Duke of Wellington","Pub","North Hobart","85 Harrington St","Hobart"],["The Republic Bar & Cafe","Bar","North Hobart","299 Elizabeth St","Hobart"],["The Telegraph Hotel","Pub","Hobart","19 Morrison St","Hobart"],["The Brunswick Hotel","Pub","Hobart","67 Liverpool St","Hobart"],["The Den","Bar","Hobart","77 Salamanca Pl","Hobart"],["The Story Bar","Bar","Hobart","19 Hunter St","Hobart"],["Altar Bar","Bar","Hobart","112 Murray St","Hobart"],["The Hanging Garden","Live Music","Hobart","77 Salamanca Pl","Hobart"],["Alabama Hotel Hobart","Bar","Hobart","Level 1/72 Liverpool St","Hobart"],["The Grand Poobah","Live Music","Hobart","142 Liverpool St","Hobart"],["The Whaler","Pub","Hobart","18 Hunter St","Hobart"],["Customs House Hotel","Pub","Hobart","1 Murray St","Hobart"],["New Bar","Bar","Hobart","Hobart CBD","Hobart"],["Shambles Brewery","Brewery","Hobart","222 Elizabeth St","Hobart"],["T-Bone Brewing Co","Brewery","Hobart","1/308 Argyle St","Hobart"],
+
+  // DARWIN
+  ["Shenanigans Irish Pub","Pub","Darwin City","1/69 Mitchell St","Darwin"],["The Precinct Tavern","Pub","Darwin City","7 Kitchener Dr","Darwin"],["Sweethearts","Pub","Darwin City","64 Smith St","Darwin"],["The Deck Bar","Bar","Darwin City","22 Mitchell St","Darwin"],["Monsoons","Bar","Darwin City","46 Mitchell St","Darwin"],["Shine Bar","Bar","Darwin City","24 Mitchell St","Darwin"],["Lost Arc","Bar","Darwin City","89 Mitchell St","Darwin"],["Hotel Darwin","Pub","Darwin City","81 Cavenagh St","Darwin"],["The Tap on Mitchell","Pub","Darwin City","58 Mitchell St","Darwin"],["The Cav","Pub","Darwin City","12 Cavenagh St","Darwin"],["Mindil Beach Casino Resort","Club","The Gardens","Gilruth Ave","Darwin"],["The Cavenagh","Pub","Darwin City","12 Cavenagh St","Darwin"],["Lola's Pergola","Bar","Darwin Waterfront","7 Kitchener Dr","Darwin"],["Wharf One Food & Wine","Bar","Darwin Waterfront","7 Kitchener Dr","Darwin"],["The Loading Bay","Bar","Darwin City","Darwin","Darwin"],["The Precinct","Pub","Darwin City","7 Kitchener Dr","Darwin"],["Lido Pool Deck at Leea Hotel","Bar","Darwin City","64 Cavenagh St","Darwin"],["Stone House","Bar","Darwin City","33 Cavenagh St","Darwin"],["Yots Greek Taverna","Bar","Darwin Waterfront","Darwin","Darwin"],["Pee Wee's at the Point","Bar","East Point","Alec Fong Lim Dr","Darwin"],["Darwin Ski Club","Club","Fannie Bay","Maria Liveris Dr","Darwin"],["Trailer Boat Club","Club","Fannie Bay","McMillans Rd","Darwin"],["Mindil Beach Sunset Market","Live Music","The Gardens","Gilruth Ave","Darwin"],
+
+  // PERTH
+  ["The Aviary","Bar","Perth CBD","140 William St","Perth"],["The Rechabite","Club","Northbridge","224 William St","Perth"],["The Court","Club","Northbridge","50 Beaufort St","Perth"],["Connections Nightclub","Club","Northbridge","81 James St","Perth"],["The Bird","Bar","Northbridge","181 William St","Perth"],["Northbridge Brewing Co","Brewery","Northbridge","44 Lake St","Perth"],["Picabar","Bar","Northbridge","51 James St","Perth"],["Alabama Song","Bar","Northbridge","232 William St","Perth"],["The Standard","Bar","Northbridge","28 Roe St","Perth"],["The Aberdeen Hotel","Pub","Northbridge","90 Aberdeen St","Perth"],["The Brass Monkey","Pub","Northbridge","William St","Perth"],["Sneaky Tony's","Bar","Northbridge","Sneaky Ln","Perth"],["Mechanics Institute","Bar","Northbridge","222 William St","Perth"],["Holey Moley Golf Club Perth","Bar","Northbridge","Crown St","Perth"],["Market Grounds","Pub","Perth CBD","10 Telethon Ave","Perth"],["Print Hall","Bar","Perth CBD","125 St Georges Tce","Perth"],["Bob's Bar","Bar","Perth CBD","Cnr Barrack St & St Georges Tce","Perth"],["Aurora Rooftop Bar","Bar","Perth CBD","22nd floor/305 Murray St","Perth"],["Bobèche","Bar","Perth CBD","Barrack St","Perth"],["The Standard Perth","Bar","Northbridge","28 Roe St","Perth"],["Villa Nightclub","Club","Perth CBD","187 Stirling St","Perth"],["Ambar","Club","Perth CBD","104 Murray St","Perth"],["Si Paradiso","Bar","Northbridge","1/446 William St","Perth"],["The Vault","Club","Perth CBD","351 Wellington St","Perth"],["The Camfield","Pub","Burswood","1 Roger MacKay Dr","Perth"],["The Windsor","Pub","South Perth","112 Mill Point Rd","Perth"],["The Vic Hotel","Pub","Subiaco","446 Hay St","Perth"],["McNally's Irish Pub","Pub","Subiaco","88 Rokeby Rd","Perth"],["The Galway Hooker","Pub","Northbridge","3/5 Milligan St","Perth"],["Freo.Social","Live Music","Fremantle","12 Parry Ave","Perth"],["Little Creatures Brewery Fremantle","Brewery","Fremantle","40 Mews Rd","Perth"],["The National Hotel Fremantle","Pub","Fremantle","98 High St","Perth"],["The Left Bank","Pub","East Fremantle","15 Riverside Rd","Perth"],["Clancy's Fish Pub","Pub","Fremantle","51 Cantonment St","Perth"],["Varsity Bar Nedlands","Bar","Nedlands","1/1-3 Hampden Rd","Perth"],["The Indi Bar","Bar","Scarborough","Gfd?","Perth"]
+,
+  // MASTER SWEEP ADDITIONS — October 2026
+  ["United Service Club Newcastle", "Club", "Newcastle", "55 Watt St", "Newcastle"],
+  ["Battlesticks", "Live Music", "Newcastle", "200 Wharf Rd", "Newcastle"],
+  ["Rooftop At QT", "Bar", "Newcastle", "185 Hunter St", "Newcastle"],
+  ["The Young Street Hotel", "Pub", "Carrington", "132 Young St", "Newcastle"],
+  ["Oceane", "Club", "Newcastle", "350 Hunter St", "Newcastle"],
+  ["Bar Romeo", "Bar", "Cooks Hill", "1/131 Darby St", "Newcastle"],
+  ["Cardiff RSL", "Club", "Cardiff", "7 Munibung Rd", "Lake Macquarie"],
+  ["Speers Point Hotel", "Pub", "Speers Point", "49 Main Rd", "Lake Macquarie"],
+  ["Pelican RSL", "Club", "Pelican", "1 Pelican St", "Lake Macquarie"],
+  ["Gateshead Tavern", "Pub", "Gateshead", "15 Pacific Hwy", "Lake Macquarie"],
+  ["Hotel Metro", "Pub", "Mirrabooka", "8-10 Victory Row", "Lake Macquarie"],
+  ["The Albion Hotel Parramatta", "Pub", "Parramatta", "135 George St", "Sydney"],
+  ["The Bat & Ball Hotel", "Pub", "Redfern", "495 Cleveland St", "Sydney"],
+  ["Maybe Sammy", "Bar", "The Rocks", "115 Harrington St", "Sydney"],
+  ["Cantina OK!", "Bar", "Sydney CBD", "1/18-20 Oxford St", "Sydney"],
+  ["Cielo Rooftop", "Bar", "Fortitude Valley", "Level 2/1000 Ann St", "Brisbane"],
+  ["Summa House", "Bar", "Fortitude Valley", "59 McLachlan St", "Brisbane"],
+  ["MAYA Mexican", "Bar", "Fortitude Valley", "757 Ann St", "Brisbane"],
+  ["The Tivoli", "Live Music", "Fortitude Valley", "52 Costin St", "Brisbane"],
+  ["The Triffid", "Live Music", "Newstead", "7-9 Stratton St", "Brisbane"],
+  ["Fortitude Music Hall", "Live Music", "Fortitude Valley", "312 Brunswick St", "Brisbane"],
+  ["Black Bear Lodge", "Live Music", "Fortitude Valley", "322 Brunswick St", "Brisbane"],
+  ["The Brightside", "Live Music", "Fortitude Valley", "27 Warner St", "Brisbane"],
+  ["Lefty's Music Hall", "Live Music", "Fortitude Valley", "15 Caxton St", "Brisbane"],
+  ["Greaser", "Live Music", "Fortitude Valley", "21 Ann St", "Brisbane"],
+  ["Crowbar Brisbane", "Live Music", "Fortitude Valley", "243 Brunswick St", "Brisbane"],
+  ["The Island Rooftop", "Bar", "Surfers Paradise", "3128 Surfers Paradise Blvd", "Gold Coast"],
+  ["Surfers Paradise Tavern", "Pub", "Surfers Paradise", "10 Beach Rd", "Gold Coast"],
+  ["Aloha Bar & Cafe", "Bar", "Surfers Paradise", "3/8 Cavill Ave", "Gold Coast"],
+  ["The Irish Finnegans", "Pub", "Townsville City", "68 Flinders St", "Townsville"],
+  ["The Ville", "Club", "Townsville City", "Sir Leslie Thiess Dr", "Townsville"],
+  ["nōknōk", "Bar", "Cairns City", "135 Grafton St", "Cairns"],
+  ["Flamingos Tiki Bar", "Bar", "Cairns City", "43-47 Shields St", "Cairns"],
+  ["The Brass Bookie", "Bar", "Cairns City", "2 Shields St", "Cairns"],
+  ["Miss Chief Bar & Eatery", "Bar", "Cairns City", "63 Shields St", "Cairns"],
+  ["Summer Bar", "Bar", "Cairns City", "1/12 Lake St", "Cairns"],
+  ["Elixir Music House", "Live Music", "Cairns City", "1/12-14 Lake St", "Cairns"],
+  ["170 Russell", "Live Music", "Melbourne CBD", "170 Russell St", "Melbourne"],
+  ["Bird's Basement", "Live Music", "Melbourne CBD", "11 Singers Ln", "Melbourne"],
+  ["Cherry Bar", "Live Music", "Melbourne CBD", "68 Little Collins St", "Melbourne"],
+  ["Festival Hall", "Live Music", "West Melbourne", "300 Dudley St", "Melbourne"],
+  ["Max Watt's House of Music", "Live Music", "Melbourne CBD", "125 Swanston St", "Melbourne"],
+  ["Paris Cat Jazz Club", "Live Music", "Melbourne CBD", "6 Goldie Pl", "Melbourne"],
+  ["Section 8", "Bar", "Melbourne CBD", "27-29 Tattersalls Ln", "Melbourne"],
+  ["The Forum", "Live Music", "Melbourne CBD", "154 Flinders St", "Melbourne"],
+  ["The Last Chance Rock & Roll Bar", "Live Music", "North Melbourne", "238 Victoria St", "Melbourne"],
+  ["Toff in Town", "Live Music", "Melbourne CBD", "252 Swanston St", "Melbourne"],
+  ["Wax Music Lounge", "Live Music", "Melbourne CBD", "250 Flinders St", "Melbourne"],
+  ["Whitehart Bar", "Bar", "Melbourne CBD", "22 Whitehart Ln", "Melbourne"],
+  ["The Brunswick Ballroom", "Live Music", "Brunswick", "314 Sydney Rd", "Melbourne"],
+  ["The Jazzlab", "Live Music", "Brunswick", "27 Leslie St", "Melbourne"],
+  ["Retreat Hotel", "Pub", "Brunswick", "280 Sydney Rd", "Melbourne"],
+  ["Stay Gold", "Live Music", "Brunswick", "133 Sydney Rd", "Melbourne"],
+  ["Union Hotel", "Pub", "Brunswick", "109 Union St", "Melbourne"],
+  ["NOLA Adelaide", "Bar", "Adelaide CBD", "28 Vardon Ave", "South Australia"],
+  ["Merrymaker Rooftop Bar", "Bar", "Adelaide CBD", "Level 4/13/15 Leigh St", "South Australia"],
+  ["Honeydripper", "Bar", "Adelaide CBD", "35 Frome St", "South Australia"],
+  ["Mothervine", "Bar", "Adelaide CBD", "22A Leigh St", "South Australia"],
+  ["Leigh Street Wine Room", "Bar", "Adelaide CBD", "9 Leigh St", "South Australia"],
+  ["La Buvette", "Bar", "Adelaide CBD", "27 Gresham St", "South Australia"],
+  ["Laterria Bar", "Bar", "Adelaide CBD", "55 Hutt St", "South Australia"],
+  ["Sonny", "Bar", "Hobart CBD", "120 Elizabeth St", "Hobart"],
+  ["Lucinda", "Bar", "Hobart CBD", "47 Liverpool St", "Hobart"],
+  ["Mary Mary", "Bar", "Hobart CBD", "43-51 Macquarie St", "Hobart"],
+  ["Gold Bar", "Bar", "Hobart Waterfront", "12 Murray St", "Hobart"],
+  ["Society Salamanca", "Bar", "Salamanca", "8 Salamanca Pl", "Hobart"],
+  ["The Tasmanian Inn", "Pub", "North Hobart", "172 Campbell St", "Hobart"],
+  ["Cascade Brewery", "Brewery", "South Hobart", "131 Cascade Rd", "Hobart"],
+  ["Fern Tree Tavern", "Pub", "Fern Tree", "680 Huon Rd", "Hobart"],
+  ["Waterman's Hotel", "Pub", "Battery Point", "27 Salamanca Pl", "Hobart"],
+  ["Deep South Brewing Co", "Brewery", "North Hobart", "220 Argyle St", "Hobart"],
+  ["Bar Kokomo", "Bar", "Darwin City", "1/12 Smith St", "Darwin"],
+  ["Zen Rooftop Lounge", "Bar", "Darwin City", "6/6 Carey St", "Darwin"],
+  ["Charlie's of Darwin", "Bar", "Darwin City", "5/16 Smith St", "Darwin"],
+  ["Leea Hotel", "Pub", "Darwin City", "64 Cavenagh St", "Darwin"],
+  ["Ambassador Bar", "Bar", "Northbridge", "59 Aberdeen St", "Perth"],
+  ["Yee-Haw Bar", "Bar", "Northbridge", "133 Aberdeen St", "Perth"],
+
+];
+
+const existingNames = new Set(data.map(x=>String(x[0]).toLowerCase()));
+for (const venue of extraVenues) {
+  if (!existingNames.has(String(venue[0]).toLowerCase())) {
+    data.push(venue);
+    existingNames.add(String(venue[0]).toLowerCase());
+  }
+}
+
+const key="hb_reports_v4";
+const savedKey="hb_saved_v4";
+const ageGateKey="hb_age_confirmed_v1";
+let reports={};
+let saved=[];
+try{
+  reports=safeJSON(hbGet(key),{});
+  saved=safeJSON(hbGet(savedKey),[]);
+}catch(e){console.warn("Local storage unavailable",e)}
+let filter="All", area="All", q="";
+let cloudRows=[];
+let cloudLoadedAt=0;
+let cloudPromise=null;
+const V=data.map((x,i)=>({
+  id:i,n:x[0],t:x[1],s:x[2],a:x[3],
+  r:x[4] || (new Set(["Belmont","Warners Bay","Jewells","Speers Point","Mount Hutton","Toronto","Swansea","Wangi Wangi"]).has(x[2]) ? "Lake Macquarie" : "Newcastle")
+}));
+const C={Quiet:"#21c77a",Moderate:"#f4c542",Busy:"#ff9d2e",Packed:"#ff4d4d"};
+const CROWD_LABELS=new Set(["Quiet","Moderate","Busy","Packed"]);
+const QUEUE_LABELS=new Set(["None","Short","Long"]);
+let activityEnabled = safeJSON(hbGet("hb_activity_enabled_v1"),false) === true;
+let activityTimer = null;
+let activeVenueId = null;
+let activitySession = hbGet("hb_activity_session_v1");
+if(!activitySession){
+  activitySession = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ("hb-"+Math.random().toString(36).slice(2)+Date.now());
+  hbSet("hb_activity_session_v1",activitySession);
+}
+
+
+function getWhosOutMessage(male,female,total){
+  if(!total || total<5) return "";
+  const mp=male/total*100, fp=female/total*100;
+  if(mp>=70) return "🍻 THE LADS ARE OUT!<br><span class=\"whosOutStats\">Looks like the lads are out tonight.</span>";
+  if(fp>=70) return "💃 THE GIRLS ARE OUT!<br><span class=\"whosOutStats\">The girls are bringing the party tonight.</span>";
+  if(mp>=45 && mp<=55) return "🎉 PERFECT MIX!<br><span class=\"whosOutStats\">Everyone's out tonight.</span>";
+  if(mp>55) return "🍻 IT'S A BLOKE-HEAVY CROWD!<br><span class=\"whosOutStats\">The lads are out in force.</span>";
+  return "💃 IT'S A GIRL-HEAVY CROWD!<br><span class=\"whosOutStats\">The girls are out in force.</span>";
+}
+
+async function loadWhosOutFromSupabase(venueId){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+  try{
+    const url=SUPABASE_URL+
+      "/rest/v1/venue_whos_out"+
+      "?select=venue_id,total_reports,men_reports,women_reports,mixed_reports,who_out_label,men_percent,women_percent,mixed_percent"+
+      "&venue_id=eq."+encodeURIComponent(Number(venueId))+"&limit=1";
+    const r=await fetchWithTimeout(url,{
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY
+      }
+    },8000);
+    if(!r.ok){
+      console.error("Who's Out view error",r.status,await r.text());
+      return null;
+    }
+    const rows=await r.json();
+    if(!rows || !rows.length) return null;
+    const row=rows[0];
+    return {
+      total:Number(row.total_reports)||0,
+      male:Number(row.men_reports)||0,
+      female:Number(row.women_reports)||0,
+      mixed:Number(row.mixed_reports)||0,
+      menPercent:Number(row.men_percent)||0,
+      womenPercent:Number(row.women_percent)||0,
+      mixedPercent:Number(row.mixed_percent)||0,
+      label:row.who_out_label||"Mixed"
+    };
+  }catch(e){
+    console.error("Who's Out load failed",e);
+    return null;
+  }
+}
+
+async function loadNearbyPresence(venueId){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return 0;
+  try{
+    const now=new Date().toISOString();
+    const url=SUPABASE_URL+"/rest/v1/activity_presence?select=id&venue_id=eq."+encodeURIComponent(Number(venueId))+"&expires_at=gt."+encodeURIComponent(now)+"&limit=1000";
+    const r=await fetchWithTimeout(url,{
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY
+      }
+    },8000);
+    if(!r.ok) return 0;
+    return (await r.json()).length;
+  }catch(e){
+    console.error("Nearby presence load failed",e);
+    return 0;
+  }
+}
+async function refreshVenueSignals(venueId){
+  const el=document.getElementById("venueSignals");
+  if(!el)return;
+  const nearby=await loadNearbyPresence(venueId);
+  const mix=await loadWhosOutFromSupabase(venueId);
+  let out="";
+  if(nearby>0){
+    out += `<div class="activityBox"><b>📍 PEOPLE NEARBY</b><div class="big" style="margin:7px 0">${nearby}</div><div class="sub">Anonymous live activity signal</div></div>`;
+  }
+  if(mix && mix.total>=5) out += renderWhosOut(mix.male,mix.female,mix.mixed,mix.total);
+  else out += `<div class="whosOut"><div class="whosOutTitle">👀 WHO'S OUT</div><div class="sub" style="margin-top:7px">Optional crowd-mix reports will appear here once there are at least 5.</div></div>`;
+  el.innerHTML=out;
+}
+
+async function refreshWhosOut(venueId){
+  const el=document.getElementById("whosOutAggregate");
+  if(!el)return;
+  const data=await loadWhosOutFromSupabase(venueId);
+  if(!data || data.total<5){
+    el.innerHTML=`<div class="whosOut"><div class="whosOutTitle">👀 WHO'S OUT</div><div class="sub" style="margin-top:7px">Not enough optional responses yet — check back when more people report.</div></div>`;
+    return;
+  }
+  el.innerHTML=renderWhosOut(data.male,data.female,data.mixed,data.total);
+}
+function renderWhosOut(male,female,mixed=0,totalReports=null){
+  const m=Number(male)||0;
+  const f=Number(female)||0;
+  const x=Number(mixed)||0;
+  const total=totalReports!==null ? Number(totalReports)||0 : m+f+x;
+  if(total<5) return "";
+  const genderTotal=m+f;
+  const menPercent=genderTotal>0 ? Math.round(m/genderTotal*100) : 0;
+  const womenPercent=genderTotal>0 ? Math.round(f/genderTotal*100) : 0;
+  const msg=getWhosOutMessage(m,f,genderTotal);
+  return `<div class="whosOut"><div class="whosOutTitle">👀 WHO'S OUT</div><div class="whosOutMsg">${msg}</div><div class="whosOutStats">Based on ${total} optional reports · 👨 ${menPercent}% Men · 👩 ${womenPercent}% Women${x>0?` · 👥 ${x} Mixed`:''}</div></div>`;
+}
+
+/* Privacy-first activity signal:
+   - location sharing is explicitly opt-in
+   - coordinates are rounded before upload
+   - raw device coordinates are never sent to Supabase
+   - presence expires automatically in the database
+*/
+function coarseLocation(lat,lon){
+  return {
+    lat: Math.round(Number(lat)*1000)/1000,
+    lon: Math.round(Number(lon)*1000)/1000
+  };
+}
+async function sendActivityPresence(position,venueId=null){
+  if(!activityEnabled || !position || !position.coords)return false;
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY)return false;
+  const c=coarseLocation(position.coords.latitude,position.coords.longitude);
+  try{
+    const r=await fetchWithTimeout(SUPABASE_URL+"/rest/v1/activity_presence",{
+      method:"POST",
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+        "Content-Type":"application/json",
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({
+        session_id:activitySession,
+        lat:c.lat,
+        lon:c.lon,
+        expires_at:new Date(Date.now()+15*60*1000).toISOString(),
+        venue_id: venueId==null ? null : Number(venueId)
+      })
+    },8000);
+    if(!r.ok){console.error("Activity presence error",r.status,await r.text());return false}
+    return true;
+  }catch(e){
+    console.error("Activity presence connection error",e);
+    return false;
+  }
+}
+function updateActivityVenue(venueId){
+  activeVenueId = venueId == null ? null : Number(venueId);
+  if(!activityEnabled || !navigator.geolocation || activeVenueId == null)return;
+  navigator.geolocation.getCurrentPosition(
+    async p=>{ await sendActivityPresence(p,activeVenueId); },
+    ()=>{},
+    {enableHighAccuracy:false,maximumAge:120000,timeout:8000}
+  );
+}
+function activityTick(){
+  if(!activityEnabled)return;
+  if(!navigator.geolocation){toast("Location is not supported on this device");return}
+  navigator.geolocation.getCurrentPosition(
+    async p=>{
+      const ok=await sendActivityPresence(p,activeVenueId);
+      if(ok) toast("Live activity signal updated");
+    },
+    ()=>toast("Location permission is required for Live Activity"),
+    {enableHighAccuracy:false,maximumAge:120000,timeout:8000}
+  );
+}
+function startActivity(){
+  if(!navigator.geolocation){toast("Location is not supported on this device");return}
+  navigator.geolocation.getCurrentPosition(
+    async p=>{
+      activityEnabled=true;
+      hbSet("hb_activity_enabled_v1","true");
+      const ok=await sendActivityPresence(p,activeVenueId);
+      if(activityTimer)clearInterval(activityTimer);
+      activityTimer=setInterval(activityTick,5*60*1000);
+      toast(ok?"Live Activity is on":"Live Activity is on — waiting for database");
+      premium();
+    },
+    ()=>toast("Location permission not granted"),
+    {enableHighAccuracy:false,maximumAge:0,timeout:10000}
+  );
+}
+function stopActivity(){
+  activityEnabled=false;
+  hbSet("hb_activity_enabled_v1","false");
+  if(activityTimer){clearInterval(activityTimer);activityTimer=null}
+  toast("Live Activity is off");
+  premium();
+}
+function activityControl(){
+  if(activityEnabled){
+    return `<div class="activityBox"><b>📍 Live Activity Detection</b><div class="sub" style="margin-top:6px"><span class="activityOn">ON</span> · anonymous aggregated activity signal</div><button class="smallBtn dangerBtn" onclick="stopActivity()">Turn off</button></div>`;
+  }
+  return `<div class="activityBox"><b>📍 Live Activity Detection</b><div class="sub" style="margin-top:6px"><span class="activityOff">OFF</span> · optional</div><button class="smallBtn" onclick="startActivity()">Enable Live Activity</button><div class="privacyNote" style="margin-top:9px">Your location is rounded before it is sent and the activity signal expires automatically. It is not shown as an individual location to other users.</div></div>`;
+}
+
+
+function isPremium(){
+  /* Prototype gate only. Replace with your real App Store/Stripe entitlement check before launch. */
+  return hbGet("hb_premium_v1")==="true";
+}
+function premiumGate(){
+  if(isPremium()) return true;
+  premium();
+  return false;
+}
+function setPremiumPrototype(){
+  hbSet("hb_premium_v1","true");
+  toast("Premium preview enabled on this device");
+  premium();
+}
+
+async function loadRelationshipAggregate(venueId){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+  try{
+    const url=SUPABASE_URL+"/rest/v1/venue_relationship_out"+
+      "?select=venue_id,total_relationship_reports,taken_reports,single_reports,prefer_not_reports"+
+      "&venue_id=eq."+encodeURIComponent(Number(venueId))+"&limit=1";
+    const r=await fetchWithTimeout(url,{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}},8000);
+    if(!r.ok){
+      console.error("Relationship aggregate error",r.status,await r.text());
+      return null;
+    }
+    const rows=await r.json();
+    if(!rows || !rows.length) return null;
+    const row=rows[0];
+    const total=Number(row.total_relationship_reports)||0;
+    if(total<5) return {total,taken:0,single:0,prefer:0};
+    return {
+      total,
+      taken:Number(row.taken_reports)||0,
+      single:Number(row.single_reports)||0,
+      prefer:Number(row.prefer_not_reports)||0
+    };
+  }catch(e){
+    console.error("Relationship aggregate load failed",e);
+    return null;
+  }
+}
+function renderRelationshipAggregate(data){
+  if(!data || data.total<5){
+    return `<div class="relationshipPanel"><div class="relationshipTitle">💕 Relationship Status</div><div class="sub" style="margin-top:7px">Not enough reports yet. At least 5 optional responses are needed.</div></div>`;
+  }
+  const t=Math.round(data.taken/data.total*100);
+  const s=Math.round(data.single/data.total*100);
+  const p=Math.max(0,100-t-s);
+  return `<div class="relationshipPanel"><div class="relationshipTitle">💕 Relationship Status</div><div class="relationshipBig">${t}% Taken · ${s}% Single</div><div class="whosOutStats">Based on ${data.total} optional reports${p>0?` · ${p}% Prefer not to say`:''}</div></div>`;
+}
+
+function safeJSON(value,fallback){try{return value?JSON.parse(value):fallback}catch(e){return fallback}}
+function esc(value){return String(value).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]))}
+function crowdLabel(p){return p>=76?"Packed":p>=51?"Busy":p>=26?"Moderate":"Quiet"}
+function crowdPercent(label){return {Quiet:15,Moderate:40,Busy:65,Packed:90}[label] ?? 0}
+
+/* Old versions of the app accidentally saved queue choices as crowd reports.
+   These three values (10/50/85) with a Moderate crowd label identify those old
+   queue-only rows. They are ignored when calculating live crowd levels. */
+function isBadLegacyQueueRow(r){
+  const p=Number(r.crowd_percent);
+  return String(r.crowd_label)==="Moderate" && (p===10 || p===50 || p===85) && QUEUE_LABELS.has(String(r.queue_label));
+}
+function fetchWithTimeout(url,options={},ms=8000){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),ms);
+  return fetch(url,{...options,signal:controller.signal}).finally(()=>clearTimeout(timer));
+}
+
+function validCloudCrowdRows(rows){
+  return (Array.isArray(rows)?rows:[]).filter(r=>
+    CROWD_LABELS.has(String(r.crowd_label)) &&
+    Number.isFinite(Number(r.crowd_percent)) &&
+    !isWhoOutOnlyRow(r) &&
+    !isBadLegacyQueueRow(r)
+  );
+}
+function isWhoOutOnlyRow(r){
+  return r && r.crowd_mix != null && String(r.crowd_mix).trim() !== "";
+}
+
+async function cloudWhosOutReport(venueId,mix,status){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){return {ok:false,status:0,error:"Supabase configuration missing"}}
+  try{
+    /* Who's Out uses the same reports table but is deliberately marked by
+       crowd_mix so it is excluded from crowd/queue calculations. */
+    const r=await fetchWithTimeout(SUPABASE_URL+"/rest/v1/venue_reports",{
+      method:"POST",
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+        "Content-Type":"application/json",
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({
+        venue_id:Number(venueId),
+        crowd_percent:0,
+        crowd_label:"Quiet",
+        queue_label:"None",
+        crowd_mix:mix ? String(mix) : null,
+        relationship_status:status ? String(status) : null
+      })
+    });
+    if(!r.ok){
+      const text=await r.text();
+      console.error("Who's Out POST error",r.status,text);
+      return {ok:false,status:r.status,error:text};
+    }
+    return {ok:true,status:r.status};
+  }catch(e){
+    console.error("Who's Out network error",e);
+    return {ok:false,status:0,error:String(e)};
+  }
+}
+
+async function cloudReport(venueId,percent,label,queueLabel="None"){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY){return {ok:false,status:0,error:"Supabase configuration missing"}}
+  try{
+    const r=await fetchWithTimeout(SUPABASE_URL+"/rest/v1/venue_reports",{
+      method:"POST",
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+        "Content-Type":"application/json",
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({
+        venue_id:Number(venueId),
+        crowd_percent:Number(percent),
+        crowd_label:String(label),
+        queue_label:String(queueLabel||"None"),
+        crowd_mix:null,
+        relationship_status:null
+      })
+    });
+    if(!r.ok){
+      const text=await r.text();
+      console.error("Supabase POST error",r.status,text);
+      return {ok:false,status:r.status,error:text};
+    }
+    return {ok:true,status:r.status};
+  }catch(e){
+    console.error("Supabase network error",e);
+    return {ok:false,status:0,error:String(e)};
+  }
+}
+
+async function cloudReports(venueId){
+  if(!SUPABASE_URL || !SUPABASE_ANON_KEY)return [];
+  try{
+    const since=new Date(Date.now()-7200000).toISOString();
+    const u=SUPABASE_URL+"/rest/v1/venue_reports?venue_id=eq."+encodeURIComponent(venueId)+
+      "&created_at=gte."+encodeURIComponent(since)+
+      "&select=venue_id,crowd_percent,crowd_label,queue_label,created_at&order=created_at.desc";
+    const r=await fetchWithTimeout(u,{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});
+    if(!r.ok){const text=await r.text();console.error("Supabase GET error",r.status,text);return []}
+    return validCloudCrowdRows(await r.json());
+  }catch(e){console.error("cloudReports failed",e);return []}
+}
+
+/* Load all recent reports once, rather than making one Supabase request per venue. */
+async function refreshCloudReports(force=false){
+  const now=Date.now();
+  if(!force && cloudLoadedAt && now-cloudLoadedAt<15000)return cloudRows;
+  if(cloudPromise)return cloudPromise;
+  cloudPromise=(async()=>{
+    try{
+      const since=new Date(Date.now()-7200000).toISOString();
+      const u=SUPABASE_URL+"/rest/v1/venue_reports?created_at=gte."+encodeURIComponent(since)+
+        "&select=venue_id,crowd_percent,crowd_label,queue_label,created_at&order=created_at.desc&limit=1000";
+      const r=await fetchWithTimeout(u,{headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY}});
+      if(!r.ok){
+        const text=await r.text();
+        console.error("Supabase live reports error",r.status,text);
+        return cloudRows;
+      }
+      cloudRows=validCloudCrowdRows(await r.json());
+      cloudLoadedAt=Date.now();
+      return cloudRows;
+    }catch(e){
+      console.error("Supabase live reports connection error",e);
+      return cloudRows;
+    }finally{cloudPromise=null}
+  })();
+  return cloudPromise;
+}
+
+function localLive(v){
+  const r=(reports[v.id]||[]).filter(x=>Date.now()-Number(x.t)<7200000 && Number.isFinite(Number(x.p)));
+  if(!r.length)return null;
+  const p=Math.round(r.reduce((a,b)=>a+Number(b.p),0)/r.length);
+  return {p,l:crowdLabel(p),n:r.length,source:"local"};
+}
+function cloudLive(v){
+  const r=cloudRows.filter(x=>Number(x.venue_id)===Number(v.id));
+  if(!r.length)return null;
+  const p=Math.round(r.reduce((a,b)=>a+Number(b.crowd_percent),0)/r.length);
+  return {p,l:crowdLabel(p),n:r.length,source:"cloud"};
+}
+function live(v){return cloudLive(v)||localLive(v)}
+
+function areaMatches(v){
+  if(area==="All")return true;
+  return v.r===area;
+}
+function filteredVenues(){
+  const term=q.trim().toLowerCase();
+  return V.filter(v=>(filter==="All"||v.t===filter)&&areaMatches(v)&&(`${v.n} ${v.t} ${v.s} ${v.a}`).toLowerCase().includes(term));
+}
+
+async function showAgeGate(){
+  app.innerHTML=`<div class="ageGate"><div class="ageCard"><div class="ageIcon">🔞</div><div class="ageTitle">18+ ONLY</div><div class="ageNotice">How Busy? is intended for people aged 18 years and over. By continuing, you confirm that you are at least 18 years old.</div><button class="action" type="button" onclick="confirmAge()">I am 18+ — Continue</button><div class="ageLegal">By continuing you agree to use How Busy? responsibly and in accordance with our <button class="ageTerms" type="button" onclick="termsPage(true)">Terms &amp; Conditions</button>.</div></div></div>`;
+}
+function confirmAge(){
+  hbSet(ageGateKey,"true");
+  home();
+}
+function startApp(){
+  if(hbGet(ageGateKey)==="true") home();
+  else showAgeGate();
+}
+
+function home(){
+  /* Render the app immediately. A slow/blocked Supabase request must never
+     leave GitHub Pages showing a blank screen. Cloud data is refreshed in the
+     background and the venue list is updated when it arrives. */
+  const x=filteredVenues();
+  app.innerHTML=`<div class="wrap"><div class="top"><div><div class="logo">🍺 How <span class="gold">Busy?</span></div><div class="sub">Know before you go.</div></div><button onclick="settings()">⚙️</button></div><input id="venueSearch" class="search" type="search" autocomplete="off" placeholder="Search venues or suburbs..." value="${esc(q)}"><div class="chips">${["All","Pub","Club","Bar","Live Music","Brewery"].map(x=>`<button class="chip ${filter===x?"on":""}" onclick="filter='${x}';home()">${x}</button>`).join("")}</div><div class="hero"><div><h2>${area==="All"?"All Areas":esc(area)}</h2><div class="sub">${x.length} venues</div></div><button class="yellow" onclick="map()">🗺 Map</button></div><div class="chips">${["All","Newcastle","Lake Macquarie","Sydney","Brisbane","Gold Coast","Townsville","Cairns","Melbourne","South Australia","Hobart","Darwin","Perth"].map(x=>`<button class="chip ${area===x?"on":""}" onclick="area='${x}';home()">${x}</button>`).join("")}</div><div class="loc">📍 Find venues near you <button class="yellow" onclick="locate()">Use location</button></div><div id="venueResults">${x.map(card).join("")}</div><div class="cta"><b class="gold">Where should I go?</b><div class="sub">Find somewhere quiet, busy or packed.</div><button class="action" onclick="where()">Find a venue</button></div>${nav()}</div>`;
+  bindSearch();
+  refreshCloudReports(true).then(()=>renderVenueResults()).catch(e=>console.error(e));
+}
+function bindSearch(){const el=document.getElementById("venueSearch");if(!el)return;el.addEventListener("input",e=>{q=e.target.value;renderVenueResults()})}
+function renderVenueResults(){const marker=document.getElementById("venueResults");if(marker)marker.innerHTML=filteredVenues().map(card).join("")}
+function card(v){
+  const d=live(v);
+  const icon=v.t==="Pub"?"🍻":v.t==="Club"?"🕺":v.t==="Bar"?"🍸":v.t==="Brewery"?"🍺":"🎵";
+  return `<button class="card" onclick="venue(${v.id})"><div class="ico">${icon}</div><div class="info"><div class="name">${esc(v.n)}</div><div class="meta">${esc(v.t)} · ${esc(v.s)}</div><div class="meta">${esc(v.a)} · ${d?d.n+" live report"+(d.n>1?"s":""):"No live crowd data"}</div></div><div><div class="badge" style="background:${d?C[d.l]:"#667784"}">${d?d.l:"No data"}</div><div class="pct">${d?d.p+"%":"—"}</div></div></button>`;
+}
+
+async function venue(id){
+  activeVenueId=id;
+  updateActivityVenue(id);
+  setTimeout(()=>refreshVenueSignals(id),100);
+
+  const v=V[id];
+  if(!v){home();return}
+  await refreshCloudReports(true);
+  const d=live(v);
+  const dataText=d?`${d.p}% · ${d.l}`:"No live crowd data";
+  app.innerHTML=`<div class="screen"><button class="back" onclick="home()">‹ Back</button><div class="title">${esc(v.n)}</div><div class="sub">${esc(v.t)} · ${esc(v.s)}</div><div id="venueSignals"></div><div class="status"><div class="sub">${d?"LIVE COMMUNITY REPORTS":"NO LIVE REPORTS YET"}</div><div class="big" style="color:${d?C[d.l]:"#9aa8b2"}">${dataText}</div><div class="sub">${d?d.n+" reports in the last 2 hours":"Be the first to report this venue."}</div></div><div class="row"><span>Address</span><b>${esc(v.a)}</b></div><button class="action" onclick="report(${id})">📊 Report crowd</button><button class="action" type="button" onclick="showWhosOut(${id})">👀 Who's Out</button><button class="action" onclick="window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('${esc(v.a)}, ${esc(v.s)}, NSW'),'_blank')">🧭 Directions</button><button class="action" onclick="save(${id})">${saved.includes(id)?"♥ Saved":"♡ Save venue"}</button></div>`;
+}
+
+async function showWhosOut(id){
+  const v=V[id];
+  if(!v){ return; }
+  app.innerHTML=`<div class="screen">
+    <button class="back" type="button" onclick="venue(${id})">‹ Back</button>
+    <div class="title">👀 Who's Out?</div>
+    <div class="sub">${esc(v.n)} · ${esc(v.s)}</div>
+    <div id="whosOutAggregate" class="whosOut">
+      <div class="whosOutTitle">👀 WHO'S OUT</div>
+      <div class="sub" style="margin-top:7px">Loading recent optional reports…</div>
+    </div>
+    ${isPremium() ? `<div id="relationshipAggregate"><div class="relationshipPanel"><div class="relationshipTitle">💕 Relationship Status</div><div class="sub" style="margin-top:7px">Loading aggregate data…</div></div></div>` : `<div class="premiumLock"><b>🔒 Taken / Single is a Premium feature</b><div class="sub" style="margin-top:7px">See the aggregated relationship status for this venue with How Busy? Premium.</div><button class="action" type="button" onclick="premium()">View Premium — $4.99/month</button></div>`}
+    <button class="action" type="button" onclick="whosOutReport(${id})">👀 Add your Who's Out report</button>
+  </div>`;
+  refreshWhosOut(id);
+  if(isPremium()){
+    const data=await loadRelationshipAggregate(id);
+    const el=document.getElementById("relationshipAggregate");
+    if(el)el.innerHTML=renderRelationshipAggregate(data);
+  }
+}
+
+let pendingReport={crowd:null,queue:null};
+let pendingWhosOut={mix:null,status:null};
+function report(id){
+  pendingReport={crowd:null,queue:null};
+  app.innerHTML=`<div class="screen"><button class="back" onclick="venue(${id})">‹ Back</button><div class="title">Report crowd</div><div class="sub">Your report helps everyone know before they go.</div><h3>1. How busy?</h3><div class="grid" id="crowdChoices">${["Quiet","Moderate","Busy","Packed"].map(x=>`<button class="report" onclick="chooseCrowd('${x}')">${x}</button>`).join("")}</div><h3>2. Queue</h3><div class="grid" id="queueChoices">${["None","Short","Long"].map(x=>`<button class="report" onclick="chooseQueue('${x}')">${x}</button>`).join("")}</div><button class="action" onclick="submitReport(${id})">Send report</button></div>`;
+}
+function chooseCrowd(x){pendingReport.crowd=x;document.querySelectorAll("#crowdChoices .report").forEach(b=>b.classList.toggle("selected",b.textContent===x))}
+function chooseQueue(x){pendingReport.queue=x;document.querySelectorAll("#queueChoices .report").forEach(b=>b.classList.toggle("selected",b.textContent===x))}
+
+function whosOutReport(id){
+  pendingWhosOut={mix:null,status:null};
+  app.innerHTML=`<div class="screen"><button class="back" onclick="showWhosOut(${id})">‹ Back</button><div class="title">👀 Who's Out?</div><div class="sub">Tell everyone who's out tonight. These answers are optional.</div><h3>1. WHO'S OUT 👀</h3><div class="grid" id="mixChoices">${[["Male","More Men"],["Female","More Women"],["Mixed","50/50"]].map(([value,label])=>`<button type="button" class="report mixChoice" data-mix="${value}" onclick="chooseWhosOutMix('${value}')">${label}</button>`).join("")}</div><h3>2. Relationship status</h3><div class="grid" id="statusChoices">${["Single","Taken","Prefer not to say"].map(x=>`<button type="button" class="report" onclick="chooseWhosOutStatus('${x}')">${x}</button>`).join("")}</div><p class="privacyNote">Who's Out and relationship status are optional. Individual answers are never displayed; only aggregated information is shown.</p><button class="action" onclick="submitWhosOut(${id})">Send Who's Out report</button></div>`;
+}
+function chooseWhosOutMix(x){pendingWhosOut.mix=x;document.querySelectorAll("#mixChoices .mixChoice").forEach(b=>b.classList.toggle("selected",b.dataset.mix===x))}
+function chooseWhosOutStatus(x){pendingWhosOut.status=x;document.querySelectorAll("#statusChoices .report").forEach(b=>b.classList.toggle("selected",b.textContent===x))}
+
+async function submitReport(id){
+  if(!pendingReport.crowd){toast("Please choose how busy it is");return}
+  const crowd=pendingReport.crowd;
+  const queue=pendingReport.queue||"None";
+  const p=crowdPercent(crowd);
+  reports[id]=reports[id]||[];
+  reports[id].push({p,t:Date.now(),queue});
+  hbSet(key,JSON.stringify(reports));
+  const result=await cloudReport(id,p,crowd,queue);
+  if(result.ok){
+    cloudLoadedAt=0;
+    await refreshCloudReports(true);
+    toast("Report sent live");
+  }else{
+    toast(result.status?`Saved here — Supabase error ${result.status}`:"Saved on this device");
+  }
+  setTimeout(()=>venue(id),700);
+}
+
+async function submitWhosOut(id){
+  if(!pendingWhosOut.mix && !pendingWhosOut.status){toast("Choose an option or go back");return}
+  const result=await cloudWhosOutReport(id,pendingWhosOut.mix,pendingWhosOut.status);
+  if(result.ok){
+    await refreshWhosOut(id);
+    toast("Who's Out report sent live");
+  }else{
+    toast(result.status?`Supabase error ${result.status}`:"Could not send Who's Out report");
+  }
+  setTimeout(()=>showWhosOut(id),700);
+}
+
+function locate(){
+  if(!navigator.geolocation){toast("Location is not supported on this device");return}
+  navigator.geolocation.getCurrentPosition(()=>toast("Location permission granted"),()=>toast("Location permission not allowed"));
+}
+function map(){const mv=V.filter(areaMatches);app.innerHTML=`<div class="screen"><button class="back" onclick="home()">‹ Back</button><div class="title">Venue map</div><div class="map"><div style="text-align:center;font-size:50px">🗺️</div><p class="sub">${mv.length} venues in ${area==="All"?"all areas":esc(area)}. Select a venue below.</p>${mv.slice(0,60).map(v=>`<button class="pin" onclick="venue(${v.id})">📍 ${esc(v.n)}<br><span class="sub">${esc(v.s)} · ${esc(v.r)}</span></button>`).join("")}</div></div>`}
+function where(){app.innerHTML=`<div class="screen"><button class="back" onclick="home()">‹ Back</button><div class="title">Where should I go?</div><div class="sub">Choose your night.</div><h3>Venue type</h3><div class="grid">${["Pub","Club","Bar","Live Music","Brewery"].map(x=>`<button class="report" onclick="filter='${x}';home()">${x}</button>`).join("")}</div></div>`}
+function save(id){if(saved.includes(id))saved=saved.filter(x=>x!==id);else saved.push(id);hbSet(savedKey,JSON.stringify(saved));toast(saved.includes(id)?"Saved":"Removed from saved");setTimeout(()=>venue(id),500)}
+function savedPage(){const x=V.filter(v=>saved.includes(v.id));app.innerHTML=`<div class="screen"><button class="back" onclick="home()">‹ Back</button><div class="title">Saved venues</div>${x.length?x.map(card).join(""):"<p class=sub>No saved venues yet.</p>"}</div>`}
+function premium(){app.innerHTML=`<div class="screen"><button class="back" onclick="home()">‹ Back</button><div class="premiumHero"><div class="title gold">How Busy? Premium</div><div class="premiumPrice">$4.99 AUD / month</div><div class="sub">Less than a drink.</div><h2>🎉 LET'S GET THE PARTY STARTED!</h2></div><div class="cta">${activityControl()}${["📍 Live Activity Detection — optional location sharing","👥 Crowd Mix — optional Men / Women","💕 Relationship Status — see Taken / Single percentages","🔴 Smarter live crowd levels","📈 Crowd history & trends","🔔 Favourite venue alerts","🔥 Trending busy areas","♾️ Unlimited saved venues","🚫 Ad-free experience"].map(x=>`<div class="premiumFeature">✓ ${x}</div>`).join("")}<p class="privacyNote"><b>Optional means optional.</b> Location, Who’s Out and relationship status are never required to use How Busy?. Individual answers are not shown to other users; only aggregated information may be displayed.</p><button class="action" onclick="toast('Subscription checkout will be connected for App Store launch')">Subscribe — $4.99/month</button>${!isPremium()?`<button class="action" style="background:#273d4c;color:#fff" onclick="setPremiumPrototype()">Developer preview: unlock Premium on this device</button>`:`<div class="sub" style="text-align:center;margin-top:10px">Premium preview is enabled on this device.</div>`}</div></div>`}
+function settings(){app.innerHTML=`<div class="screen"><button class="back" onclick="home()">‹ Back</button><div class="title">Settings</div><div class="row"><span>Venues</span><b>${V.length}</b></div><div class="row"><span>Your reports on this device</span><b>${Object.values(reports).flat().length}</b></div><div class="cta"><b class="gold">Premium</b><p class="sub">$4.99 AUD/month</p></div><div class="grid"><button class="report" onclick="privacyPage()">Privacy Policy</button><button class="report" onclick="termsPage()">Terms & Conditions</button><button class="report" onclick="contactPage()">Contact & Support</button></div></div>`}
+function privacyPage(){
+  app.innerHTML=`<div class="screen">
+    <button class="back" onclick="settings()">‹ Back</button>
+    <div class="title">Privacy Policy</div>
+    <p class="sub">Last updated: September 2026</p>
+
+    <h3>How Busy?</h3>
+    <p>How Busy? is designed to provide live information about crowd levels, queues and general crowd mix at venues.</p>
+
+    <h3>Age requirement</h3><p>How Busy? is intended for people aged 18 years and over.</p>
+
+    <h3>Information we collect</h3>
+    <p>We aim to collect as little information as possible. You do not need to provide your name, phone number, address or other identifying information to use the core features of How Busy?.</p>
+    <p>When you submit a report, the information you choose to provide — such as crowd level, queue information, crowd mix and relationship status — is used to provide aggregated information about venues.</p>
+
+    <h3>Location</h3>
+    <p>Live Activity is optional. If you choose to enable it, How Busy? may use your device's location to provide an anonymous indication of activity near venues.</p>
+    <p>Location sharing is not required to use How Busy?. Location information is not intended to identify you personally, and the app uses a coarse location rather than transmitting your precise device coordinates. Activity records expire automatically.</p>
+
+    <h3>How information is used</h3>
+    <ul>
+      <li>Provide current crowd and queue information.</li>
+      <li>Calculate aggregated crowd trends.</li>
+      <li>Display aggregated Who's Out information.</li>
+      <li>Improve the How Busy? service.</li>
+      <li>Provide optional live activity features.</li>
+    </ul>
+    <p>Individual Who's Out responses are not displayed to other users; only aggregated information is displayed.</p>
+
+    <h3>No requirement to identify yourself</h3>
+    <p>How Busy? does not require you to identify yourself to submit ordinary crowd information.</p>
+
+    <h3>Storage and security</h3>
+    <p>Information submitted through the app may be stored using our cloud database services so that reports can be processed and displayed. We take reasonable steps to protect information from unauthorised access, alteration or disclosure.</p>
+
+    <h3>Sharing</h3>
+    <p>We do not sell personal information. Aggregated venue information may be displayed publicly through How Busy?. We do not intend to publish individual users' reports or identify individual contributors.</p>
+
+    <h3>Your privacy questions</h3>
+    <p>If you have a question, want to know what information we hold about you, believe information is incorrect, or have a privacy complaint, contact:</p>
+    <p><b>Howbusy26@gmail.com</b></p>
+
+    <h3>Changes to this policy</h3>
+    <p>We may update this Privacy Policy when our information-handling practices change. The latest version will be made available through How Busy?.</p>
+  </div>`
+}
+
+function termsPage(fromAgeGate=false){
+  app.innerHTML=`<div class="screen">
+    <button class="back" onclick="${fromAgeGate?'showAgeGate()':'settings()'}">‹ Back</button>
+    <div class="title">Terms & Conditions</div>
+    <p class="sub">Last updated: October 2026</p>
+
+    <h3>18+ Age Requirement</h3>
+    <p>How Busy? is intended solely for people aged 18 years and over. By accessing or using How Busy?, you confirm that you are at least 18 years old. You must not use the app if you are under 18.</p>
+
+    <h3>Use of How Busy?</h3>
+    <p>How Busy? provides crowd, queue, venue and other community-reported information based on user reports and optional activity signals. Information is intended as a guide and may be incomplete, inaccurate, delayed, subjective or out of date.</p>
+
+    <h3>User Reports</h3>
+    <p>Users must submit information honestly and must not deliberately submit misleading, abusive, discriminatory, defamatory, threatening or otherwise inappropriate reports. How Busy? may remove content or restrict access where reasonably necessary to protect the service and its users.</p>
+
+    <h3>Venue Information</h3>
+    <p>Venue information and crowd conditions can change rapidly. How Busy? does not guarantee venue opening hours, availability, entry, capacity, wait times, crowd levels, queues, safety conditions or any other venue condition.</p>
+
+    <h3>User Responsibility and Venue Attendance</h3>
+    <p>You are solely responsible for your own decisions, actions and conduct when using How Busy? and when travelling to, attending, remaining at or leaving any venue identified through the app.</p>
+    <p>How Busy? does not direct, control or supervise your conduct or activities at any venue and is not responsible for decisions or actions taken by you or any other person based on information provided through the app, to the extent permitted by law.</p>
+    <p>You are responsible for complying with all applicable laws, venue rules and directions from venue staff, security personnel and emergency services.</p>
+
+    <h3>No Guarantee of Conditions</h3>
+    <p>A venue's reported status should not be treated as a guarantee of actual conditions when you arrive. Crowd levels, queues and activity can change at any time.</p>
+
+    <h3>Safety</h3>
+    <p>How Busy? is an information service and is not a safety, emergency or security service. You are responsible for assessing your own safety and the safety of others. If you believe there is an emergency or immediate danger, contact the appropriate emergency services rather than relying on How Busy?.</p>
+
+    <h3>User-Generated Content</h3>
+    <p>How Busy? may provide tools for users to report or flag inappropriate content or misuse. Users must not use the service to harass, threaten, discriminate against, impersonate or otherwise harm other people.</p>
+
+    <h3>Changes and Availability</h3>
+    <p>Features, venues and services may be changed, suspended or removed as the service develops. We do not guarantee that the app or any particular feature will always be available.</p>
+
+    <h3>Contact</h3>
+    <p>Questions about these terms can be sent to <b>Howbusy26@gmail.com</b>.</p>
+  </div>`;
+}
+function contactPage(){
+  app.innerHTML=`<div class="screen">
+    <button class="back" onclick="settings()">‹ Back</button>
+    <div class="title">Contact</div>
+    <p class="sub">Questions, feedback or privacy enquiries?</p>
+    <div class="cta">
+      <h3>How Busy? Support</h3>
+      <p><b>Howbusy26@gmail.com</b></p>
+      <button class="action" onclick="location.href='mailto:Howbusy26@gmail.com'">Email How Busy?</button>
+    </div>
+  </div>`
+}
+function nav(){return `<div class="bottom"><button class="nav" onclick="home()">⌂<br>Home</button><button class="nav" onclick="map()">◉<br>Map</button><button class="nav" onclick="savedPage()">♡<br>Saved</button><button class="nav" onclick="premium()">♛<br>Premium</button></div>`}
+function toast(x){const d=document.createElement("div");d.className="toast";d.textContent=x;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+
+
+window.addEventListener("error", function(e){
+  console.error("How Busy? startup/runtime error:", e.error || e.message);
+  const appEl = document.getElementById("app");
+  if(appEl && !appEl.innerHTML.trim()){
+    appEl.innerHTML = `<div class="screen">
+      <div class="title">How Busy?</div>
+      <div class="error"><b>The app could not start.</b><br>
+      Please refresh the page. If the problem continues, contact How Busy? support.</div>
+    </div>`;
+  }
+});
+
+startApp();
+</script>
+</body>
+</html>

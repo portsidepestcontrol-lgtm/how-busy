@@ -72,6 +72,134 @@ const root=document.getElementById('root');
 
 const venues=[{"id":"the-lucky-hotel","name":"The Lucky Hotel","type":"Pub/Bar","address":"237 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"clarendon-hotel","name":"Clarendon Hotel","type":"Pub/Bar","address":"347 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"great-northern-hotel","name":"Great Northern Hotel","type":"Pub","address":"83-89 Scott St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"honeysuckle-hotel","name":"Honeysuckle Hotel","type":"Pub/Bar","address":"Lee Wharf C, Lot 31 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"customs-house-hotel","name":"Customs House Hotel","type":"Pub/Bar","address":"1 Bond St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"crown-anchor-hotel","name":"Crown & Anchor Hotel","type":"Pub","address":"189 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"george-darby-hotel","name":"George Darby Hotel","type":"Pub/Bar","address":"21 Darby St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"the-ship-inn","name":"The Ship Inn","type":"Pub/Bar","address":"102 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"newcastle-club","name":"Newcastle Club","type":"Club","address":"40 Newcomen St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"united-service-club-newcastle","name":"United Service Club Newcastle","type":"Club","address":"55 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"coal-cedar","name":"Coal & Cedar","type":"Bar","address":"380/382 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"granddad-s-bar-experience","name":"Granddad's Bar Experience","type":"Bar","address":"515 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"the-koutetsu","name":"The Koutetsu","type":"Bar","address":"555 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"wests-city","name":"Wests City","type":"Club","address":"King St & Union St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"king-st-hotel","name":"King St Hotel","type":"Pub/Bar","address":"15 Steel St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"the-family-hotel","name":"The Family Hotel","type":"Pub","address":"635 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"bar-petite","name":"Bar Petite","type":"Bar","address":"Unit 5/5 King St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"blue-kahunas","name":"Blue Kahunas","type":"Bar","address":"Unit 3/146 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"ginger-meg-s","name":"Ginger Meg's","type":"Bar","address":"212 King St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"moneypenny","name":"MoneyPenny","type":"Bar","address":"1 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"battlesticks","name":"Battlesticks","type":"Live Music/Bar","address":"200 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"charlies-rooftop","name":"Charlies Rooftop","type":"Bar","address":"Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"exchange-hotel","name":"Exchange Hotel","type":"Pub/Bar","address":"125 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"kent-hotel","name":"Kent Hotel","type":"Pub/Bar","address":"59 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"hamilton-station-hotel","name":"Hamilton Station Hotel","type":"Pub/Bar","address":"2/6 Beaumont St, Islington NSW 2296","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"greenroof-hotel","name":"Greenroof Hotel","type":"Pub/Bar","address":"71 Tudor St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"bennett-hotel","name":"Bennett Hotel","type":"Pub/Bar","address":"146 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"good-folk-brewing","name":"Good Folk Brewing","type":"Brewery","address":"80 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"sydney-junction-hotel","name":"Sydney Junction Hotel","type":"Pub/Bar","address":"8 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"blind-monk","name":"Blind Monk","type":"Bar/Brewery","address":"Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"maryville-tavern","name":"Maryville Tavern","type":"Pub","address":"71 Lewis St, Maryville NSW 2293","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"seven-seas-hotel","name":"Seven Seas Hotel","type":"Pub","address":"33 Cowper St N, Carrington NSW 2294","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"young-street-hotel","name":"Young Street Hotel","type":"Pub","address":"132 Young St, Carrington NSW 2294","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"criterion-pub-kitchen","name":"Criterion Pub & Kitchen","type":"Pub","address":"81 Bourke St, Carrington NSW 2294","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"stag-hunter-hotel","name":"Stag & Hunter Hotel","type":"Pub","address":"187 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"beauford-hotel","name":"Beauford Hotel","type":"Pub","address":"77 Hanbury St, Mayfield NSW 2304","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"mayfield-hotel","name":"Mayfield Hotel","type":"Pub","address":"117 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"oak-tighes-hill","name":"Oak Tighes Hill","type":"Pub","address":"207 Maitland Rd, Tighes Hill NSW 2297","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"albion-hotel","name":"Albion Hotel","type":"Pub","address":"72 Hannell St, Wickham NSW 2293","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"lass-o-gowrie-hotel","name":"Lass O'Gowrie Hotel","type":"Pub/Live Music","address":"14 Railway St, Wickham NSW 2293","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"wickham-park-hotel","name":"Wickham Park Hotel","type":"Pub/Live Music","address":"61 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"premier-hotel","name":"Premier Hotel","type":"Pub","address":"1 Brunker Rd, Broadmeadow NSW 2292","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"sunnyside-tavern","name":"Sunnyside Tavern","type":"Pub","address":"20 Broadmeadow Rd, Broadmeadow NSW 2292","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"gates-hotel","name":"Gates Hotel","type":"Pub","address":"660 Glebe Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"nags-head-hotel","name":"Nags Head Hotel","type":"Pub","address":"272 Brunker Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"general-roberts-hotel","name":"General Roberts Hotel","type":"Pub","address":"102 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"duke-of-wellington","name":"Duke of Wellington","type":"Pub","address":"69 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"blackbutt-hotel","name":"Blackbutt Hotel","type":"Pub","address":"80 Orchardtown Rd, New Lambton NSW 2305","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"lambton-park-hotel","name":"Lambton Park Hotel","type":"Pub","address":"19A Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"northumberland-hotel","name":"Northumberland Hotel","type":"Pub","address":"85 Elder St, Lambton NSW 2299","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"flamingos-live","name":"Flamingos Live","type":"Live Music Venue","address":"31 Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"grainfed-brewing-company","name":"Grainfed Brewing Company","type":"Brewery","address":"1/52 Young Rd, Lambton NSW 2299","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"town-hall-hotel","name":"Town Hall Hotel","type":"Pub","address":"29 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"royal-hotel-waratah","name":"Royal Hotel Waratah","type":"Pub","address":"72 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"shorty-hotel","name":"Shorty Hotel","type":"Pub","address":"269 Sandgate Rd, Shortland NSW 2307","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"hotel-jesmond","name":"Hotel Jesmond","type":"Pub","address":"184 Newcastle Rd & 1 Blue Gum Rd, Jesmond NSW 2299","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"colliery-inn-wallsend","name":"Colliery Inn Wallsend","type":"Pub","address":"87 Cowper St, Wallsend NSW 2287","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"lemon-grove-hotel","name":"Lemon Grove Hotel","type":"Pub","address":"112 Nelson St, Wallsend NSW 2287","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"winners-circle-hotel","name":"Winners Circle Hotel","type":"Pub","address":"24 Kokera St, Wallsend NSW 2287","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"mary-ellen-hotel","name":"Mary Ellen Hotel","type":"Pub","address":"51 Railway St, Merewether NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"prince-of-merewether","name":"Prince of Merewether","type":"Pub","address":"1 Morgan St, Merewether NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"beach-hotel","name":"Beach Hotel","type":"Pub","address":"99 Frederick St, Merewether NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"oriental-hotel","name":"Oriental Hotel","type":"Pub","address":"53 Bull St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"commonwealth-hotel","name":"Commonwealth Hotel","type":"Pub","address":"1/35 Union St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"cricketers-arms-hotel","name":"Cricketers Arms Hotel","type":"Pub","address":"61 Bruce St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"lowlands-bowling-club","name":"Lowlands Bowling Club","type":"Club","address":"98A Dawson St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"junction-hotel","name":"Junction Hotel","type":"Pub","address":"204 Corlette St, The Junction NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"bar-beach-bowling-club","name":"Bar Beach Bowling Club","type":"Club","address":"29 Kilgour Ave, Merewether NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"merewether-surfhouse","name":"Merewether Surfhouse","type":"Bar/Restaurant","address":"5 Henderson Pde, Merewether NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"modus-merewether","name":"Modus Merewether","type":"Brewery/Bar","address":"20 Merewether St, Merewether NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"earp-distilling-co","name":"Earp Distilling Co","type":"Distillery/Bar","address":"41 Darling St, Carrington NSW 2294","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"method-brewing","name":"Method Brewing","type":"Brewery","address":"18 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"grain-store-newcastle","name":"Grain Store Newcastle","type":"Bar/Pub","address":"64-66 Scott St, Newcastle East NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"queens-wharf-hotel","name":"Queens Wharf Hotel","type":"Pub","address":"Queens Wharf, 150 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"the-dockyard","name":"The Dockyard","type":"Pub","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"mad-poet","name":"Mad Poet","type":"Bar","address":"537 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"coyote","name":"Coyote","type":"Bar","address":"Newcastle West NSW 2302","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"peregrin","name":"Peregrin","type":"Bar/Restaurant","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"bartholomew-s","name":"Bartholomew's","type":"Bar/Restaurant","address":"145 King St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"uptowns-bar","name":"Uptowns Bar","type":"Bar","address":"23 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"rooftop-at-qt","name":"Rooftop at QT","type":"Bar","address":"185 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":25,"verified":false,"active":false},{"id":"junction-inn-hotel","name":"Junction Inn Hotel","type":"Pub","address":"The Junction NSW 2291","lat":null,"lon":null,"radius":25,"verified":false,"active":false}];
 
+/* =========================================================
+   HOW BUSY? — 25 METRE VENUE GEOFENCE ENGINE
+   - Uses phone GPS only to determine the nearest participating venue.
+   - Venue coordinates are geocoded from the stored street address and cached.
+   - No raw GPS trail is stored by this browser build.
+   - Production native builds should replace the geocoder with a licensed
+     Places/Geocoding provider and keep the same 25m Haversine test.
+========================================================= */
+const HB_GEOFENCE_RADIUS_METRES = 25;
+let hbGpsWatchId = null;
+let hbGpsRunning = false;
+let hbCurrentVenueId = null;
+let hbLastGps = null;
+let hbGeocodeRunning = false;
+
+function hbDistanceMetres(lat1,lon1,lat2,lon2){
+  const R=6371000;
+  const p1=Number(lat1)*Math.PI/180, p2=Number(lat2)*Math.PI/180;
+  const dLat=(Number(lat2)-Number(lat1))*Math.PI/180;
+  const dLon=(Number(lon2)-Number(lon1))*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+
+function hbLoadVenueCoordinates(){
+  venues.forEach(v=>{
+    try{
+      const raw=localStorage.getItem('hbVenueCoords:'+v.id);
+      if(!raw)return;
+      const c=JSON.parse(raw);
+      if(Number.isFinite(Number(c.lat))&&Number.isFinite(Number(c.lon))){
+        v.lat=Number(c.lat); v.lon=Number(c.lon); v.verified=!!c.verified;
+      }
+    }catch(e){}
+  });
+}
+
+function hbSaveVenueCoordinates(v,lat,lon){
+  v.lat=Number(lat); v.lon=Number(lon); v.radius=HB_GEOFENCE_RADIUS_METRES; v.verified=true;
+  try{localStorage.setItem('hbVenueCoords:'+v.id,JSON.stringify({lat:v.lat,lon:v.lon,verified:true}));}catch(e){}
+}
+
+async function hbGeocodeVenue(v){
+  if(!v || !v.address || (Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))) return true;
+  try{
+    const q=encodeURIComponent(v.address+', Australia');
+    const r=await fetch('https://photon.komoot.io/api/?q='+q+'&limit=1',{headers:{'Accept':'application/json'}});
+    if(!r.ok)return false;
+    const j=await r.json();
+    const f=j && j.features && j.features[0];
+    const c=f && f.geometry && f.geometry.coordinates;
+    if(!c || c.length<2)return false;
+    hbSaveVenueCoordinates(v,c[1],c[0]);
+    return true;
+  }catch(e){ return false; }
+}
+
+async function hbGeocodeAllVenues(){
+  if(hbGeocodeRunning)return;
+  hbGeocodeRunning=true;
+  let done=0;
+  for(const v of venues){
+    if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))){done++;continue;}
+    await hbGeocodeVenue(v);
+    done++;
+    if(done%5===0) hbSetGpsStatus('GPS database: '+done+'/'+venues.length+' venues checked');
+    // Keep within public geocoder limits during this prototype build.
+    await new Promise(r=>setTimeout(r,1100));
+  }
+  hbGeocodeRunning=false;
+  hbSetGpsStatus('GPS database: '+venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length+'/'+venues.length+' venues mapped');
+}
+
+function hbFindVenue(lat,lon){
+  let nearest=null, nearestDistance=Infinity;
+  for(const v of venues){
+    if(!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)))continue;
+    const d=hbDistanceMetres(lat,lon,v.lat,v.lon);
+    if(d<=HB_GEOFENCE_RADIUS_METRES && d<nearestDistance){ nearest={venue:v,distance:d}; nearestDistance=d; }
+  }
+  return nearest;
+}
+
+function hbHandlePosition(position){
+  const lat=Number(position.coords.latitude), lon=Number(position.coords.longitude);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
+  hbLastGps={lat,lon,accuracy:Number(position.coords.accuracy)||null,at:Date.now()};
+  const hit=hbFindVenue(lat,lon);
+  const newId=hit?hit.venue.id:null;
+  if(newId!==hbCurrentVenueId){
+    hbCurrentVenueId=newId;
+    try{localStorage.setItem('hbCurrentVenueId',newId||'');}catch(e){}
+    if(hit){
+      hbSetGpsStatus('📍 At '+hit.venue.name+' · '+Math.round(hit.distance)+'m from venue centre');
+    }else{
+      hbSetGpsStatus('📍 No participating venue within 25m');
+    }
+  }
+}
+
+function hbHandleGpsError(err){
+  const msg=err && err.code===1?'Location permission is off. Turn on Location Services for How Busy?.':err && err.code===2?'GPS position unavailable right now.':'GPS timed out — trying again.';
+  hbSetGpsStatus('⚠️ '+msg);
+}
+
+function hbSetGpsStatus(text){
+  document.querySelectorAll('[data-hb-gps-status]').forEach(el=>el.textContent=text);
+}
+
+function startVenueGeofencing(){
+  if(hbGpsRunning)return;
+  hbLoadVenueCoordinates();
+  if(!navigator.geolocation){hbSetGpsStatus('GPS is not supported on this device/browser.');return;}
+  hbGpsRunning=true;
+  hbSetGpsStatus('📍 Requesting GPS permission…');
+  hbGpsWatchId=navigator.geolocation.watchPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+  // Geocode in the background; cached coordinates are reused.
+  hbGeocodeAllVenues();
+}
+
+function stopVenueGeofencing(){
+  if(hbGpsWatchId!==null && navigator.geolocation){navigator.geolocation.clearWatch(hbGpsWatchId);}
+  hbGpsWatchId=null; hbGpsRunning=false;
+}
+
+hbLoadVenueCoordinates();
+
+
 let state={page:'welcome',relationship:localStorage.hbRel||'',crowd:localStorage.hbCrowd||'',venue:null,premium:localStorage.getItem('hbPremiumDemo')==='true'};
 
 function save(){localStorage.hbRel=state.relationship;localStorage.hbCrowd=state.crowd}
@@ -85,7 +213,7 @@ function nav(active){return `<div class="nav"><button class="${active==='home'?'
 
 
 
-function welcome(){frame(`<div class="screen"><div class="logo">How <span class="gold">Busy?</span></div><h1>Know before you go.</h1><p class="sub">See how busy venues are, who's around and what the crowd is like — using anonymous venue presence data.</p><div class="card"><span class="pill">18+ APP</span><h2>Built around location</h2><p class="sub">How Busy? uses your phone's location to automatically work out which participating venue you're at. Your exact GPS position is matched on your phone rather than stored as a movement trail.</p></div><button class="action" onclick="home()">Get started</button><p class="small muted">Visual development build — GPS is simulated here. Native GPS will be connected in the iPhone/Android build.</p></div>`)}
+function welcome(){frame(`<div class="screen"><div class="logo">How <span class="gold">Busy?</span></div><h1>Know before you go.</h1><p class="sub">See how busy venues are, who's around and what the crowd is like — using anonymous venue presence data.</p><div class="card"><span class="pill">18+ APP</span><h2>Built around location</h2><p class="sub">How Busy? uses your phone's location to automatically work out which participating venue you're at. Your exact GPS position is matched on your phone rather than stored as a movement trail.</p></div><button class="action" onclick="startVenueGeofencing();home()">Enable location & continue</button><p class="small muted">How Busy? uses your phone location to detect participating venues. Your raw GPS trail is not displayed to other users.</p></div>`)}
 
 
 // ---------- CITY CATEGORIES ----------
@@ -256,7 +384,9 @@ function showCityComingSoon(city){
 
 
 
-function home(){frame(`<div class="screen"><div class="row"><div><div class="logo">How <span class="gold">Busy?</span></div><div class="muted small">Is your local venue?</div></div><span class="pill">GPS SIMULATION</span></div><div class="notice" style="margin-top:18px">📍 <b>Location is active</b><br><span class="muted">In the real app, the phone will automatically detect participating venues in the background.</span></div><h2 style="margin-top:24px">Near you</h2><div class="map">${venues.map(v=>`<div class="pin" style="left:${v.x}%;top:${v.y}%" onclick="venue(${JSON.stringify(v.id)})">📍</div>`).join('')}</div>
+function home(){
+  if(!hbGpsRunning) startVenueGeofencing();
+  frame(`<div class="screen"><div class="row"><div><div class="logo">How <span class="gold">Busy?</span></div><div class="muted small">Is your local venue?</div></div><span class="pill" data-hb-gps-status>GPS READY</span></div><div class="notice" style="margin-top:18px"><b data-hb-gps-status>📍 GPS ready</b><br><span class="muted">25 m venue geofences are used to detect participating venues automatically.</span></div><h2 style="margin-top:24px">Near you</h2><div class="map">${venues.map(v=>`<div class="pin" style="left:${v.x}%;top:${v.y}%" onclick="venue(${JSON.stringify(v.id)})">📍</div>`).join('')}</div>
 <div class="card" id="city-selector-card">
   <div class="row">
     <div><b>📍 Choose your city</b><div class="muted small">Newcastle is our active development city. Other cities are coming soon.</div></div>
@@ -279,7 +409,7 @@ function venueCard(v){
 }
 
 function venuesPage(){frame(`<div class="screen"><div class="logo">Newcastle</div><p class="sub">Participating venues</p>${venues.map(v=>venueCard(v)).join('')}</div>${nav('venues')}`)}
-function venue(id){let v=venues.find(x=>x.id===id);if(!v)return;state.venue=v;frame(`<div class="screen"><button class="secondary" onclick="home()">← Back</button><div class="pill" style="margin-top:20px">${v.type}</div><h1>${v.name}</h1><p class="sub">${v.address}</p><div class="card" style="text-align:center"><div class="muted">LIVE CROWD</div><div class="big" style="font-size:62px">${v.busy}</div><div class="green">● ${v.busy>75?'Very busy':v.busy>55?'Busy':'Moderate'}</div></div><div class="card"><div class="row"><b>Live crowd mix</b><span class="pill">LIVE</span></div><p>${v.m}% men · ${v.w}% women</p><div class="notice">This is calculated from anonymous How Busy? users currently detected at or around the venue.</div></div><div class="card"><b>Relationship mix</b><p class="muted">Available in Premium live insights.</p>${state.premium?'<p>Example live insight: 48% single · 52% taken</p>':'<button class="action" onclick="state.premium=true;venue('+v.id+')">Preview Premium</button>'}</div></div>${nav('venues')}`)}
+function venue(id){let v=venues.find(x=>x.id===id);if(!v)return;state.venue=v;frame(`<div class="screen"><button class="secondary" onclick="home()">← Back</button><div class="pill" style="margin-top:20px">${v.type}</div><h1>${v.name}</h1><p class="sub">${v.address}</p><div class="card"><div class="muted small">📍 GPS GEOFENCE</div><b>${v.verified?"25 m geofence mapped":"Waiting for venue coordinates"}</b></div><div class="card" style="text-align:center"><div class="muted">LIVE CROWD</div><div class="big" style="font-size:62px">${v.busy}</div><div class="green">● ${v.busy>75?'Very busy':v.busy>55?'Busy':'Moderate'}</div></div><div class="card"><div class="row"><b>Live crowd mix</b><span class="pill">LIVE</span></div><p>${v.m}% men · ${v.w}% women</p><div class="notice">This is calculated from anonymous How Busy? users currently detected at or around the venue.</div></div><div class="card"><b>Relationship mix</b><p class="muted">Available in Premium live insights.</p>${state.premium?'<p>Example live insight: 48% single · 52% taken</p>':'<button class="action" onclick="state.premium=true;venue('+v.id+')">Preview Premium</button>'}</div></div>${nav('venues')}`)}
 function profile(){
   var relationship="";
   var gender="";

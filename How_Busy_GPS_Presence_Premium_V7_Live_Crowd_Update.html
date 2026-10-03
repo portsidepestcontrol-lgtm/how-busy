@@ -1,0 +1,355 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071522">
+<title>How Busy? — GPS Presence</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071522;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}button{border:0}.wrap{padding-bottom:90px}.top{padding:20px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:28px;font-weight:900}.gold{color:#ffd21a}.sub,.meta{color:#91a3b3;font-size:13px}.screen{padding:22px 18px}.title{font-size:29px;font-weight:900;margin:12px 0}
+.card{margin:0 18px 10px;width:calc(100% - 36px);padding:14px;background:#0e2030;border-radius:16px;color:#fff;display:flex;gap:12px;text-align:left;align-items:center}
+.ico{width:48px;height:48px;border-radius:12px;background:#172d3f;display:grid;place-items:center;font-size:23px}.info{flex:1}.name{font-weight:800}.meta{font-size:11px;margin-top:4px}
+.badge{padding:5px 8px;border-radius:9px;font-size:11px;font-weight:800}.pct{text-align:right;font-size:12px;margin-top:4px}
+.search{margin:0 18px 12px;width:calc(100% - 36px);padding:14px;border:0;border-radius:14px;background:#112536;color:#fff}
+.chips{display:flex;gap:8px;overflow:auto;padding:0 18px 12px}.chip{padding:9px 15px;border-radius:20px;background:#112536;color:#ccd5dc;white-space:nowrap}.on{background:#ffd21a;color:#111;font-weight:800}
+.yellow,.action{background:#ffd21a;color:#111;padding:11px 14px;border-radius:11px;font-weight:900}.action{width:100%;padding:15px;margin-top:12px}
+.hero{display:flex;justify-content:space-between;align-items:center;padding:8px 18px}.status{margin-top:18px;padding:18px;border:2px solid #7d8b96;border-radius:18px;background:#0e2030}
+.big{font-size:30px;font-weight:900;margin:8px 0}.row{padding:15px 0;border-bottom:1px solid #1d3343;display:flex;justify-content:space-between;gap:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{padding:18px;border-radius:14px;background:#102334;color:#fff;font-weight:800}.choice.selected{outline:3px solid #ffd21a;background:#17334a}
+.loc{margin:8px 18px 12px;padding:14px;background:#10283a;border-radius:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.toast{position:fixed;z-index:9999;bottom:95px;left:18px;right:18px;background:#183044;padding:14px;border-radius:12px;text-align:center}
+.bottom{position:fixed;bottom:0;left:0;right:0;height:76px;background:#091b2a;border-top:1px solid #1d3343;display:flex;justify-content:space-around;align-items:center}
+.nav{background:none;color:#718597}.nav.active{color:#ffd21a}.small{font-size:12px;color:#91a3b3}.ok{color:#21c77a}
+</style>
+</head>
+<body><div id="app"></div>
+<script>
+/*
+ HOW BUSY? GPS PRESENCE V1
+ NEW build. It does not replace How_Busy_Superbase.html.
+ GPS is used while this web app is running. Exact GPS is not uploaded.
+*/
+const SUPABASE_URL = "https://muabpzculmygamxanqzq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_fWxLAiiN658fOlsCdiCZpQ_UFfIaJua";
+
+const data=[
+["King Street","Club","Newcastle West","15 Steel St"],["Great Northern Hotel Newcastle","Pub","Newcastle","83-89 Scott St"],["The Lucky Hotel","Pub","Newcastle","237 Hunter St"],["Queens Wharf Hotel","Pub","Newcastle","150 Wharf Rd"],["Customs House Hotel","Pub","Newcastle","1 Bond St"],["George Darby Hotel","Pub","Cooks Hill","21 Darby St"],["The Exchange Hotel","Pub","Hamilton","125 Denison St"],["Crown & Anchor Hotel","Pub","Newcastle","189 Hunter St"],["Wests City","Club","Newcastle West","King St & Union St"],["The Underground","Live Music","Newcastle","32 Church St"],["The Rogue Scholar","Live Music","Newcastle West","4-6 Union St"],["Bernie's Bar","Bar","Newcastle West","410 King St"],["Maru HiFi","Live Music","Newcastle West","10 Union St"],["Jams Karaoke & Bar","Bar","Newcastle West","8 Union St"],["Coal & Cedar","Bar","Newcastle","380-382 Hunter St"],["Uptowns Bar","Bar","Newcastle","23 Watt St"],["The Koutetsu","Bar","Newcastle West","555 Hunter St"],["MoneyPenny","Bar","Honeysuckle","1 Honeysuckle Dr"],["Flamingos Live","Live Music","Lambton","31 Morehead St"],["Stag & Hunter Hotel","Pub","Mayfield","187 Maitland Rd"],["Wickham Park Hotel","Pub","Wickham","61 Union St"],["Kent Hotel","Pub","Hamilton","59 Beaumont St"],["Greenroof Hotel","Pub","Hamilton","71 Tudor St"],["Delany Hotel","Pub","Cooks Hill","134 Darby St"],["Commonwealth Hotel","Pub","Cooks Hill","35 Union St"],["Prince of Merewether","Pub","Merewether","1 Morgan St"],["Modus Merewether","Brewery","Merewether","2 Glebe Rd"],["Foghorn Brewery","Brewery","Newcastle","218 King St"],["Earp Distilling Co","Bar","Carrington","41 Darling St"],["Shout Brewing","Brewery","Islington","6 Steel St"],["Charlie's Rooftop","Bar","Newcastle West","537 Hunter St"],["Granddad's Bar Experience","Bar","Newcastle","515 Hunter St"],["Merewether Surfhouse","Bar","Merewether","5 Henderson Pde"],["Belmont 16s","Club","Belmont","The Parade"],["Warners Bay Hotel","Pub","Warners Bay","5 King St"],["Jewells Tavern","Pub","Jewells","Wommara Ave"],["Pippi's at the Point Hotel","Pub","Speers Point","The Esplanade"],["Lake Macquarie Tavern","Pub","Mount Hutton","1 Murray St"],["Toronto Hotel","Pub","Toronto","74 Victory Row"],["Swansea Workers Club","Club","Swansea","228 Pacific Hwy"],["Swansea RSL","Club","Swansea","2 Bridge St"],["Hotel Wangi","Pub","Wangi Wangi","295 Watkins Rd"],["Lake Macquarie Yacht Club","Club","Belmont","Ada St"]
+];
+
+const V=data.map((x,i)=>({id:i,n:x[0],t:x[1],s:x[2],a:x[3]}));
+const LS_PROFILE="hb_gps_profile_v1",LS_DEVICE="hb_gps_device_v1",LS_COORDS="hb_gps_coords_v1";
+let profile=JSON.parse(localStorage.getItem(LS_PROFILE)||"null");
+let deviceId=localStorage.getItem(LS_DEVICE)||crypto.randomUUID();
+localStorage.setItem(LS_DEVICE,deviceId);
+let coords=JSON.parse(localStorage.getItem(LS_COORDS)||"{}");
+let currentVenueId=null,watchId=null,searchBusy=false;
+
+async function api(path,options={}){
+ const headers=Object.assign({"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},options.headers||{});
+ return fetch(SUPABASE_URL+path,Object.assign({},options,{headers}));
+}
+async function saveProfile(status,crowdBalance){
+ profile={relationship_status:status,crowd_balance:crowdBalance||profile?.crowd_balance||null};
+ localStorage.setItem(LS_PROFILE,JSON.stringify(profile));
+ try{
+  await api("/rest/v1/hb_profiles",{method:"POST",headers:{"Prefer":"resolution=merge-duplicates,return=minimal"},
+   body:JSON.stringify({device_id:deviceId,relationship_status:status,crowd_balance:profile.crowd_balance})})
+ }catch(e){console.warn("Profile saved locally; Supabase profile update unavailable.",e)}
+}
+let setupStatus=profile?.relationship_status||null, setupCrowd=profile?.crowd_balance||null;
+function setup(){
+ app.innerHTML=`<div class="screen"><div class="logo">🍺 How <span class="gold">Busy?</span></div>
+ <div class="title">One quick setup</div><p class="sub">When you're at a venue, give us a quick live update. Your answer helps build the current crowd picture.</p>
+ <h3>Are you single or taken?</h3><div class="grid">
+ <button id="stSingle" class="choice ${setupStatus==="Single"?"selected":""}" onclick="pickStatus('Single')">💚 Single</button>
+ <button id="stTaken" class="choice ${setupStatus==="Taken"?"selected":""}" onclick="pickStatus('Taken')">❤️ Taken</button></div>
+ <h3 style="margin-top:22px">Right now, what does the crowd look like?</h3>
+ <div class="grid">
+ <button id="cbMen" class="choice ${setupCrowd==="More men"?"selected":""}" onclick="pickCrowd('More men')">👨 More men right now</button>
+ <button id="cbWomen" class="choice ${setupCrowd==="More women"?"selected":""}" onclick="pickCrowd('More women')">👩 More women right now</button>
+ </div>
+ <button id="cb5050" class="choice ${setupCrowd==="50/50"?"selected":""}" style="width:100%;margin-top:10px" onclick="pickCrowd('50/50')">⚖️ 50/50 right now</button>
+ <button class="action" onclick="finishSetup()">Submit live update</button><div class="small" style="text-align:center;margin-top:8px">This update applies to the venue you’re currently at and can be refreshed later.</div>
+ <div class="status"><b>Privacy</b><p class="sub">Your live crowd answer is used anonymously to help calculate the current venue picture. Other users don't see your identity or exact location.</p></div></div>`;
+}
+function pickStatus(s){setupStatus=s;setup()}
+function pickCrowd(s){setupCrowd=s;setup()}
+async function finishSetup(){
+ if(!setupStatus||!setupCrowd){toast("Please answer both questions.");return}
+ await saveProfile(setupStatus,setupCrowd);home()
+}
+async function chooseStatus(s){setupStatus=s;setup()}
+function home(){
+ app.innerHTML=`<div class="wrap"><div class="top"><div><div class="logo">🍺 How <span class="gold">Busy?</span></div><div class="sub">Know before you go.</div></div><button onclick="profilePage()">⚙️</button></div>
+ <div class="loc"><div><b>📍 Automatic venue detection</b><div class="small" id="gpsStatus">Starting location…</div></div><button class="yellow" onclick="requestLocationAgain()">Enable</button></div>
+ <div id="presenceBox"></div><div class="hero"><div><h2>Venues</h2><div class="sub">GPS presence works while this web app is open.</div></div></div>
+ <div id="venueResults">${V.slice(0,20).map(card).join("")}</div>
+ <div class="status"><b>How it works</b><div class="row"><span>1. GPS detects your venue</span><span>📍</span></div><div class="row"><span>2. Your presence is counted anonymously</span><span>👥</span></div><div class="row"><span>3. You answer one question</span><span>⚖️</span></div></div>${nav()}</div>`;
+ startGPS();
+}
+function venue(id){
+ const v=V.find(x=>x.id===Number(id));
+ if(!v){toast("Venue not found.");return}
+ app.innerHTML=`<div class="screen">
+   <button class="nav" onclick="venueList()">‹ Back</button>
+   <div class="title">${v.n}</div>
+   <div class="sub">${v.t} · ${v.s}</div>
+   <div class="status">
+     <div class="big">🍺 ${v.n}</div>
+     <div class="row"><span>📍 Address</span><b>${v.a}</b></div>
+     <div class="row"><span>Venue type</span><b>${v.t}</b></div>
+     <div id="detailLive" class="row"><span>👥 People here</span><b>Loading…</b></div>
+     <div id="detailBreakdown"></div>
+   </div>
+   <button class="action" onclick="refreshVenue(${v.id})">Refresh live information</button>
+ </div>${nav()}`;
+ refreshVenue(v.id);
+}
+async function refreshVenue(id){
+ const v=V.find(x=>x.id===Number(id)); if(!v)return;
+ const live=document.getElementById("detailLive");
+ const breakdown=document.getElementById("detailBreakdown");
+ if(live)live.innerHTML='<span>👥 People here</span><b>Checking…</b>';
+ try{
+   const r=await api("/rest/v1/rpc/hb_venue_summary",{method:"POST",body:JSON.stringify({p_venue_id:v.id})});
+   if(!r.ok)throw new Error("summary unavailable");
+   const s=await r.json();
+   const people=Number(s.people_here||0);
+   if(live)live.innerHTML=`<span>👥 People here</span><b>${people}</b>`;
+   if(breakdown){
+     const balance=Number(s.more_men||0)>Number(s.more_women||0)?"More men":Number(s.more_women||0)>Number(s.more_men||0)?"More women":"50/50";
+     breakdown.innerHTML=isPremium()?`
+       <div class="row"><span>⚖️ Crowd balance</span><b>${balance}</b></div>
+       <div class="row"><span>💚 Single</span><b>${Number(s.single||0)}</b></div>
+       <div class="row"><span>❤️ Taken</span><b>${Number(s.taken||0)}</b></div>`
+       :`<div style="margin-top:12px">${premiumGate("Unlock detailed venue information","Premium shows the Single/Taken breakdown and deeper live venue insights.")}</div>`;
+   }
+ }catch(e){
+   if(live)live.innerHTML='<span>👥 People here</span><b>Live data unavailable</b>';
+   if(breakdown)breakdown.innerHTML='<div class="small" style="margin-top:12px">This venue page is working, but live crowd data has not been connected for this venue yet.</div>';
+ }
+}
+function card(v){return `<button type="button" class="card" data-venue-id="${v.id}"><div class="ico">${v.t=="Pub"?"🍻":v.t=="Club"?"🕺":v.t=="Bar"?"🍸":v.t=="Brewery"?"🍺":"🎵"}</div><div class="info"><div class="name">${v.n}</div><div class="meta">${v.t} · ${v.s}</div><div class="meta">${v.a}</div></div></button>`}
+function nav(){return `<div class="bottom"><button class="nav active" onclick="home()">⌂<br>Home</button><button class="nav" onclick="profilePage()">👤<br>Me</button><button class="nav" onclick="venueList()">📍<br>Venues</button></div>`}
+document.addEventListener("click",function(e){
+ const btn=e.target.closest && e.target.closest("[data-venue-id]");
+ if(!btn)return;
+ e.preventDefault();
+ const id=Number(btn.getAttribute("data-venue-id"));
+ if(Number.isFinite(id)) venue(id);
+});
+function venueList(){app.innerHTML=`<div class="screen"><button class="nav" onclick="home()">‹ Back</button><div class="title">Venues</div>${V.map(card).join("")}</div>${nav()}`}
+function profilePage(){app.innerHTML=`<div class="screen"><button class="nav" onclick="home()">‹ Back</button><div class="title">My profile</div>
+<div class="row"><span>Relationship status</span><b>${profile?.relationship_status||"Not set"}</b></div>
+<div class="row"><span>Crowd answer</span><b>${profile?.crowd_balance||"Not set"}</b></div>
+<div class="row"><span>Plan</span><b>${isPremium()?'<span class="premium">PREMIUM</span>':'<span class="freeTag">FREE</span>'}</b></div>
+<button class="action" onclick="setup()">📡 Update live crowd</button>
+${isPremium()?'<button class="action" onclick="setFreeForTesting()">Switch to Free (TEST)</button>':premiumGate("Unlock Premium","See the deeper information behind the live venue data.")}
+<div class="status"><b>Automatic presence</b><p class="sub">When you're detected at a venue, How Busy? counts you in the anonymous venue total. This page does not upload your exact GPS coordinates.</p></div>
+</div>`}
+function distanceM(a,b,c,d){const R=6371000,p1=a*Math.PI/180,p2=c*Math.PI/180,dp=(c-a)*Math.PI/180,dq=(d-b)*Math.PI/180,x=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dq/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+async function findVenue(lat,lon){
+ let best=null;for(const v of V){const c=coords[v.id];if(!c)continue;const d=distanceM(lat,lon,c.lat,c.lon);if(!best||d<best.distance)best={v,distance:d}}
+ if(best&&best.distance<=180)return best;
+ const q=`[out:json];(nwr(around:220,${lat},${lon})["name"];);out center tags;`;
+ try{
+  const r=await fetch("https://overpass-api.de/api/interpreter?data="+encodeURIComponent(q));if(!r.ok)throw 0;const j=await r.json(),candidates=[];
+  for(const el of (j.elements||[])){const name=el.tags?.name;if(!name)continue;const n=name.toLowerCase();const v=V.find(x=>x.n.toLowerCase()===n||n.includes(x.n.toLowerCase())||x.n.toLowerCase().includes(n));if(!v)continue;const clat=el.lat??el.center?.lat,clon=el.lon??el.center?.lon;if(clat==null||clon==null)continue;const d=distanceM(lat,lon,Number(clat),Number(clon));if(!coords[v.id]){coords[v.id]={lat:Number(clat),lon:Number(clon)};localStorage.setItem(LS_COORDS,JSON.stringify(coords))}candidates.push({v,distance:d})}
+  candidates.sort((a,b)=>a.distance-b.distance);return candidates[0]||null;
+ }catch(e){return best&&best.distance<=180?best:null}
+}
+function requestLocationAgain(){
+ if(!navigator.geolocation){toast("Location isn't available on this device.");return;}
+ navigator.geolocation.getCurrentPosition(
+   ()=>{localStorage.setItem(HB_LOCATION_KEY,"requested");toast("Location enabled");startGPS()},
+   (err)=>{
+     if(err.code===1){
+       toast("Location permission is off. Turn it on in your phone Settings, then return to How Busy?.");
+     } else toast("Couldn't get your location yet.");
+   },
+   {enableHighAccuracy:false,maximumAge:30000,timeout:15000}
+ );
+}
+function startGPS(){
+ if(!navigator.geolocation){setGps("GPS isn't available on this device.");return}
+ setGps("Requesting location permission…");if(watchId!==null)navigator.geolocation.clearWatch(watchId);
+ watchId=navigator.geolocation.watchPosition(onPosition,onGeoError,{enableHighAccuracy:false,maximumAge:30000,timeout:20000});
+}
+function setGps(x){const el=document.getElementById("gpsStatus");if(el)el.textContent=x}
+async function onPosition(pos){
+ const lat=pos.coords.latitude,lon=pos.coords.longitude;if(searchBusy)return;searchBusy=true;try{
+  const found=await findVenue(lat,lon);
+  if(found&&found.distance<=180){await enterVenue(found.v,found.distance)}
+  else{setGps("No How Busy? venue detected nearby.");if(currentVenueId!==null)await leaveVenue(currentVenueId)}
+ }finally{searchBusy=false}
+}
+function onGeoError(err){setGps(err.code===1?"Location permission denied. Turn on Location Services for How Busy?.":err.code===2?"Location unavailable.":"Location timed out.")}
+async function enterVenue(v,distance){
+ if(currentVenueId===v.id){setGps(`Detected ${v.n} · ${Math.round(distance)}m away`);return}
+ if(currentVenueId!==null)await leaveVenue(currentVenueId);currentVenueId=v.id;setGps(`Detected ${v.n} · ${Math.round(distance)}m away`);renderPresence(v);
+ try{await api("/rest/v1/rpc/hb_enter_venue",{method:"POST",body:JSON.stringify({p_device_id:deviceId,p_venue_id:v.id})})}catch(e){console.warn(e)}
+}
+async function leaveVenue(id){currentVenueId=null;try{await api("/rest/v1/rpc/hb_leave_venue",{method:"POST",body:JSON.stringify({p_device_id:deviceId,p_venue_id:id})})}catch(e){}}
+function renderPresence(v){const box=document.getElementById("presenceBox");if(!box)return;box.innerHTML=`<div class="status"><div class="small ok">📍 YOU'RE AT</div><div class="big">${v.n}</div><div class="sub">Your presence is being counted anonymously.</div><div id="venueStats" class="row"><span>People here</span><b>Loading…</b></div><div id="genderQuestion"></div></div>`;loadStats(v.id)}
+async function loadStats(id){
+ try{
+  const r=await api("/rest/v1/rpc/hb_venue_summary",{method:"POST",body:JSON.stringify({p_venue_id:id})});
+  if(!r.ok)throw 0;
+  const s=await r.json();
+  const box=document.getElementById("venueStats");
+  if(box)box.innerHTML=`<span>People here</span><b>${Number(s.people_here||0)}</b>`;
+  const q=document.getElementById("genderQuestion");
+  if(q)q.innerHTML=`<h3>Live crowd</h3>
+    <div class="row"><span>Gender balance</span><b>${Number(s.more_men||0)>Number(s.more_women||0)?"More men":Number(s.more_women||0)>Number(s.more_men||0)?"More women":"50/50"}</b></div>
+    ${isPremium()?`
+      <div class="row"><span>💚 Single</span><b>${Number(s.single||0)}</b></div>
+      <div class="row"><span>❤️ Taken</span><b>${Number(s.taken||0)}</b></div>
+      <div class="row"><span>👨 Men</span><b>${Number(s.more_men||0)}</b></div>
+      <div class="row"><span>👩 Women</span><b>${Number(s.more_women||0)}</b></div>
+      <div class="row"><span>⚖️ 50/50 reports</span><b>${Number(s.fifty_fifty||0)}</b></div>
+      <div class="small" style="margin-top:10px">Premium venue breakdown</div>`
+    :premiumGate("See the full crowd breakdown","Premium shows the Single/Taken breakdown, detailed crowd reports and deeper venue insights.")}`;
+ }catch(e){
+  const box=document.getElementById("venueStats");if(box)box.innerHTML=`<span>People here</span><b>—</b>`;
+ }
+}
+async function answerGender(id,answer){
+ const q=document.getElementById("genderQuestion");if(q)q.innerHTML=`<div class="status"><b>Thanks.</b><div class="sub">Your answer is helping build the live venue picture.</div></div>`;
+ try{await api("/rest/v1/rpc/hb_gender_answer",{method:"POST",body:JSON.stringify({p_device_id:deviceId,p_venue_id:id,p_gender_balance:answer})})}catch(e){console.warn(e)}
+ setTimeout(()=>loadStats(id),300);
+}
+
+const HB_LOCATION_KEY="hb_location_consent_v1";
+const HB_AGE_KEY="hb_age_confirmed_v1";
+
+function ageGate(){
+ app.innerHTML=`<div class="screen">
+   <div style="font-size:58px;margin-top:45px">🔞</div>
+   <div class="title">How Busy? is 18+</div>
+   <p class="sub" style="font-size:17px;line-height:1.55">
+     You must be 18 years or older to use How Busy?.
+   </p>
+   <div class="status">
+     <b>By continuing, you confirm that:</b>
+     <div class="row"><span>🎂 I am 18 or older</span><b>✓</b></div>
+     <div class="row"><span>📱 I understand this is a social venue app</span><b>✓</b></div>
+   </div>
+   <button class="action" onclick="confirmAge()">I am 18+ — Continue</button>
+ </div>`;
+}
+function confirmAge(){
+ localStorage.setItem(HB_AGE_KEY,"yes");
+ if(!localStorage.getItem(HB_LOCATION_KEY)) locationConsent();
+ else if(!profile) setup(); else home();
+}
+
+function locationConsent(){
+ app.innerHTML=`<div class="screen">
+   <div style="font-size:52px;margin-top:35px">📍</div>
+   <div class="title">How Busy? would like to use your location</div>
+   <p class="sub" style="font-size:16px;line-height:1.55">
+     We use your location to automatically work out when you arrive at a participating venue.
+     This helps How Busy? calculate how many people are there without asking you to check in.
+   </p>
+   <div class="status">
+     <div class="row"><span>📍 Detect nearby venues</span><b>YES</b></div>
+     <div class="row"><span>👥 Count anonymous presence</span><b>YES</b></div>
+     <div class="row"><span>🗺️ Upload your exact GPS trail</span><b>NO</b></div>
+     <div class="row"><span>🔕 Sell your location</span><b>NO</b></div>
+   </div>
+   <p class="small">Your phone's operating system will show the official location permission request next. You can change this permission later in your phone settings.</p>
+   <button class="action" onclick="allowLocation()">Allow location</button>
+   <button class="nav" style="width:100%;padding:12px;margin-top:6px" onclick="locationLater()">Continue without location</button>
+   <button class="nav" style="width:100%;padding:12px;margin-top:6px" onclick="locationLater()">Not now</button>
+ </div>`;
+}
+function allowLocation(){
+ localStorage.setItem(HB_LOCATION_KEY,"requested");
+
+ // Continue immediately so a blocked/unavailable browser permission request
+ // cannot trap the user on this screen.
+ afterLocationConsent();
+
+ if(!navigator.geolocation){
+   return;
+ }
+
+ // Ask the operating system/browser for location permission in the background.
+ // The app does not wait for this callback to continue.
+ try{
+   navigator.geolocation.getCurrentPosition(
+     ()=>{},
+     ()=>{},
+     {enableHighAccuracy:false,maximumAge:30000,timeout:10000}
+   );
+ }catch(e){}
+}
+function locationLater(){
+ localStorage.setItem(HB_LOCATION_KEY,"skipped");
+ afterLocationConsent();
+}
+function afterLocationConsent(){
+ if(!profile) setup(); else home();
+}
+if(!localStorage.getItem(HB_AGE_KEY)){
+ ageGate();
+}else if(!localStorage.getItem(HB_LOCATION_KEY)){
+ locationConsent();
+}else if(!profile)setup();else home();
+
+</script>
+
+<style>
+.paywall{margin-top:14px;padding:18px;border-radius:16px;background:#13283a;border:1px solid #2b4355}
+.premium{color:#ffd21a;font-weight:900}.lock{font-size:26px}.premiumBtn{background:#ffd21a;color:#111;padding:13px 16px;border-radius:12px;font-weight:900;width:100%;margin-top:10px}
+.freeTag{display:inline-block;padding:4px 8px;border-radius:8px;background:#1c3447;color:#9fb0bd;font-size:11px;font-weight:800}
+</style>
+<script>
+/* HOW BUSY? FREE / PREMIUM ACCESS LAYER
+   Prototype only: subscription is represented locally for testing.
+   Production must validate Apple App Store / Google Play purchases server-side.
+*/
+const HB_PLAN_KEY="hb_plan_v1";
+let hbPlan=localStorage.getItem(HB_PLAN_KEY)||"free";
+function isPremium(){return hbPlan==="premium"}
+function setPremiumForTesting(){
+  hbPlan="premium"; localStorage.setItem(HB_PLAN_KEY,"premium");
+  toast("Premium enabled for testing"); home();
+}
+function setFreeForTesting(){
+  hbPlan="free"; localStorage.setItem(HB_PLAN_KEY,"free");
+  toast("Free plan enabled"); home();
+}
+function premiumGate(title,description){
+  return `<div class="paywall">
+    <div class="lock">🔒</div>
+    <div class="premium">${title}</div>
+    <div class="sub">${description}</div>
+    <button class="premiumBtn" onclick="premiumScreen()">Unlock Premium — $4.99 AUD/month</button>
+  </div>`;
+}
+function premiumScreen(){
+  app.innerHTML=`<div class="screen">
+    <button class="nav" onclick="home()">‹ Back</button>
+    <div class="title">How Busy? Premium</div>
+    <div class="status">
+      <div class="premium">Unlock the full venue picture</div>
+      <div class="row"><span>👥 Live people count</span><b>FREE</b></div>
+      <div class="row"><span>🔥 Basic busy status</span><b>FREE</b></div>
+      <div class="row"><span>👨👩 Basic crowd balance</span><b>FREE</b></div>
+      <div class="row"><span>💚 Single/Taken breakdown</span><b class="premium">PREMIUM</b></div>
+      <div class="row"><span>📊 Detailed crowd breakdown</span><b class="premium">PREMIUM</b></div>
+      <div class="row"><span>📈 Historical venue data</span><b class="premium">PREMIUM</b></div>
+      <div class="row"><span>🕒 Best/worst times</span><b class="premium">PREMIUM</b></div>
+      <div class="row"><span>❤️ Who's Out / discovery</span><b class="premium">PREMIUM</b></div>
+      <button class="premiumBtn" onclick="setPremiumForTesting()">Activate Premium (TEST)</button>
+      <div class="small" style="margin-top:10px">TEST mode only. Real billing will use Apple App Store and Google Play purchases.</div>
+    </div>
+  </div>`;
+}
+</script>
+
+</body>
+</html>

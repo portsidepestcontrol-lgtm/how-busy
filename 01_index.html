@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How Busy? — Visual Development Build</title>
+<style>
+:root{--bg:#08131d;--card:#102536;--card2:#143148;--line:#28465b;--text:#f4f7f9;--muted:#9eb1bf;--gold:#f5c451;--green:#45d483;--red:#ff6d72}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:80px}.screen{min-height:100vh;padding:28px 20px}
+.logo{font-size:34px;font-weight:900;letter-spacing:-1px}.gold{color:var(--gold)}
+h1{font-size:30px;line-height:1.05;margin:22px 0 10px}.sub{color:var(--muted);line-height:1.55}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0}
+.action{border:0;background:var(--gold);color:#121a20;font-weight:900;border-radius:14px;padding:15px 18px;width:100%;cursor:pointer;margin-top:12px}
+.secondary{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:14px;padding:14px;width:100%;cursor:pointer;margin-top:10px}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#17364a;color:#b8d2e1;font-size:12px;font-weight:800}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.muted{color:var(--muted)}
+.venue{cursor:pointer;transition:.15s}.venue:hover{transform:translateY(-1px);border-color:#41647d}
+.big{font-size:34px;font-weight:950}.green{color:var(--green)}.red{color:var(--red)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#0b1c29;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:12px 6px;z-index:10}
+.nav button{background:none;border:0;color:var(--muted);font-size:12px}.nav button.active{color:var(--gold);font-weight:900}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.choice button{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:15px;font-weight:800;cursor:pointer}.choice button.on{border-color:var(--gold);box-shadow:0 0 0 2px #f5c45133}
+.notice{background:#17364a;border-radius:14px;padding:13px;font-size:13px;line-height:1.5}
+.small{font-size:12px}.map{height:230px;border-radius:20px;background:radial-gradient(circle at 30% 35%,#315a70 0 3px,transparent 4px),radial-gradient(circle at 72% 62%,#315a70 0 3px,transparent 4px),linear-gradient(135deg,#102736,#0b1c29);border:1px solid var(--line);position:relative;overflow:hidden}.pin{position:absolute;transform:translate(-50%,-50%);font-size:28px;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const root=document.getElementById('root');
+
+const venues=[
+ {id:1,n:"The Lucky Hotel",t:"Pub",s:"Newcastle",busy:72,m:44,w:56,x:30,y:35},
+ {id:2,n:"The Cambridge Hotel",t:"Pub & Live Music",s:"Newcastle West",busy:58,m:52,w:48,x:70,y:62},
+ {id:3,n:"The Clarendon Hotel",t:"Pub",s:"Hamilton",busy:84,m:61,w:39,x:54,y:26},
+ {id:4,n:"King Street Hotel",t:"Pub",s:"Newcastle",busy:43,m:47,w:53,x:22,y:70},
+ {id:5,n:"The Exchange Hotel",t:"Pub",s:"Hamilton",busy:91,m:55,w:45,x:78,y:28},
+ {id:6,n:"Queens Wharf Hotel",t:"Pub",s:"Newcastle",busy:66,m:50,w:50,x:43,y:72}
+];
+
+let state={page:'welcome',relationship:localStorage.hbRel||'',crowd:localStorage.hbCrowd||'',venue:null,premium:false};
+
+function save(){localStorage.hbRel=state.relationship;localStorage.hbCrowd=state.crowd}
+function frame(body){root.innerHTML=`<div class="app">${body}</div>`}
+function nav(active){return `<div class="nav"><button class="${active==='home'?'active':''}" onclick="home()">🏠<br>Home</button><button class="${active==='venues'?'active':''}" onclick="venuesPage()">📍<br>Venues</button><button class="${active==='profile'?'active':''}" onclick="profile()">👤<br>Profile</button></div>`}
+
+function welcome(){frame(`<div class="screen"><div class="logo">How <span class="gold">Busy?</span></div><h1>Know before you go.</h1><p class="sub">See how busy venues are, who's around and what the crowd is like — using anonymous venue presence data.</p><div class="card"><span class="pill">18+ APP</span><h2>Built around location</h2><p class="sub">How Busy? uses your phone's location to automatically work out which participating venue you're at. Your exact GPS position is matched on your phone rather than stored as a movement trail.</p></div><button class="action" onclick="setup()">Get started</button><p class="small muted">Visual development build — GPS is simulated here. Native GPS will be connected in the iPhone/Android build.</p></div>`)}
+
+function setup(){frame(`<div class="screen"><div class="logo">How <span class="gold">Busy?</span></div><h1>Set up once.</h1><p class="sub">These answers are saved on your phone so you don't have to answer them every time you visit a venue.</p><div class="card"><b>Relationship status</b><div class="choice">${['Single','Taken'].map(x=>`<button class="${state.relationship===x?'on':''}" onclick="state.relationship='${x}';save();setup()">${x}</button>`).join('')}</div></div><div class="card"><b>What does the crowd look like?</b><div class="choice"><button class="${state.crowd==='More men'?'on':''}" onclick="state.crowd='More men';save();setup()">More men</button><button class="${state.crowd==='More women'?'on':''}" onclick="state.crowd='More women';save();setup()">More women</button><button class="${state.crowd==='50/50'?'on':''}" onclick="state.crowd='50/50';save();setup()">50/50</button></div></div><button class="action" ${state.relationship&&state.crowd?'':'disabled'} style="${state.relationship&&state.crowd?'':'opacity:.45'}" onclick="home()">Continue</button></div>`)}
+
+function home(){frame(`<div class="screen"><div class="row"><div><div class="logo">How <span class="gold">Busy?</span></div><div class="muted small">Newcastle</div></div><span class="pill">GPS SIMULATION</span></div><div class="notice" style="margin-top:18px">📍 <b>Location is active</b><br><span class="muted">In the real app, the phone will automatically detect participating venues in the background.</span></div><h2 style="margin-top:24px">Near you</h2><div class="map">${venues.map(v=>`<div class="pin" style="left:${v.x}%;top:${v.y}%" onclick="venue(${v.id})">📍</div>`).join('')}</div><h2>Newcastle venues</h2>${venues.slice(0,4).map(v=>venueCard(v)).join('')}</div>${nav('home')}`)}
+function venueCard(v){return `<div class="card venue" onclick="venue(${v.id})"><div class="row"><div><b>${v.n}</b><div class="muted small">${v.t} · ${v.s}</div></div><div style="text-align:right"><div class="big">${v.busy}</div><div class="muted small">people now</div></div></div><div style="margin-top:12px" class="small"><span class="green">● ${v.busy>75?'Very busy':v.busy>55?'Busy':'Moderate'}</span> · ${v.m}% men · ${v.w}% women</div></div>`}
+
+function venuesPage(){frame(`<div class="screen"><div class="logo">Newcastle</div><p class="sub">Participating venues</p>${venues.map(v=>venueCard(v)).join('')}</div>${nav('venues')}`)}
+function venue(id){let v=venues.find(x=>x.id===id);if(!v)return;state.venue=v;frame(`<div class="screen"><button class="secondary" onclick="home()">← Back</button><div class="pill" style="margin-top:20px">${v.t}</div><h1>${v.n}</h1><p class="sub">${v.s}</p><div class="card" style="text-align:center"><div class="muted">LIVE CROWD</div><div class="big" style="font-size:62px">${v.busy}</div><div class="green">● ${v.busy>75?'Very busy':v.busy>55?'Busy':'Moderate'}</div></div><div class="card"><div class="row"><b>Live crowd mix</b><span class="pill">LIVE</span></div><p>${v.m}% men · ${v.w}% women</p><div class="notice">This is calculated from anonymous How Busy? users currently detected at or around the venue.</div></div><div class="card"><b>Relationship mix</b><p class="muted">Available in Premium live insights.</p>${state.premium?'<p>Example live insight: 48% single · 52% taken</p>':'<button class="action" onclick="state.premium=true;venue('+v.id+')">Preview Premium</button>'}</div></div>${nav('venues')}`)}
+function profile(){frame(`<div class="screen"><div class="logo">Your profile</div><div class="card"><b>Saved answers</b><p>Relationship: <b>${state.relationship||'Not set'}</b></p><p>Crowd answer: <b>${state.crowd||'Not set'}</b></p><button class="secondary" onclick="setup()">Change answers</button></div><div class="card"><b>Location</b><p class="muted">Visual mode: simulated GPS. Native mode will request the appropriate iPhone/Android permission.</p></div></div>${nav('profile')}`)}
+
+welcome();
+</script>
+</body>
+</html>

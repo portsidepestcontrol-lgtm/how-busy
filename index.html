@@ -445,41 +445,75 @@ async function hbGeocodeVenue(v){
   return false;
 }
 
+function hbNormVenueName(s){
+  return String(s||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,' ').trim().replace(/\b(the|hotel|pub|bar|club|newcastle|nsw)\b/g,' ').replace(/\s+/g,' ').trim();
+}
+async function hbMapFromOpenStreetMap(){
+  try{
+    const q='[out:json][timeout:25];(nwr[\"name\"][\"amenity\"~\"pub|bar|nightclub|brewery|social_centre|community_centre|restaurant\"](-33.2,151.45,-32.75,151.9);nwr[\"name\"][\"leisure\"~\"dance|sports_centre|stadium\"](-33.2,151.45,-32.75,151.9););out center tags;';
+    const r=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q),{headers:{'Accept':'application/json'}});
+    if(!r.ok)return 0;
+    const j=await r.json();
+    const rows=(j&&j.elements)||[];
+    let hits=0;
+    const byName=new Map();
+    rows.forEach(e=>{const n=hbNormVenueName(e.tags&&e.tags.name); if(!n)return; const lat=e.lat!=null?e.lat:(e.center&&e.center.lat), lon=e.lon!=null?e.lon:(e.center&&e.center.lon); if(Number.isFinite(Number(lat))&&Number.isFinite(Number(lon))){byName.set(n,{lat:Number(lat),lon:Number(lon)})}});
+    venues.forEach(v=>{
+      if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))return;
+      const key=hbNormVenueName(v.name);
+      const c=byName.get(key);
+      if(c){hbSaveVenueCoordinates(v,c.lat,c.lon);hits++;}
+    });
+    return hits;
+  }catch(e){console.warn('OSM venue sweep failed',e);return 0;}
+}
+
 async function hbGeocodeAllVenues(){
   if(hbGeocodeRunning)return;
   hbGeocodeRunning=true;
-  let done=0;
+  hbSetGpsStatus('Venue database: mapping all venues…');
+  // First use one local OSM sweep instead of making 100+ individual requests.
+  await hbMapFromOpenStreetMap();
+  let done=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
+  hbSetGpsStatus('Venue database: '+done+'/'+venues.length+' mapped · resolving remaining');
+  hbRenderNearbyVenues();
+  try{if(typeof renderNewcastleVenues==='function' && selectedCity==='Newcastle')renderNewcastleVenues();}catch(e){}
+
+  // Resolve the remaining exact street addresses in parallel. The old build used one worker,
+  // which made a full Newcastle sweep take many minutes and caused mobile browsers to time out.
   const queue=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
-  const workers=1;
+  const workers=Math.min(6,Math.max(2,queue.length));
   async function worker(){
     while(queue.length){
-      const v=queue.shift();
-      if(!v) return;
-      const mapped=await hbGeocodeVenue(v);
+      const v=queue.shift(); if(!v)return;
+      await hbGeocodeVenue(v);
       done++;
-      hbRenderNearbyVenues();
-      if(typeof renderNewcastleVenues==='function' && selectedCity==='Newcastle' && done%5===0){ try{ renderNewcastleVenues(); }catch(e){} }
-      if(done%10===0) hbSetGpsStatus('Venue database: '+done+'/'+venues.length+' locations checked');
-      await new Promise(r=>setTimeout(r,750));
+      if(done%3===0){hbRenderNearbyVenues();try{if(typeof renderNewcastleVenues==='function'&&selectedCity==='Newcastle')renderNewcastleVenues();}catch(e){}}
+      hbSetGpsStatus('Venue database: '+Math.min(done,venues.length)+'/'+venues.length+' mapped');
+      await new Promise(r=>setTimeout(r,220));
     }
   }
   await Promise.all(Array.from({length:workers},worker));
 
-  // A second pass catches temporary geocoder failures without requiring the user to do anything.
+  // Final retry with the venue name included, useful for POIs whose street address is not indexed.
   const retry=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
   for(const v of retry){
-    await hbGeocodeVenue(v);
-    await new Promise(r=>setTimeout(r,1000));
+    const original=v.address;
+    try{
+      const q=encodeURIComponent(v.name+', '+original+', Australia');
+      const r=await fetch('https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+q+'&f=json&maxLocations=1',{headers:{'Accept':'application/json'}});
+      if(r.ok){const j=await r.json(),a=j&&j.candidates&&j.candidates[0];if(a&&a.location&&Number.isFinite(Number(a.location.y))&&Number.isFinite(Number(a.location.x)))hbSaveVenueCoordinates(v,a.location.y,a.location.x);}
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,250));
   }
 
   venues.forEach(v=>{if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))){v.radius=50;v.verified=true;}});
   hbGeocodeRunning=false;
   const mapped=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
   const missing=venues.length-mapped;
-  hbSetGpsStatus(missing ? 'Venue database: '+mapped+'/'+venues.length+' mapped · retrying '+missing+' remaining' : 'Venue database: '+mapped+'/'+venues.length+' venues mapped · 50m geofence');
-  if(missing){
-    setTimeout(()=>{ try{ hbGeocodeAllVenues(); }catch(e){} },30000);
-  }
+  hbSetGpsStatus(missing ? 'Venue database: '+mapped+'/'+venues.length+' mapped · '+missing+' need manual verification' : 'Venue database: '+venues.length+'/'+venues.length+' venues mapped · 50m geofence');
+  hbRenderNearbyVenues();
+  try{if(typeof renderNewcastleVenues==='function'&&selectedCity==='Newcastle')renderNewcastleVenues();}catch(e){}
 }
 function hbFindVenue(lat,lon){
   let nearest=null, nearestDistance=Infinity;

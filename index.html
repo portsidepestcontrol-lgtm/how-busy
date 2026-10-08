@@ -1,11 +1,11 @@
 <!doctype html>
-<!-- How Busy? V27 - GitHub-ready UTF-8 build -->
+<!-- How Busy? V48 - Master GitHub Pages build -->
 <html lang="en">
 <head>
-<meta name="how-busy-build" content="V27-happy-wombat">
+<meta name="how-busy-build" content="V48-master">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How Busy? — Visual Development Build</title>
+<title>How Busy? — V43</title>
 <style>
 :root{--bg:#08131d;--card:#102536;--card2:#143148;--line:#28465b;--text:#f4f7f9;--muted:#9eb1bf;--gold:#f5c451;--green:#45d483;--red:#ff6d72}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -85,6 +85,53 @@ h1{font-size:30px;line-height:1.05;margin:22px 0 10px}.sub{color:var(--muted);li
   border-radius:17px !important;
   margin:0 !important;
 }
+</style>
+
+<style>
+/* V40 detailed mobile redesign */
+:root{--hb-blue:#071a2a;--hb-blue2:#0b2940;--hb-line:#17618b;--hb-yellow:#ffd51f;--hb-cyan:#76b9ff}
+body{background:linear-gradient(180deg,#03111d 0%,#061b2b 100%)}
+.app{max-width:560px;background:linear-gradient(180deg,#061522,#071b2c);box-shadow:0 0 50px #0008}
+.screen{padding:20px 14px 105px}
+.hb-brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.hb-brand-main{display:flex;align-items:center;gap:10px}
+.hb-beer{font-size:31px;filter:drop-shadow(0 0 8px #ffd51f66)}
+.hb-brand-title{font-size:30px;font-weight:950;letter-spacing:-1.3px}.hb-brand-sub{font-size:11px;letter-spacing:2.2px;color:#86b9e8;font-weight:800;margin-top:1px}
+.hb-premium-chip{border:1px solid #ffd51f;border-radius:999px;padding:9px 13px;color:#ffd51f;font-weight:900;background:#10253a;box-shadow:0 0 14px #ffd51f2b;cursor:pointer;white-space:nowrap}
+.hb-hero-title{text-align:center;font-size:31px;line-height:1.05;margin:22px 0 4px;font-weight:950}.hb-hero-sub{text-align:center;color:#9bc4e9;font-size:16px;margin-bottom:15px}
+.hb-summary{border:1px solid #1974a5;background:linear-gradient(145deg,#0b2b43,#071d30);border-radius:22px;padding:16px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;box-shadow:0 10px 35px #0004}
+.hb-summary>div{padding:2px 8px;text-align:center;border-right:1px solid #ffffff22}.hb-summary>div:last-child{border-right:0}.hb-summary .icon{font-size:24px}.hb-summary .num{font-size:28px;font-weight:950;color:#ffd51f}.hb-summary b{display:block;font-size:12px}.hb-summary small{color:#9bc4e9;font-size:10px;line-height:1.25}
+.hb-filters{display:flex;gap:8px;overflow:auto;padding:12px 0 7px;scrollbar-width:none}.hb-filters::-webkit-scrollbar{display:none}.hb-filter{flex:0 0 auto;border:1px solid #15577e;background:#09243a;color:#9fc9ec;border-radius:999px;padding:11px 14px;font-weight:850;font-size:12px;cursor:pointer}.hb-filter.on{background:#ffd51f;color:#09131b;border-color:#ffd51f}
+.hb-section-head{display:flex;align-items:end;justify-content:space-between;margin:14px 3px 9px}.hb-section-head h2{font-size:21px;margin:0}.hb-section-head span{font-size:11px;color:#7fa8ca}
+.hb-venue-card{border:1px solid #17618b;background:linear-gradient(145deg,#0b2a42,#071d30);border-radius:21px;padding:13px;margin:10px 0;box-shadow:0 7px 22px #0005;position:relative;overflow:hidden}
+.hb-venue-top{display:grid;grid-template-columns:62px 1fr auto;gap:11px;align-items:center}.hb-venue-icon{width:62px;height:62px;border-radius:15px;background:linear-gradient(135deg,#174c6e,#0c2639);display:flex;align-items:center;justify-content:center;font-size:29px;border:1px solid #2c729b}.hb-venue-name{font-size:18px;font-weight:950}.hb-address{font-size:10px;color:#8fb5d5;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hb-mini-trend{width:54px;height:26px;display:flex;align-items:end;gap:2px}.hb-mini-trend i{display:block;width:4px;background:#1574a9;border-radius:3px 3px 0 0}.hb-mini-trend i:nth-child(1){height:7px}.hb-mini-trend i:nth-child(2){height:12px}.hb-mini-trend i:nth-child(3){height:9px}.hb-mini-trend i:nth-child(4){height:17px}.hb-mini-trend i:nth-child(5){height:22px}.hb-mini-trend i:nth-child(6){height:16px}.hb-mini-trend i:nth-child(7){height:25px}.hb-status{display:inline-flex;align-items:center;gap:5px;border:1px solid #d9b800;color:#ffd51f;background:#382f0730;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:900;margin-top:7px}.hb-status.very{border-color:#ff5b66;color:#ff7a82;background:#5c182020}.hb-status.quiet{border-color:#507a9d;color:#8eb7d8}
+.hb-live-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}.hb-live-stat{padding:8px 7px;background:#ffffff08;border-radius:12px;text-align:center}.hb-live-stat .v{display:block;font-size:18px;font-weight:950}.hb-live-stat small{color:#8eafd0;font-size:9px}.hb-basic-lock{margin-top:9px;padding:10px 11px;border-radius:12px;background:#071522;border:1px dashed #285c7e;color:#86aaca;font-size:10px;line-height:1.35}.hb-intel{margin-top:10px;background:#ffd51f;color:#111a20;border:0;border-radius:13px;padding:12px;width:100%;font-weight:950;cursor:pointer}
+.hb-premium-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.hb-premium-stat{background:#ffffff09;border-radius:11px;padding:8px;text-align:center}.hb-premium-stat b{font-size:17px}.hb-premium-stat small{display:block;color:#8eafd0;font-size:9px}.hb-crowd{margin-top:9px;border-top:1px solid #ffffff14;padding-top:8px;font-size:11px}.hb-crowd strong{color:#ffd51f}.hb-arrow{font-size:22px;color:#83bce8;cursor:pointer}
+.hb-location{margin:8px 0 2px}.hb-location button{border:1px solid #285c7e;background:#09243a;color:#d9ecff;border-radius:12px;padding:10px 12px;width:100%;font-weight:850;cursor:pointer}
+@media(max-width:390px){.hb-summary .num{font-size:23px}.hb-hero-title{font-size:27px}.hb-venue-top{grid-template-columns:54px 1fr auto}.hb-venue-icon{width:54px;height:54px}}
+</style>
+
+<style>
+/* V41 polish */
+.hb-contribute{margin:14px 0;border:1px solid #1b6b91;background:linear-gradient(145deg,#0d3048,#081d2e);border-radius:20px;padding:15px;box-shadow:0 8px 24px #0004}
+.hb-contribute-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.hb-contribute h3{margin:0;font-size:17px}.hb-contribute p{margin:6px 0 12px;color:#9fc0d8;font-size:12px;line-height:1.45}
+.hb-answer-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.hb-answer-btn{border:1px solid #285c7e;background:#09243a;color:#e7f3ff;border-radius:12px;padding:10px 5px;font-size:11px;font-weight:900;cursor:pointer}.hb-answer-btn:active{transform:scale(.98)}
+.hb-free-note{font-size:10px;color:#789bb5;margin-top:9px}.hb-live-badge{display:inline-flex;align-items:center;gap:5px;border:1px solid #2b7d5a;color:#75e3a9;background:#0b3023;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900}
+.hb-section-head h2{letter-spacing:-.3px}.hb-venue-card{transition:transform .16s ease,box-shadow .16s ease}.hb-venue-card:active{transform:scale(.992)}
+.hb-summary>div{min-width:0}.hb-summary .num{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+
+<style>
+/* V43 City redesign */
+.city-hero{margin-top:18px;padding:20px;border:1px solid #17618b;border-radius:24px;background:linear-gradient(145deg,#0b2d46,#071c2d);box-shadow:0 10px 30px #0005}
+.city-hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.city-hero-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#102f46;border:1px solid #2a6d94;font-size:27px}.city-hero h1{font-size:28px;margin:0}.city-hero p{margin:4px 0 0}.city-active{display:inline-flex;align-items:center;gap:6px;color:#75e3a9;font-size:11px;font-weight:900;border:1px solid #2b7d5a;background:#0b3023;border-radius:999px;padding:7px 9px;white-space:nowrap}
+.city-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:15px}.city-stat{background:#ffffff08;border-radius:13px;padding:10px;text-align:center}.city-stat b{display:block;font-size:18px}.city-stat small{color:#8fb5d5;font-size:9px}
+.city-search-wrap{position:relative;margin:14px 0 10px}.city-search-wrap .search{padding-left:46px!important}.city-search-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);font-size:20px;z-index:2}
+.city-filters{display:flex;gap:7px;overflow:auto;padding:3px 0 8px;scrollbar-width:none}.city-filters::-webkit-scrollbar{display:none}.city-filter{flex:0 0 auto;border:1px solid #15577e;background:#09243a;color:#9fc9ec;border-radius:999px;padding:9px 13px;font-size:11px;font-weight:900}.city-filter.on{background:#ffd51f;color:#09131b;border-color:#ffd51f}
+.city-section-title{display:flex;justify-content:space-between;align-items:end;margin:14px 2px 8px}.city-section-title h2{margin:0;font-size:20px}.city-section-title span{font-size:10px;color:#789fbd}
+.city-venue-card{border:1px solid #17618b;background:linear-gradient(145deg,#0b2a42,#071d30);border-radius:20px;padding:14px;margin:9px 0;box-shadow:0 7px 20px #0004}.city-venue-head{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center}.city-venue-icon{width:46px;height:46px;border-radius:13px;background:#10334b;border:1px solid #2a6d94;display:flex;align-items:center;justify-content:center;font-size:22px}.city-venue-name{font-weight:950;font-size:16px}.city-venue-address{font-size:10px;color:#8fb5d5;margin-top:3px;line-height:1.3}.city-arrow{font-size:22px;color:#83bce8}.city-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.city-tag{font-size:9px;font-weight:900;color:#a9c8df;background:#ffffff08;border:1px solid #285c7e;border-radius:999px;padding:5px 8px}.city-tag.live{color:#75e3a9;border-color:#2b7d5a;background:#0b3023}.city-tag.mapped{color:#ffd51f;border-color:#8d7912}.city-empty{padding:22px;text-align:center;border:1px dashed #285c7e;border-radius:18px;color:#8faec6;background:#ffffff05}
+.city-menu-hero{text-align:center;margin-top:16px;padding:24px 18px;border:1px solid #17618b;border-radius:24px;background:linear-gradient(145deg,#0b2d46,#071c2d)}.city-menu-hero-icon{font-size:46px}.city-menu-hero h1{margin:10px 0 5px}.city-menu-hero p{margin:0}.city-menu-list{gap:9px}.city-menu-button{padding:15px 16px;border-radius:17px;background:linear-gradient(145deg,#102c41,#0b2233);border-color:#1d5577}.city-menu-button span{font-size:15px}.city-menu-button small{color:#7fa8ca;font-weight:900}.city-menu-button.selected{outline:2px solid #ffd51f;background:#132e3d}.city-menu-button.selected small{color:#ffd51f}
+@media(max-width:390px){.city-stat b{font-size:16px}.city-hero h1{font-size:25px}}
 </style>
 </head>
 <body>
@@ -173,24 +220,7 @@ async function submitCrowdAnswerToSupabase(venueId, answer){
 }
 
 
-const venues=[{"id":"the-lucky-hotel","name":"The Lucky Hotel","type":"Pub/Bar","address":"237 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"clarendon-hotel","name":"Clarendon Hotel","type":"Pub/Bar","address":"347 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"great-northern-hotel","name":"Great Northern Hotel","type":"Pub","address":"83-89 Scott St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"honeysuckle-hotel","name":"Honeysuckle Hotel","type":"Pub/Bar","address":"Lee Wharf C, Lot 31 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"customs-house-hotel","name":"Customs House Hotel","type":"Pub/Bar","address":"1 Bond St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"crown-anchor-hotel","name":"Crown & Anchor Hotel","type":"Pub","address":"189 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"george-darby-hotel","name":"George Darby Hotel","type":"Pub/Bar","address":"21 Darby St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-ship-inn","name":"The Ship Inn","type":"Pub/Bar","address":"102 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"newcastle-club","name":"Newcastle Club","type":"Club","address":"40 Newcomen St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"united-service-club-newcastle","name":"United Service Club Newcastle","type":"Club","address":"55 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"coal-cedar","name":"Coal & Cedar","type":"Bar","address":"380/382 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"granddad-s-bar-experience","name":"Granddad's Bar Experience","type":"Bar","address":"515 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-koutetsu","name":"The Koutetsu","type":"Bar","address":"555 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wests-city","name":"Wests City","type":"Club","address":"King St & Union St, Newcastle West NSW 2302","lat":-32.9285049,"lon":151.7665557,"radius":50,"verified":true,"active":false},{"id":"king-st-hotel","name":"King St Hotel","type":"Pub","address":"15 Steel St, Newcastle West NSW 2302","lat":-32.9277697,"lon":151.7642007,"radius":50,"verified":true,"active":false},{"id":"the-family-hotel","name":"The Family Hotel","type":"Pub","address":"635 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bar-petite","name":"Bar Petite","type":"Bar","address":"Unit 5/5 King St, Newcastle NSW 2300","lat":-32.9291171,"lon":151.7849931,"radius":50,"verified":true,"active":false},{"id":"blue-kahunas","name":"Blue Kahunas","type":"Bar","address":"Unit 3/146 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"ginger-meg-s","name":"Ginger Meg's","type":"Bar","address":"212 King St, Newcastle NSW 2300","lat":-32.9269,"lon":151.77539,"radius":50,"verified":true,"active":false},{"id":"moneypenny","name":"MoneyPenny","type":"Bar","address":"1 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"battlesticks","name":"Battlesticks","type":"Live Music/Bar","address":"200 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"charlies-rooftop","name":"Charlies Rooftop","type":"Bar","address":"Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"exchange-hotel","name":"Exchange Hotel","type":"Pub/Bar","address":"125 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"kent-hotel","name":"Kent Hotel","type":"Pub/Bar","address":"59 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"hamilton-station-hotel","name":"Hamilton Station Hotel","type":"Pub/Bar","address":"2/6 Beaumont St, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"greenroof-hotel","name":"Greenroof Hotel","type":"Pub/Bar","address":"71 Tudor St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bennett-hotel","name":"Bennett Hotel","type":"Pub/Bar","address":"146 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"good-folk-brewing","name":"Good Folk Brewing","type":"Brewery","address":"80 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"sydney-junction-hotel","name":"Sydney Junction Hotel","type":"Pub/Bar","address":"8 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"blind-monk","name":"Blind Monk","type":"Bar/Brewery","address":"Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"maryville-tavern","name":"Maryville Tavern","type":"Pub","address":"71 Lewis St, Maryville NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"seven-seas-hotel","name":"Seven Seas Hotel","type":"Pub","address":"33 Cowper St N, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"young-street-hotel","name":"Young Street Hotel","type":"Pub","address":"132 Young St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"criterion-pub-kitchen","name":"Criterion Pub & Kitchen","type":"Pub","address":"81 Bourke St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"stag-hunter-hotel","name":"Stag & Hunter Hotel","type":"Pub","address":"187 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"beauford-hotel","name":"Beauford Hotel","type":"Pub","address":"39 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mayfield-hotel","name":"Mayfield Hotel","type":"Pub","address":"117 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oak-tighes-hill","name":"Oak Tighes Hill","type":"Pub","address":"207 Maitland Rd, Tighes Hill NSW 2297","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"albion-hotel","name":"Albion Hotel","type":"Pub","address":"72 Hannell St, Wickham NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lass-o-gowrie-hotel","name":"Lass O'Gowrie Hotel","type":"Pub/Live Music","address":"14 Railway St, Wickham NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wickham-park-hotel","name":"Wickham Park Hotel","type":"Pub/Live Music","address":"61 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"premier-hotel","name":"Premier Hotel","type":"Pub","address":"1 Brunker Rd, Broadmeadow NSW 2292","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"sunnyside-tavern","name":"Sunnyside Tavern","type":"Pub","address":"20 Broadmeadow Rd, Broadmeadow NSW 2292","lat":-32.91433,"lon":151.73247,"radius":50,"verified":true,"active":false},{"id":"gates-hotel","name":"Gates Hotel","type":"Pub","address":"660 Glebe Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"nags-head-hotel","name":"Nags Head Hotel","type":"Pub","address":"272 Brunker Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"general-roberts-hotel","name":"General Roberts Hotel","type":"Pub","address":"102 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"duke-of-wellington","name":"Duke of Wellington","type":"Pub","address":"69 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"blackbutt-hotel","name":"Blackbutt Hotel","type":"Pub","address":"80 Orchardtown Rd, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lambton-park-hotel","name":"Lambton Park Hotel","type":"Pub","address":"19A Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"northumberland-hotel","name":"Northumberland Hotel","type":"Pub","address":"85 Elder St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"flamingos-live","name":"Flamingos Live","type":"Live Music Venue","address":"31 Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"grainfed-brewing-company","name":"Grainfed Brewing Company","type":"Brewery","address":"1/52 Young Rd, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"town-hall-hotel","name":"Town Hall Hotel","type":"Pub","address":"29 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"royal-hotel-waratah","name":"Royal Hotel Waratah","type":"Pub","address":"72 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"shorty-hotel","name":"Shorty Hotel","type":"Pub","address":"269 Sandgate Rd, Shortland NSW 2307","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"hotel-jesmond","name":"Hotel Jesmond","type":"Pub","address":"184 Newcastle Rd & 1 Blue Gum Rd, Jesmond NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"colliery-inn-wallsend","name":"Colliery Inn Wallsend","type":"Pub","address":"87 Cowper St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lemon-grove-hotel","name":"Lemon Grove Hotel","type":"Pub","address":"112 Nelson St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"winners-circle-hotel","name":"Winners Circle Hotel","type":"Pub","address":"24 Kokera St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mary-ellen-hotel","name":"Mary Ellen Hotel","type":"Pub","address":"51 Railway St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"prince-of-merewether","name":"Prince of Merewether","type":"Pub","address":"1 Morgan St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"beach-hotel","name":"Beach Hotel","type":"Pub","address":"99 Frederick St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oriental-hotel","name":"Oriental Hotel","type":"Pub","address":"53 Bull St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"commonwealth-hotel","name":"Commonwealth Hotel","type":"Pub","address":"1/35 Union St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"cricketers-arms-hotel","name":"Cricketers Arms Hotel","type":"Pub","address":"61 Bruce St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lowlands-bowling-club","name":"Lowlands Bowling Club","type":"Club","address":"98A Dawson St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"junction-hotel","name":"Junction Hotel","type":"Pub","address":"204 Corlette St, The Junction NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bar-beach-bowling-club","name":"Bar Beach Bowling Club","type":"Club","address":"29 Kilgour Ave, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"merewether-surfhouse","name":"Merewether Surfhouse","type":"Bar/Restaurant","address":"5 Henderson Pde, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"modus-merewether","name":"Modus Merewether","type":"Brewery/Bar","address":"20 Merewether St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"earp-distilling-co","name":"Earp Distilling Co","type":"Distillery/Bar","address":"41 Darling St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"method-brewing","name":"Method Brewing","type":"Brewery","address":"18 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"grain-store-newcastle","name":"Grain Store Newcastle","type":"Bar/Pub","address":"64-66 Scott St, Newcastle East NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"queens-wharf-hotel","name":"Queens Wharf Hotel","type":"Pub","address":"Queens Wharf, 150 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-dockyard","name":"The Dockyard","type":"Pub","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mad-poet","name":"Mad Poet","type":"Bar","address":"537 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"coyote","name":"Coyote","type":"Bar","address":"Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"peregrin","name":"Peregrin","type":"Bar/Restaurant","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bartholomew-s","name":"Bartholomew's","type":"Bar/Restaurant","address":"145 King St, Newcastle NSW 2300","lat":-32.9274407,"lon":151.7779717,"radius":50,"verified":true,"active":false},{"id":"uptowns-bar","name":"Uptowns Bar","type":"Bar","address":"23 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"rooftop-at-qt","name":"Rooftop at QT","type":"Bar","address":"185 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"junction-inn-hotel","name":"Junction Inn Hotel","type":"Pub","address":"The Junction NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"mattara-hotel","name":"Mattara Hotel","type":"Pub","address":"333 Charlestown Rd, Charlestown NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"central-leagues-charlestown","name":"Central Leagues Club","type":"Club","address":"8 Bula St, Charlestown NSW 2290","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"belmont-hotel","name":"Belmont Hotel","type":"Pub","address":"483 Pacific Hwy, Belmont NSW 2280","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"gunyah-hotel","name":"Gunyah Hotel","type":"Pub","address":"644 Pacific Hwy, Belmont NSW 2280","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"lake-macquarie-tavern","name":"Lake Macquarie Tavern","type":"Pub/Bar","address":"66 Wilsons Rd, Mount Hutton NSW 2290","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"warners-bay-hotel","name":"Warners Bay Hotel","type":"Pub","address":"5 John St, Warners Bay NSW 2282","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"warners-at-the-bay","name":"Warners At The Bay","type":"Pub","address":"320 Hillsborough Rd, Warners Bay NSW 2282","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"pippis-at-the-point","name":"Pippi's At The Point Hotel","type":"Pub","address":"199 Main Rd, Speers Point NSW 2284","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"wests-cardiff","name":"Wests Cardiff","type":"Club","address":"18 Munibung Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"cardiff-rsl","name":"Cardiff RSL Club","type":"Club","address":"45 Macquarie Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"iron-horse-inn","name":"Iron Horse Inn","type":"Pub","address":"329 Main Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"club-macquarie","name":"Club Macquarie","type":"Club","address":"458 Lake Rd, Argenton NSW 2284","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"lake-macquarie-hotel-motel","name":"Lake Macquarie Hotel-Motel","type":"Pub","address":"83 Dora St, Morisset NSW 2264","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"toronto-hotel","name":"Toronto Hotel","type":"Pub","address":"74 Victory Parade, Toronto NSW 2283","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"swansea-hotel","name":"The Swansea Hotel","type":"Pub","address":"196 Pacific Hwy, Swansea NSW 2281","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"orana-hotel","name":"The Orana Hotel","type":"Pub","address":"20 Pacific Hwy, Blacksmiths NSW 2281","lat":null,"lon":null,"radius":50,"verified":false,"active":false},
-{"id":"happy-wombat","name":"The Happy Wombat","type":"Pub/Bar","address":"575 Hunter St, Newcastle West NSW 2302","lat":-32.9273196,"lon":151.7659215,"radius":50,"verified":true,"active":false}];
+const venues=[{"id":"the-lucky-hotel","name":"The Lucky Hotel","type":"Pub/Bar","address":"237 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"clarendon-hotel","name":"Clarendon Hotel","type":"Pub/Bar","address":"347 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"great-northern-hotel","name":"Great Northern Hotel","type":"Pub","address":"83-89 Scott St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"honeysuckle-hotel","name":"Honeysuckle Hotel","type":"Pub/Bar","address":"Lee Wharf C, Lot 31 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"customs-house-hotel","name":"Customs House Hotel","type":"Pub/Bar","address":"1 Bond St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"crown-anchor-hotel","name":"Crown & Anchor Hotel","type":"Pub","address":"189 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"george-darby-hotel","name":"George Darby Hotel","type":"Pub/Bar","address":"21 Darby St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-ship-inn","name":"The Ship Inn","type":"Pub/Bar","address":"102 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"newcastle-club","name":"Newcastle Club","type":"Club","address":"40 Newcomen St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"united-service-club-newcastle","name":"United Service Club Newcastle","type":"Club","address":"55 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"coal-cedar","name":"Coal & Cedar","type":"Bar","address":"380/382 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"granddad-s-bar-experience","name":"Granddad's Bar Experience","type":"Bar","address":"515 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-koutetsu","name":"The Koutetsu","type":"Bar","address":"555 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wests-city","name":"Wests City","type":"Club","address":"King St & Union St, Newcastle West NSW 2302","lat":-32.9285049,"lon":151.7665557,"radius":50,"verified":true,"active":false},{"id":"king-st-hotel","name":"King St Hotel","type":"Pub","address":"15 Steel St, Newcastle West NSW 2302","lat":-32.9277697,"lon":151.7642007,"radius":50,"verified":true,"active":false},{"id":"the-family-hotel","name":"The Family Hotel","type":"Pub","address":"635 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bar-petite","name":"Bar Petite","type":"Bar","address":"Unit 5/5 King St, Newcastle NSW 2300","lat":-32.9291171,"lon":151.7849931,"radius":50,"verified":true,"active":false},{"id":"blue-kahunas","name":"Blue Kahunas","type":"Bar","address":"Unit 3/146 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"ginger-meg-s","name":"Ginger Meg's","type":"Bar","address":"212 King St, Newcastle NSW 2300","lat":-32.9269,"lon":151.77539,"radius":50,"verified":true,"active":false},{"id":"moneypenny","name":"MoneyPenny","type":"Bar","address":"1 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"battlesticks","name":"Battlesticks","type":"Live Music/Bar","address":"200 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"charlies-rooftop","name":"Charlies Rooftop","type":"Bar","address":"Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"exchange-hotel","name":"Exchange Hotel","type":"Pub/Bar","address":"125 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"kent-hotel","name":"Kent Hotel","type":"Pub/Bar","address":"59 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"hamilton-station-hotel","name":"Hamilton Station Hotel","type":"Pub/Bar","address":"2/6 Beaumont St, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"greenroof-hotel","name":"Greenroof Hotel","type":"Pub/Bar","address":"71 Tudor St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bennett-hotel","name":"Bennett Hotel","type":"Pub/Bar","address":"146 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"good-folk-brewing","name":"Good Folk Brewing","type":"Brewery","address":"80 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"sydney-junction-hotel","name":"Sydney Junction Hotel","type":"Pub/Bar","address":"8 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"blind-monk","name":"Blind Monk","type":"Bar/Brewery","address":"Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"maryville-tavern","name":"Maryville Tavern","type":"Pub","address":"71 Lewis St, Maryville NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"seven-seas-hotel","name":"Seven Seas Hotel","type":"Pub","address":"33 Cowper St N, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"young-street-hotel","name":"Young Street Hotel","type":"Pub","address":"132 Young St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"criterion-pub-kitchen","name":"Criterion Pub & Kitchen","type":"Pub","address":"81 Bourke St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"stag-hunter-hotel","name":"Stag & Hunter Hotel","type":"Pub","address":"187 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"beauford-hotel","name":"Beauford Hotel","type":"Pub","address":"39 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mayfield-hotel","name":"Mayfield Hotel","type":"Pub","address":"117 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oak-tighes-hill","name":"Oak Tighes Hill","type":"Pub","address":"207 Maitland Rd, Tighes Hill NSW 2297","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"albion-hotel","name":"Albion Hotel","type":"Pub","address":"72 Hannell St, Wickham NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lass-o-gowrie-hotel","name":"Lass O'Gowrie Hotel","type":"Pub/Live Music","address":"14 Railway St, Wickham NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wickham-park-hotel","name":"Wickham Park Hotel","type":"Pub/Live Music","address":"61 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"premier-hotel","name":"Premier Hotel","type":"Pub","address":"1 Brunker Rd, Broadmeadow NSW 2292","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"sunnyside-tavern","name":"Sunnyside Tavern","type":"Pub","address":"20 Broadmeadow Rd, Broadmeadow NSW 2292","lat":-32.91433,"lon":151.73247,"radius":50,"verified":true,"active":false},{"id":"gates-hotel","name":"Gates Hotel","type":"Pub","address":"660 Glebe Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"nags-head-hotel","name":"Nags Head Hotel","type":"Pub","address":"272 Brunker Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"general-roberts-hotel","name":"General Roberts Hotel","type":"Pub","address":"102 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"duke-of-wellington","name":"Duke of Wellington","type":"Pub","address":"69 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"blackbutt-hotel","name":"Blackbutt Hotel","type":"Pub","address":"80 Orchardtown Rd, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lambton-park-hotel","name":"Lambton Park Hotel","type":"Pub","address":"19A Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"northumberland-hotel","name":"Northumberland Hotel","type":"Pub","address":"85 Elder St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"flamingos-live","name":"Flamingos Live","type":"Live Music Venue","address":"31 Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"grainfed-brewing-company","name":"Grainfed Brewing Company","type":"Brewery","address":"1/52 Young Rd, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"town-hall-hotel","name":"Town Hall Hotel","type":"Pub","address":"29 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"royal-hotel-waratah","name":"Royal Hotel Waratah","type":"Pub","address":"72 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"shorty-hotel","name":"Shorty Hotel","type":"Pub","address":"269 Sandgate Rd, Shortland NSW 2307","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"hotel-jesmond","name":"Hotel Jesmond","type":"Pub","address":"184 Newcastle Rd & 1 Blue Gum Rd, Jesmond NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"colliery-inn-wallsend","name":"Colliery Inn Wallsend","type":"Pub","address":"87 Cowper St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lemon-grove-hotel","name":"Lemon Grove Hotel","type":"Pub","address":"112 Nelson St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"winners-circle-hotel","name":"Winners Circle Hotel","type":"Pub","address":"24 Kokera St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mary-ellen-hotel","name":"Mary Ellen Hotel","type":"Pub","address":"51 Railway St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"prince-of-merewether","name":"Prince of Merewether","type":"Pub","address":"1 Morgan St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"beach-hotel","name":"Beach Hotel","type":"Pub","address":"99 Frederick St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oriental-hotel","name":"Oriental Hotel","type":"Pub","address":"53 Bull St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"commonwealth-hotel","name":"Commonwealth Hotel","type":"Pub","address":"1/35 Union St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"cricketers-arms-hotel","name":"Cricketers Arms Hotel","type":"Pub","address":"61 Bruce St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lowlands-bowling-club","name":"Lowlands Bowling Club","type":"Club","address":"98A Dawson St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"junction-hotel","name":"Junction Hotel","type":"Pub","address":"204 Corlette St, The Junction NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bar-beach-bowling-club","name":"Bar Beach Bowling Club","type":"Club","address":"29 Kilgour Ave, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"merewether-surfhouse","name":"Merewether Surfhouse","type":"Bar/Restaurant","address":"5 Henderson Pde, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"modus-merewether","name":"Modus Merewether","type":"Brewery/Bar","address":"20 Merewether St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"earp-distilling-co","name":"Earp Distilling Co","type":"Distillery/Bar","address":"41 Darling St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"method-brewing","name":"Method Brewing","type":"Brewery","address":"18 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"grain-store-newcastle","name":"Grain Store Newcastle","type":"Bar/Pub","address":"64-66 Scott St, Newcastle East NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"queens-wharf-hotel","name":"Queens Wharf Hotel","type":"Pub","address":"Queens Wharf, 150 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-dockyard","name":"The Dockyard","type":"Pub","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mad-poet","name":"Mad Poet","type":"Bar","address":"537 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"coyote","name":"Coyote","type":"Bar","address":"Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"peregrin","name":"Peregrin","type":"Bar/Restaurant","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bartholomew-s","name":"Bartholomew's","type":"Bar/Restaurant","address":"145 King St, Newcastle NSW 2300","lat":-32.9274407,"lon":151.7779717,"radius":50,"verified":true,"active":false},{"id":"uptowns-bar","name":"Uptowns Bar","type":"Bar","address":"23 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"rooftop-at-qt","name":"Rooftop at QT","type":"Bar","address":"185 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"junction-inn-hotel","name":"Junction Inn Hotel","type":"Pub","address":"The Junction NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mattara-hotel","name":"Mattara Hotel","type":"Pub","address":"333 Charlestown Rd, Charlestown NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"central-leagues-charlestown","name":"Central Leagues Club","type":"Club","address":"8 Bula St, Charlestown NSW 2290","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"belmont-hotel","name":"Belmont Hotel","type":"Pub","address":"483 Pacific Hwy, Belmont NSW 2280","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"gunyah-hotel","name":"Gunyah Hotel","type":"Pub","address":"644 Pacific Hwy, Belmont NSW 2280","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lake-macquarie-tavern","name":"Lake Macquarie Tavern","type":"Pub/Bar","address":"66 Wilsons Rd, Mount Hutton NSW 2290","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"warners-bay-hotel","name":"Warners Bay Hotel","type":"Pub","address":"5 John St, Warners Bay NSW 2282","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"warners-at-the-bay","name":"Warners At The Bay","type":"Pub","address":"320 Hillsborough Rd, Warners Bay NSW 2282","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"pippis-at-the-point","name":"Pippi's At The Point Hotel","type":"Pub","address":"199 Main Rd, Speers Point NSW 2284","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wests-cardiff","name":"Wests Cardiff","type":"Club","address":"18 Munibung Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"cardiff-rsl","name":"Cardiff RSL Club","type":"Club","address":"45 Macquarie Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"iron-horse-inn","name":"Iron Horse Inn","type":"Pub","address":"329 Main Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"club-macquarie","name":"Club Macquarie","type":"Club","address":"458 Lake Rd, Argenton NSW 2284","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lake-macquarie-hotel-motel","name":"Lake Macquarie Hotel-Motel","type":"Pub","address":"83 Dora St, Morisset NSW 2264","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"toronto-hotel","name":"Toronto Hotel","type":"Pub","address":"74 Victory Parade, Toronto NSW 2283","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"swansea-hotel","name":"The Swansea Hotel","type":"Pub","address":"196 Pacific Hwy, Swansea NSW 2281","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"orana-hotel","name":"The Orana Hotel","type":"Pub","address":"20 Pacific Hwy, Blacksmiths NSW 2281","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"happy-wombat","name":"The Happy Wombat","type":"Pub/Bar","address":"575 Hunter St, Newcastle West NSW 2302","lat":-32.9273196,"lon":151.7659215,"radius":50,"verified":true,"active":false},{"id":"northern-star-hotel","name":"Northern Star Hotel","type":"Pub/Bar","address":"112 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-den","name":"The Den","type":"Live Music","address":"2 Union St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oceane-hotel","name":"Oceane Hotel","type":"Pub/Bar","address":"29 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"honeysuckle-social","name":"Honeysuckle Social","type":"Bar","address":"Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"shout-brewing","name":"Shout Brewing","type":"Brewery","address":"21 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"foghorn-brewhouse","name":"Foghorn Brewhouse","type":"Brewery","address":"218 King St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"newcastle-comedy-club","name":"Newcastle Comedy Club","type":"Live Music","address":"139 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"gallipoli-legion-club","name":"Gallipoli Legion Club","type":"Club","address":"96 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"club-merewether","name":"Club Merewether","type":"Club","address":"5 Ocean St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"souths-merewether","name":"Souths Merewether","type":"Club","address":"46 Llewellyn St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-burwood-inn","name":"The Burwood Inn","type":"Pub","address":"77 Berner St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false}];
 
 
 /* Verified seed coordinate: Sunnyside Tavern, 20 Broadmeadow Rd, Broadmeadow NSW 2292.
@@ -322,7 +352,6 @@ function hbLoadVenueCoordinates(){
     try{
       const staticC=HB_STATIC_COORDS[v.id];
       if(staticC){
-        localStorage.removeItem('hbVenueCoords:'+v.id);
         v.lat=Number(staticC[0]);
         v.lon=Number(staticC[1]);
         v.verified=true;
@@ -330,11 +359,21 @@ function hbLoadVenueCoordinates(){
         return;
       }
       if(v.id==='sunnyside-tavern'){
-        localStorage.removeItem('hbVenueCoords:sunnyside-tavern');
         v.lat=-32.91433;
         v.lon=151.73247;
         v.verified=true;
         v.radius=50;
+        return;
+      }
+      const cached=localStorage.getItem('hbVenueCoords:'+v.id);
+      if(cached){
+        const c=JSON.parse(cached);
+        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lon))){
+          v.lat=Number(c.lat);
+          v.lon=Number(c.lon);
+          v.verified=true;
+          v.radius=50;
+        }
       }
     }catch(e){}
   });
@@ -348,41 +387,133 @@ function hbSaveVenueCoordinates(v,lat,lon){
 
 async function hbGeocodeVenue(v){
   if(!v || !v.address || (Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))) return true;
+  const queries=[
+    v.address+', Australia',
+    v.name+', '+v.address+', Australia',
+    v.name+', '+String(v.address||'')
+  ];
+
+  // 1) ArcGIS World Geocoder — strong street-address coverage.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const url='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+q+'&f=json&maxLocations=1';
+      const r=await fetch(url,{headers:{'Accept':'application/json'}});
+      if(r.ok){
+        const j=await r.json();
+        const a=j && j.candidates && j.candidates[0];
+        if(a && a.location && Number.isFinite(Number(a.location.y)) && Number.isFinite(Number(a.location.x))){
+          hbSaveVenueCoordinates(v,a.location.y,a.location.x);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+
+  // 2) Photon fallback.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const r=await fetch('https://photon.komoot.io/api/?q='+q+'&limit=1',{headers:{'Accept':'application/json'}});
+      if(r.ok){
+        const j=await r.json();
+        const f=j && j.features && j.features[0];
+        const c=f && f.geometry && f.geometry.coordinates;
+        if(c && c.length>=2 && Number.isFinite(Number(c[0])) && Number.isFinite(Number(c[1]))){
+          hbSaveVenueCoordinates(v,c[1],c[0]);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+
+  // 3) OpenStreetMap Nominatim fallback. Keep this sequential to respect public-service limits.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json','Accept-Language':'en-AU'}});
+      if(r.ok){
+        const j=await r.json();
+        const a=j && j[0];
+        if(a && Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lon))){
+          hbSaveVenueCoordinates(v,Number(a.lat),Number(a.lon));
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+  return false;
+}
+
+function hbNormVenueName(s){
+  return String(s||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,' ').trim().replace(/\b(the|hotel|pub|bar|club|newcastle|nsw)\b/g,' ').replace(/\s+/g,' ').trim();
+}
+async function hbMapFromOpenStreetMap(){
   try{
-    const q=encodeURIComponent(v.address+', Australia');
-    const r=await fetch('https://photon.komoot.io/api/?q='+q+'&limit=1',{headers:{'Accept':'application/json'}});
-    if(!r.ok)return false;
+    const q='[out:json][timeout:25];(nwr[\"name\"][\"amenity\"~\"pub|bar|nightclub|brewery|social_centre|community_centre|restaurant\"](-33.2,151.45,-32.75,151.9);nwr[\"name\"][\"leisure\"~\"dance|sports_centre|stadium\"](-33.2,151.45,-32.75,151.9););out center tags;';
+    const r=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q),{headers:{'Accept':'application/json'}});
+    if(!r.ok)return 0;
     const j=await r.json();
-    const f=j && j.features && j.features[0];
-    const c=f && f.geometry && f.geometry.coordinates;
-    if(!c || c.length<2)return false;
-    hbSaveVenueCoordinates(v,c[1],c[0]);
-    return true;
-  }catch(e){ return false; }
+    const rows=(j&&j.elements)||[];
+    let hits=0;
+    const byName=new Map();
+    rows.forEach(e=>{const n=hbNormVenueName(e.tags&&e.tags.name); if(!n)return; const lat=e.lat!=null?e.lat:(e.center&&e.center.lat), lon=e.lon!=null?e.lon:(e.center&&e.center.lon); if(Number.isFinite(Number(lat))&&Number.isFinite(Number(lon))){byName.set(n,{lat:Number(lat),lon:Number(lon)})}});
+    venues.forEach(v=>{
+      if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))return;
+      const key=hbNormVenueName(v.name);
+      const c=byName.get(key);
+      if(c){hbSaveVenueCoordinates(v,c.lat,c.lon);hits++;}
+    });
+    return hits;
+  }catch(e){console.warn('OSM venue sweep failed',e);return 0;}
 }
 
 async function hbGeocodeAllVenues(){
   if(hbGeocodeRunning)return;
   hbGeocodeRunning=true;
-  let done=0;
+  hbSetGpsStatus('Venue database: mapping all venues…');
+  // First use one local OSM sweep instead of making 100+ individual requests.
+  await hbMapFromOpenStreetMap();
+  let done=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
+  hbSetGpsStatus('Venue database: '+done+'/'+venues.length+' mapped · resolving remaining');
+  hbRenderNearbyVenues();
+  try{if(typeof renderNewcastleVenues==='function' && selectedCity==='Newcastle')renderNewcastleVenues();}catch(e){}
+
+  // Resolve the remaining exact street addresses in parallel. The old build used one worker,
+  // which made a full Newcastle sweep take many minutes and caused mobile browsers to time out.
   const queue=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
-  const workers=Math.min(4,Math.max(1,queue.length));
+  const workers=Math.min(6,Math.max(2,queue.length));
   async function worker(){
     while(queue.length){
-      const v=queue.shift();
-      if(!v) return;
+      const v=queue.shift(); if(!v)return;
       await hbGeocodeVenue(v);
       done++;
-      hbRenderNearbyVenues();
-      if(done%10===0) hbSetGpsStatus('Venue database: '+done+'/'+venues.length+' locations checked');
-      await new Promise(r=>setTimeout(r,250));
+      if(done%3===0){hbRenderNearbyVenues();try{if(typeof renderNewcastleVenues==='function'&&selectedCity==='Newcastle')renderNewcastleVenues();}catch(e){}}
+      hbSetGpsStatus('Venue database: '+Math.min(done,venues.length)+'/'+venues.length+' mapped');
+      await new Promise(r=>setTimeout(r,220));
     }
   }
   await Promise.all(Array.from({length:workers},worker));
+
+  // Final retry with the venue name included, useful for POIs whose street address is not indexed.
+  const retry=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
+  for(const v of retry){
+    const original=v.address;
+    try{
+      const q=encodeURIComponent(v.name+', '+original+', Australia');
+      const r=await fetch('https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+q+'&f=json&maxLocations=1',{headers:{'Accept':'application/json'}});
+      if(r.ok){const j=await r.json(),a=j&&j.candidates&&j.candidates[0];if(a&&a.location&&Number.isFinite(Number(a.location.y))&&Number.isFinite(Number(a.location.x)))hbSaveVenueCoordinates(v,a.location.y,a.location.x);}
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,250));
+  }
+
   venues.forEach(v=>{if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))){v.radius=50;v.verified=true;}});
   hbGeocodeRunning=false;
   const mapped=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
-  hbSetGpsStatus('Venue database: '+mapped+'/'+venues.length+' venues mapped · 50m geofence');
+  const missing=venues.length-mapped;
+  hbSetGpsStatus(missing ? 'Venue database: '+mapped+'/'+venues.length+' mapped · '+missing+' need manual verification' : 'Venue database: '+venues.length+'/'+venues.length+' venues mapped · 50m geofence');
+  hbRenderNearbyVenues();
+  try{if(typeof renderNewcastleVenues==='function'&&selectedCity==='Newcastle')renderNewcastleVenues();}catch(e){}
 }
 function hbFindVenue(lat,lon){
   let nearest=null, nearestDistance=Infinity;
@@ -565,28 +696,32 @@ async function hbLoadLiveVenueCounts(){
   }
 }
 
-function hbRenderHomeRankings(){
-  const closeBox=document.getElementById('hbClosestPubs');
-  const busyBox=document.getElementById('hbBusiestPubs');
+function hbRenderHomeRankings(filter){
+  const closeBox=document.getElementById('hbClosestPubs'), busyBox=document.getElementById('hbBusiestPubs');
   if(!closeBox||!busyBox)return;
-
-  if(!hbLastGps || !Number.isFinite(hbLastGps.lat) || !Number.isFinite(hbLastGps.lon)){
-    closeBox.innerHTML='<div class="muted">Waiting for your phone location…</div>';
-  }else{
-    const closest=venues.filter(v=>/pub/i.test(String(v.type||'')) && Number.isFinite(Number(v.lat)) && Number.isFinite(Number(v.lon)))
-      .map(v=>({v,d:hbDistanceMetres(hbLastGps.lat,hbLastGps.lon,v.lat,v.lon)}))
-      .sort((a,b)=>a.d-b.d).slice(0,5);
-    closeBox.innerHTML=closest.length?closest.map(({v,d})=>{
-      const inside=(Date.now()-hbLastGps.at)<120000 && d<=hbVenueRadius(v);
-      const dist=d<1000?Math.round(d)+' m':(d/1000).toFixed(1)+' km';
-      return `<div class="rank-row" onclick="venue(${JSON.stringify(v.id)})"><div><b>${escapeHtmlSafe(v.name)}</b><div class="muted small">${escapeHtmlSafe(v.address)}</div></div><div class="rank-right"><b>${dist}</b><span class="muted small">${inside?'AT VENUE':'away'}</span></div></div>`;
-    }).join(''):'<div class="muted">We are still mapping Newcastle pubs for location ranking.</div>';
+  let mapped=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)));
+  let closest=mapped.map(v=>({v,d:hbLastGps?hbDistanceMetres(hbLastGps.lat,hbLastGps.lon,v.lat,v.lon):999999})).sort((a,b)=>a.d-b.d).slice(0,5).map(x=>x.v);
+  if(!closest.length) closeBox.innerHTML='<div class="muted">We are still mapping Newcastle venues for location ranking.</div>';
+  else closeBox.innerHTML=closest.map(v=>hbDetailedVenueCard(v,isPremium())).join('');
+  let ranked=venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0));
+  if(filter==='singles' && isPremium()) ranked.sort((a,b)=>Number(b._singlePct||0)-Number(a._singlePct||0));
+  if(filter==='balance' && isPremium()) ranked.sort((a,b)=>Math.abs(50-Number(a._malePct||50))-Math.abs(50-Number(b._malePct||50)));
+  const top=ranked.slice(0,5);
+  busyBox.innerHTML=top.map(v=>hbDetailedVenueCard(v,isPremium())).join('');
+  const total=venues.reduce((s,v)=>s+Number(v.busy||0),0);
+  const busiest=ranked[0];
+  const t=document.getElementById('hbTotalPeople'),bn=document.getElementById('hbBusiestName'),bc=document.getElementById('hbBusiestCount');
+  if(t)t.textContent=total||'0';
+  if(bn)bn.textContent=busiest?busiest.name:'—';
+  if(bc)bc.textContent=busiest?(Number(busiest.busy||0)+' people'): 'Busiest venue';
+  if(isPremium()){
+    Promise.all(venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0)).slice(0,8).map(async v=>{const d=await loadPremiumDemographics(v.id);v._premiumData=d;if(d&&Number(d.total_active||0)>0){v._singlePct=pct(d.single_count,d.total_active);v._malePct=pct(d.male_count,d.total_active)}return v;})).then(()=>{
+      const best=venues.filter(v=>Number(v._singlePct||0)>0).sort((a,b)=>b._singlePct-a._singlePct)[0];
+      const el=document.getElementById('hbSinglesName'); if(el)el.textContent=best?best.name:'Collecting data';
+      if(filter==='singles'||filter==='balance') hbRenderHomeRankings(filter);
+      else { if(closeBox)closeBox.innerHTML=closest.map(v=>hbDetailedVenueCard(v,true)).join(''); if(busyBox)busyBox.innerHTML=top.map(v=>hbDetailedVenueCard(v,true)).join(''); }
+    });
   }
-
-  const pubs=venues.filter(v=>/pub/i.test(String(v.type||'')));
-  pubs.sort((a,b)=>Number(b.busy||0)-Number(a.busy||0));
-  const top=pubs.slice(0,8);
-  busyBox.innerHTML=top.map((v,i)=>`<div class="rank-row" onclick="venue(${JSON.stringify(v.id)})"><div><b>${i+1}. ${escapeHtmlSafe(v.name)}</b><div class="muted small">${escapeHtmlSafe(v.address)}</div></div><div class="rank-right"><b>${Number(v.busy||0)}</b><span class="muted small">people now</span></div></div>`).join('');
 }
 
 function hbHandlePosition(position){
@@ -754,7 +889,8 @@ hbLoadVenueCoordinates();
 hbApplyStaticVenueCoordinates();
 
 // Resume venue detection silently after a reload when the user has already enabled location.
-setTimeout(()=>{ try{ startVenueGeofencing(); }catch(e){ console.warn('Venue detection start failed',e); } }, 800);
+setTimeout(()=>{ try{ hbLoadVenueCoordinates(); hbGeocodeAllVenues(); }catch(e){ console.warn('Venue mapping start failed',e); } }, 500);
+setTimeout(()=>{ try{ startVenueGeofencing(); }catch(e){ console.warn('Venue detection start failed',e); } }, 1200);
 
 let state={page:'welcome',relationship:localStorage.hbRel||'',crowd:localStorage.hbCrowd||'',venue:null,premium:localStorage.getItem('hbPremiumDemo')==='true'};
 
@@ -794,17 +930,21 @@ let selectedCity=HOW_BUSY_CITIES.includes(savedCity)?savedCity:"Newcastle";
 function showCityMenu(){
   const cities=HOW_BUSY_CITIES;
   frame(`<div class="screen">
-    <button class="secondary" onclick="home()">← Back</button>
-    <div class="pill" style="margin-top:20px">HOW BUSY? · CITIES</div>
-    <h1>📍 Choose your City</h1>
-    <p class="sub">Newcastle opens the venue directory. Other cities are coming soon.</p>
+    <button class="secondary" onclick="home()">← Back to Home</button>
+    <div class="city-menu-hero">
+      <div class="city-menu-hero-icon">📍</div>
+      <div class="pill">HOW BUSY? · CITY GUIDE</div>
+      <h1>Choose your City</h1>
+      <p class="sub">Find participating venues and live activity in your area.</p>
+    </div>
+    <div class="city-section-title"><h2>Available cities</h2><span>${cities.length} locations planned</span></div>
     <div class="city-menu-list">
       ${cities.map(c=>`<button type="button" class="city-menu-button ${c===selectedCity?'selected':''}" onclick="selectCity('${c.replace(/'/g,"\\'")}')">
-        <span>${c}</span>
-        <small>${c==="Newcastle"?"ACTIVE":"COMING SOON"}</small>
+        <span>📍 ${c}</span>
+        <small>${c==="Newcastle"?"● LIVE":"COMING SOON"}</small>
       </button>`).join("")}
     </div>
-  </div>${nav("home")}`);
+  </div>${nav("venues")}`);
 }
 
 function selectCity(city){
@@ -816,60 +956,101 @@ function selectCity(city){
   openNewcastleVenues();
 }
 
+let cityVenueFilter="All";
+function cityVenueCategory(v){
+  const t=String(v.type||'').toLowerCase();
+  if(t.includes('club')) return 'Clubs';
+  if(t.includes('bar')) return 'Bars';
+  if(t.includes('music')) return 'Live Music';
+  return 'Pubs';
+}
+function setCityVenueFilter(filter){
+  cityVenueFilter=filter;
+  renderNewcastleVenues();
+}
 function filterNewcastleVenues(query){
-  const q=String(query||"").trim().toLowerCase();
-  document.querySelectorAll(".screen .venue[data-venue-name]").forEach(card=>{
-    const name=card.getAttribute("data-venue-name")||"";
-    card.style.display=(!q || name.includes(q)) ? "" : "none";
+  window.hbCitySearch=String(query||'').trim().toLowerCase();
+  /* Do NOT rebuild the whole City page while typing. Rebuilding the input
+     element on every keystroke makes iPhone Safari lose focus after the
+     first character. Update only the results/count so typing stays smooth. */
+  const list=Array.isArray(venues)?venues:[];
+  const q=window.hbCitySearch||'';
+  const filtered=list.filter(v=>{
+    const text=(String(v.name||'')+' '+String(v.address||'')+' '+String(v.type||'')).toLowerCase();
+    const cat=cityVenueCategory(v);
+    return (!q||text.includes(q)) && (cityVenueFilter==='All'||cat===cityVenueFilter);
   });
+  const results=document.getElementById('cityVenueResults');
+  const count=document.getElementById('cityVenueCount');
+  if(count) count.textContent=filtered.length+' shown';
+  if(!results) return renderNewcastleVenues();
+  results.innerHTML=filtered.length ? filtered.map(v=>{
+    const idx=list.indexOf(v);
+    const name=escapeHtmlSafe(v.name||'Venue');
+    const address=escapeHtmlSafe(v.address||'Address not available');
+    const cat=cityVenueCategory(v);
+    const busy=Number(v.busy);
+    const c=Number.isFinite(busy)?busy:0;
+    const status=c>=80?'Very busy':c>=55?'Busy':c>=30?'Moderate':'Quiet';
+    const icon=cat==='Clubs'?'🎉':cat==='Bars'?'🍸':cat==='Live Music'?'🎵':'🍻';
+    return '<div class="city-venue-card venue" data-venue-name="'+name.toLowerCase()+'" onclick="openVenueSafe('+idx+')">'+
+      '<div class="city-venue-head"><div class="city-venue-icon">'+icon+'</div><div><div class="city-venue-name">'+name+'</div><div class="city-venue-address">📍 '+address+'</div></div><div class="city-arrow">›</div></div>'+
+      '<div class="city-meta"><span class="city-tag">'+cat+'</span><span class="city-tag">'+status+'</span><span class="city-tag">👥 '+c+' now</span>'+(v.verified?'<span class="city-tag mapped">✓ 50m mapped</span>':'<span class="city-tag">📍 Mapping…</span>')+'</div>'+
+      '</div>';
+  }).join('') : '<div class="city-empty">No venues match that search.<br><button class="secondary" onclick="clearCitySearch()">Show all venues</button></div>';
+}
+function clearCitySearch(){
+  window.hbCitySearch='';
+  const input=document.getElementById('newcastleVenueSearch');
+  if(input) input.value='';
+  filterNewcastleVenues('');
+}
+function renderNewcastleVenues(){
+  const list=Array.isArray(venues)?venues:[];
+  const q=window.hbCitySearch||'';
+  const filtered=list.filter(v=>{
+    const text=(String(v.name||'')+' '+String(v.address||'')+' '+String(v.type||'')).toLowerCase();
+    const cat=cityVenueCategory(v);
+    return (!q||text.includes(q)) && (cityVenueFilter==='All'||cat===cityVenueFilter);
+  });
+  const categories=['All','Pubs','Bars','Clubs','Live Music'];
+  let html='<div class="screen">';
+  html+='<button class="secondary" onclick="showCityMenu()">← City</button>';
+  html+='<div class="city-hero">';
+  html+='<div class="city-hero-top"><div style="display:flex;gap:11px;align-items:center"><div class="city-hero-icon">🏙️</div><div><h1>Newcastle</h1><p class="sub">Live local venue guide</p></div></div><span class="city-active">● LIVE</span></div>';
+  html+='<div class="city-stat-row"><div class="city-stat"><b>'+list.length+'</b><small>venues listed</small></div><div class="city-stat"><b>'+list.filter(v=>v.verified).length+'</b><small>mapped</small></div><div class="city-stat"><b>50 m</b><small>detection zone</small></div></div><button class="action" style="margin-top:12px" onclick="hbGeocodeAllVenues();toast(&quot;Mapping all Newcastle venues…&quot;)">📍 Map / verify all venues</button>';
+  html+='</div>';
+  html+='<div class="city-search-wrap"><span class="city-search-icon">🔍</span><input id="newcastleVenueSearch" class="search newcastleSearch" type="search" placeholder="Search venues, suburbs or types" value="'+escapeHtmlSafe(window.hbCitySearch||'')+'" oninput="filterNewcastleVenues(this.value)" autocomplete="off"></div>';
+  html+='<div class="city-filters">'+categories.map(c=>'<button class="city-filter '+(cityVenueFilter===c?'on':'')+'" onclick="setCityVenueFilter(\"'+c+'\")">'+c+'</button>').join('')+'</div>';
+  html+='<div class="city-section-title"><h2>Newcastle venues</h2><span id="cityVenueCount">'+filtered.length+' shown</span></div>';
+  html+='<div id="cityVenueResults">';
+  if(!filtered.length){
+    html+='<div class="city-empty">No venues match that search.<br><button class="secondary" onclick="clearCitySearch()">Show all venues</button></div>';
+  }else{
+    filtered.forEach(v=>{
+      const idx=list.indexOf(v);
+      const name=escapeHtmlSafe(v.name||'Venue');
+      const address=escapeHtmlSafe(v.address||'Address not available');
+      const cat=cityVenueCategory(v);
+      const busy=Number(v.busy);
+      const count=Number.isFinite(busy)?busy:0;
+      const status=count>=80?'Very busy':count>=55?'Busy':count>=30?'Moderate':'Quiet';
+      const icon=cat==='Clubs'?'🎉':cat==='Bars'?'🍸':cat==='Live Music'?'🎵':'🍻';
+      html+='<div class="city-venue-card venue" data-venue-name="'+name.toLowerCase()+'" onclick="openVenueSafe('+idx+')">';
+      html+='<div class="city-venue-head"><div class="city-venue-icon">'+icon+'</div><div><div class="city-venue-name">'+name+'</div><div class="city-venue-address">📍 '+address+'</div></div><div class="city-arrow">›</div></div>';
+      html+='<div class="city-meta"><span class="city-tag">'+cat+'</span><span class="city-tag">'+status+'</span><span class="city-tag">👥 '+count+' now</span>'+(v.verified?'<span class="city-tag mapped">✓ 50m mapped</span>':'<span class="city-tag">📍 Mapping…</span>')+'</div>';
+      html+='</div>';
+    });
+  }
+  html+='</div>';
+  html+='</div>';
+  frame(html);
 }
 
 function openNewcastleVenues(){
   selectedCity="Newcastle";
   try{localStorage.setItem("hbCity","Newcastle");}catch(e){}
-
-  var list=Array.isArray(venues)?venues:[];
-
-  var html='<div class="screen">';
-  html+='<button class="secondary" onclick="showCityMenu()">← City</button>';
-  html+='<div class="pill" style="margin-top:20px">📍 NEWCASTLE</div>';
-  html+='<h1>Newcastle Venues</h1>';
-  html+='<p class="sub">Live venue information</p>';
-  html+='<div style="margin:14px 0 12px">';
-  html+='<input id="newcastleVenueSearch" class="search newcastleSearch" type="search" placeholder="🔍 Search Newcastle venues" oninput="filterNewcastleVenues(this.value)" autocomplete="off">';
-  html+='</div>';
-
-  if(list.length===0){
-    html+='<div class="card"><h2>Newcastle venues</h2><p class="muted">No Newcastle venues are loaded yet.</p></div>';
-  }else{
-    for(var i=0;i<list.length;i++){
-      var v=list[i]||{};
-      var name=escapeHtmlSafe(v.name||"Venue");
-      var address=escapeHtmlSafe(v.address||"Address not available");
-      var busy=Number(v.busy);
-      if(!Number.isFinite(busy)) busy=0;
-
-      var status=busy>=80?"Very busy":busy>=55?"Busy":busy>=30?"Moderate":"Quiet";
-      var statusIcon=busy>=80?"🔴":busy>=55?"🟠":busy>=30?"🟡":"🟢";
-
-      html+='<div class="card venue" data-venue-name="'+name.toLowerCase()+'" style="margin:10px 0">';
-      html+='<div class="row">';
-      html+='<div><b style="font-size:18px">'+name+'</b>';
-      html+='<div class="muted small">📍 '+address+'</div></div>';
-      html+='</div>';
-
-      html+='<div class="venue-data-grid">';
-      html+='<div><div class="muted small">How busy now</div><b>'+statusIcon+' '+status+'</b></div>';
-      html+='<div><div class="muted small">Estimated people</div><b>👥 '+busy+'</b></div>';
-      html+='</div>';
-
-      html+='<button class="action" style="margin-top:12px;width:100%" onclick="openVenueSafe('+i+')">View venue →</button>';
-      html+='</div>';
-    }
-  }
-
-  html+='</div>';
-  frame(html);
+  renderNewcastleVenues();
 }
 
 function escapeHtmlSafe(value){
@@ -882,6 +1063,7 @@ function openVenueSafe(index){
   var list=Array.isArray(venues)?venues:[];
   var v=list[index];
   if(!v) return;
+  window.hbCurrentVenue=v;
 
   var name=escapeHtmlSafe(v.name||"Venue");
   var address=escapeHtmlSafe(v.address||"Address not available");
@@ -967,19 +1149,89 @@ function showCityComingSoon(city){
 
 
 
+function hbVenueEmoji(v){
+  const t=String(v.type||'').toLowerCase();
+  if(t.includes('club')) return '🎉';
+  if(t.includes('bar')) return '🍸';
+  if(t.includes('brew')) return '🍺';
+  if(t.includes('music')) return '🎵';
+  return '🍻';
+}
+function hbBusyLabel(n){n=Number(n||0);return n>=100?'Very Busy':n>=60?'Busy':n>=25?'Moderate':'Quiet'}
+function hbTrendClass(n){n=Number(n||0);return n>=100?'very':n<25?'quiet':''}
+function hbPremiumCard(v){
+  const d=v._premiumData;
+  if(!d || Number(d.total_active||0)<3) return `<div class="hb-basic-lock">🔒 <b>Premium Venue Intelligence</b><br>Live Single/Taken and Male/Female data appears here for Premium subscribers when enough anonymous data is available.</div>`;
+  const total=Number(d.total_active)||0;
+  return `<div class="hb-premium-grid">
+    <div class="hb-premium-stat"><b>💙 ${pct(d.single_count,total)}%</b><small>Single</small></div>
+    <div class="hb-premium-stat"><b>❤️ ${pct(d.taken_count,total)}%</b><small>Taken</small></div>
+    <div class="hb-premium-stat"><b>♂️ ${pct(d.male_count,total)}%</b><small>Male</small></div>
+    <div class="hb-premium-stat"><b>♀️ ${pct(d.female_count,total)}%</b><small>Female</small></div>
+  </div>`;
+}
+function hbDetailedVenueCard(v, premium){
+  const n=Number(v.busy||0), label=hbBusyLabel(n), cls=hbTrendClass(n);
+  const distance=(hbLastGps && Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))?hbDistanceMetres(hbLastGps.lat,hbLastGps.lon,v.lat,v.lon):null;
+  const inside=distance!==null && (Date.now()-hbLastGps.at)<120000 && distance<=hbVenueRadius(v);
+  return `<div class="hb-venue-card" onclick="venue(${JSON.stringify(v.id)})">
+    <div class="hb-venue-top">
+      <div class="hb-venue-icon">${hbVenueEmoji(v)}</div>
+      <div><div class="hb-venue-name">${escapeHtmlSafe(v.name||'Venue')}</div><div class="hb-address">📍 ${escapeHtmlSafe(v.address||'')}</div><span class="hb-status ${cls}">👥 ${label}</span></div>
+      <div style="text-align:right"><div class="hb-mini-trend"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="hb-arrow">›</div></div>
+    </div>
+    <div class="hb-live-row">
+      <div class="hb-live-stat"><span class="v">${n}</span><small>ACTIVE NOW</small></div>
+      <div class="hb-live-stat"><span class="v">${inside?'📍 HERE':distance!==null?(distance<1000?Math.round(distance)+'m':(distance/1000).toFixed(1)+'km'):'—'}</span><small>${inside?'AT VENUE':'DISTANCE'}</small></div>
+      <div class="hb-live-stat"><span class="v">${v.active?'● Live':'○ Live feed'}</span><small>VENUE STATUS</small></div>
+    </div>
+    ${premium?hbPremiumCard(v):`<div class="hb-basic-lock">🔒 <b>Premium Venue Intelligence</b><br>Unlock anonymous Single/Taken, Male/Female, crowd balance and venue trends.</div>`}
+    <button class="hb-intel" onclick="event.stopPropagation();${premium?'premiumVenueDetailById('+JSON.stringify(v.id)+')':'premiumPaywall(\'Venue Intelligence\')'}">${premium?'👑 View Venue Intelligence →':'👑 Unlock Venue Intelligence →'}</button>
+  </div>`;
+}
 function home(){
   if(!hbGpsRunning) startVenueGeofencing();
-  // Keep the live GPS state when returning to Home, then request a fresh fix.
-  // This makes the closest-venue list and 50m geofence use the same current position.
-  setTimeout(()=>{
-    hbRequestFreshVenueLocation();
-    hbStartLiveRefresh();
-  },150);
-  frame(`<div class="screen"><div class="row"><div><div class="logo">How <span class="gold">Busy?</span></div><div class="muted small">Is Your Local Venue</div></div></div><div class="notice" style="margin-top:18px"><b>📍 Automatic venue detection</b><br><span class="muted">Venues use a fixed 50 m detection zone. The same venue pin is used for both “closest” distance and venue entry.</span><br><button class="secondary" style="margin-top:10px" onclick="hbRequestFreshVenueLocation()">Refresh my location</button></div>
-<h2 style="margin-top:24px">Venues Near You</h2><div id="hbClosestPubs" class="ranking-list"><div class="muted">Finding your location…</div></div>
-<h2 style="margin-top:24px">Where’s The Party At</h2><div id="hbBusiestPubs" class="ranking-list"><div class="muted">Loading live venue activity…</div></div>
-<div class="card" id="city-selector-card"><div class="row"><div><b>📍 Choose your city</b><div class="muted small">Newcastle is our active development city. Other cities are coming soon.</div></div><span class="pill">AUSTRALIA</span></div><div class="choice" id="city-selector"><button class="city-btn on" onclick="selectCity('Newcastle')">Newcastle</button><button class="city-btn " onclick="selectCity('Sydney')">Sydney</button><button class="city-btn " onclick="selectCity('Brisbane')">Brisbane</button><button class="city-btn " onclick="selectCity('Melbourne')">Melbourne</button><button class="city-btn " onclick="selectCity('Darwin')">Darwin</button><button class="city-btn " onclick="selectCity('Canberra')">Canberra</button><button class="city-btn " onclick="selectCity('Perth')">Perth</button><button class="city-btn " onclick="selectCity('Hobart')">Hobart</button><button class="city-btn " onclick="selectCity('Cairns')">Cairns</button><button class="city-btn " onclick="selectCity('Townsville')">Townsville</button><button class="city-btn " onclick="selectCity('Gold Coast')">Gold Coast</button><button class="city-btn " onclick="selectCity('South Australia')">South Australia</button></div></div>
-<h2 id="city-venue-heading">Newcastle venues</h2>${venues.slice(0,12).map(v=>venueCard(v)).join('')}</div>${nav('home')}`)}
+  setTimeout(()=>{hbRequestFreshVenueLocation();hbStartLiveRefresh();},150);
+  const premium=isPremium();
+  frame(`<div class="screen">
+    <div class="hb-brand"><div class="hb-brand-main"><div class="hb-beer">🍻</div><div><div class="hb-brand-title">How <span class="gold">Busy?</span></div><div class="hb-brand-sub">IS YOUR LOCAL VENUE</div></div></div><button class="hb-premium-chip" onclick="premiumSinglesScreen()">👑 PREMIUM</button></div>
+    <div class="hb-hero-title">Where’s The Party At</div><div class="hb-hero-sub">Live venue activity · Newcastle</div>
+    <div class="hb-summary"><div><div class="icon">👥</div><div class="num" id="hbTotalPeople">—</div><b>people out now</b><small>live Newcastle activity</small></div><div><div class="icon">🔥</div><div class="num" id="hbBusiestName" style="font-size:15px;color:#fff">—</div><b id="hbBusiestCount">Busiest venue</b><small>right now</small></div><div><div class="icon">⭐</div><div class="num" id="hbSinglesName" style="font-size:15px;color:#fff">Premium</div><b>best singles data</b><small>anonymous intelligence</small></div></div>
+    <div class="hb-filters"><button class="hb-filter on" onclick="hbSetHomeFilter('closest',this)">📍 Closest</button><button class="hb-filter" onclick="hbSetHomeFilter('busy',this)">📊 Busiest</button><button class="hb-filter" onclick="hbSetHomeFilter('singles',this)">👥 Most Singles</button><button class="hb-filter" onclick="hbSetHomeFilter('balance',this)">⚖️ Best Balance</button></div>
+    <div class="hb-location"><button onclick="hbRequestFreshVenueLocation()">📍 Refresh My Location</button></div>
+    <div class="hb-contribute">
+      <div class="hb-contribute-head"><h3>👋 Help build How Busy?</h3><span class="hb-live-badge">ANONYMOUS</span></div>
+      <p>Tell us what the crowd looks like. Everyone can answer — Premium members get the deeper anonymous venue intelligence built from these answers.</p>
+      <div class="hb-answer-row">
+        <button class="hb-answer-btn" onclick="hbQuickCrowdAnswer('men')">👨 More Men</button>
+        <button class="hb-answer-btn" onclick="hbQuickCrowdAnswer('women')">👩 More Women</button>
+        <button class="hb-answer-btn" onclick="hbQuickCrowdAnswer('even')">⚖️ 50/50</button>
+      </div>
+      <div id="hbQuickAnswer" class="hb-free-note">You can answer for the venue you are currently at.</div>
+    </div>
+    <div class="hb-section-head"><h2>Venues Near You</h2><span>5 closest mapped venues</span></div><div id="hbClosestPubs"><div class="muted">Finding your location…</div></div>
+    <div class="hb-section-head"><h2>Where’s The Party At</h2><span>Live Newcastle ranking</span></div><div id="hbBusiestPubs"><div class="muted">Loading live venue activity…</div></div>
+  </div>${nav('home')}`);
+  hbRenderHomeRankings();
+}
+
+async function hbQuickCrowdAnswer(answer){
+  const box=document.getElementById('hbQuickAnswer');
+  if(!box)return;
+  const label=answer==='men'?'👨 More Men':answer==='women'?'👩 More Women':'⚖️ 50/50';
+  const venue=(typeof hbCurrentVenue!=='undefined' ? hbCurrentVenue : null) || (state&&state.venue ? state.venue : null);
+  if(!venue){ box.textContent='Open a venue and answer the crowd question there.'; return; }
+  box.textContent='Sending your anonymous answer…';
+  try{
+    const ok=await submitCrowdAnswerToSupabase(venue.id,answer);
+    box.textContent=ok?('✓ '+label+' recorded anonymously for '+(venue.name||'this venue')+'.'):'Could not send the answer. Try again.';
+  }catch(e){ box.textContent='Could not send the answer. Try again.'; }
+}
+
+function hbSetHomeFilter(filter,btn){
+  document.querySelectorAll('.hb-filter').forEach(x=>x.classList.remove('on')); if(btn)btn.classList.add('on');
+  hbRenderHomeRankings(filter);
+}
 
 function venueCard(v){
   return `<div class="card venue" onclick="venue(${JSON.stringify(v.id)})">
@@ -987,12 +1239,86 @@ function venueCard(v){
       <div><b>${escapeHtmlSafe(v.name||"Venue")}</b><div class="muted small">${escapeHtmlSafe(v.type||"Venue")} · ${escapeHtmlSafe(v.address||"")}</div></div>
       <div style="text-align:right"><div class="big">${Number(v.busy||0)}</div><div class="muted small">people now</div></div>
     </div>
-    <div style="margin-top:12px" class="small"><span class="green">● ${Number(v.busy||0)>75?"Very busy":Number(v.busy||0)>55?"Busy":"Moderate"}</span> · ${Number(v.m||0)}% men · ${Number(v.w||0)}% women</div>
+    <div style="margin-top:12px" class="small"><span class="green">● ${Number(v.busy||0)>75?"Very busy":Number(v.busy||0)>55?"Busy":"Moderate"}</span> · Anonymous crowd answers help build Premium Venue Intelligence</div>
   </div>`
 }
 
 function venuesPage(){frame(`<div class="screen"><div class="logo">Newcastle</div><p class="sub">Participating venues</p>${venues.map(v=>venueCard(v)).join('')}</div>${nav('venues')}`)}
-function venue(id){let v=venues.find(x=>x.id===id);if(!v)return;state.venue=v;frame(`<div class="screen"><button class="secondary" onclick="home()">← Back</button><div class="pill" style="margin-top:20px">${v.type}</div><h1>${v.name}</h1><p class="sub">${v.address}</p><div class="card"><div class="muted small">📍 VENUE DETECTION</div><b>${v.verified?((v.radius||10)+" m detection zone mapped"):"Waiting for venue location"}</b></div><div class="card" style="text-align:center"><div class="muted">LIVE CROWD</div><div class="big" style="font-size:62px">${v.busy}</div><div class="green">● ${v.busy>75?'Very busy':v.busy>55?'Busy':'Moderate'}</div></div><div class="card"><div class="row"><b>Live crowd mix</b><span class="pill">LIVE</span></div><p>${v.m}% men · ${v.w}% women</p><div class="notice">This is calculated from anonymous How Busy? users currently detected at or around the venue.</div></div><div class="card"><b>Relationship mix</b><p class="muted">Available in Premium live insights.</p>${state.premium?'<button class="action" onclick="premiumVenueDetailByName('+JSON.stringify(v.name)+')">View Premium live mix</button>':'<button class="action" onclick="premiumPaywall(\"Single / Taken + Male / Female\")">Unlock Premium</button>'}</div></div>${nav('venues')}`)}
+function venue(id){
+  let v=venues.find(x=>x.id===id);
+  if(!v)return;
+  state.venue=v;
+  window.hbCurrentVenue=v;
+  const premium=isPremium();
+  const busy=Number(v.busy||0);
+  const status=busy>=100?'Very busy':busy>=60?'Busy':busy>=25?'Moderate':'Quiet';
+  const statusClass=busy>=100?'very':busy<25?'quiet':'';
+  frame(`<div class="screen">
+    <button class="secondary" onclick="home()">← Back</button>
+    <div class="hb-brand" style="margin-top:18px"><div class="hb-brand-main"><div class="hb-beer">${hbVenueEmoji(v)}</div><div><div class="hb-brand-title" style="font-size:24px">How <span class="gold">Busy?</span></div><div class="hb-brand-sub">IS YOUR LOCAL VENUE</div></div></div></div>
+    <div class="pill" style="margin-top:16px">📍 NEWCASTLE VENUE</div>
+    <h1 style="margin-bottom:4px">${escapeHtmlSafe(v.name)}</h1>
+    <p class="sub">${escapeHtmlSafe(v.address||'')}</p>
+
+    <div class="hb-summary" style="margin-top:16px;grid-template-columns:1fr 1fr">
+      <div><div class="icon">👥</div><div class="num">${busy}</div><b>people out now</b><small>live anonymous presence</small></div>
+      <div><div class="icon">${status==='Very busy'?'🔥':status==='Busy'?'🟠':status==='Moderate'?'🟡':'🟢'}</div><div class="num" style="font-size:22px">${status}</div><b>venue activity</b><small>updated live</small></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>👋 What's the crowd like?</h2>
+      <p class="sub">Everyone can answer. Your response is anonymous and helps build the venue data.</p>
+      <div class="crowd-choice-buttons">
+        <button class="crowd-choice" onclick="submitVenueCrowdAnswer(${JSON.stringify(v.id)},'men')">👨 More Men</button>
+        <button class="crowd-choice" onclick="submitVenueCrowdAnswer(${JSON.stringify(v.id)},'women')">👩 More Women</button>
+        <button class="crowd-choice" onclick="submitVenueCrowdAnswer(${JSON.stringify(v.id)},'even')">⚖️ 50/50</button>
+      </div>
+      <div id="venueCrowdAnswer" class="crowd-answer" style="display:none"></div>
+    </div>
+
+    ${premium ? `<div id="venuePremiumLive"><div class="card"><div class="muted">Loading Premium venue intelligence…</div></div></div>` : `
+    <div class="card" style="border-color:#6e5d13;background:linear-gradient(145deg,#172a31,#0b1d29)">
+      <div class="row"><b>👑 Venue Intelligence</b><span class="pill">PREMIUM</span></div>
+      <p class="muted">Premium members can see the anonymous data built from everyone's answers:</p>
+      <div class="premium-stat-grid">
+        <div><span class="premium-stat-icon">💙</span><b>Single %</b><small>relationship mix</small></div>
+        <div><span class="premium-stat-icon">❤️</span><b>Taken %</b><small>relationship mix</small></div>
+        <div><span class="premium-stat-icon">♂️</span><b>Male %</b><small>gender mix</small></div>
+        <div><span class="premium-stat-icon">♀️</span><b>Female %</b><small>gender mix</small></div>
+      </div>
+      <button class="action" style="margin-top:12px" onclick="premiumVenueDetailById(${JSON.stringify(v.id)})">👑 View Premium Venue Intelligence →</button>
+    </div>`}
+
+    <div class="card">
+      <b>🔒 Privacy</b>
+      <p class="muted">Individual answers are never shown. How Busy? only uses anonymous, aggregated information to build venue intelligence.</p>
+    </div>
+  </div>${nav('home')}`);
+
+  if(premium){
+    loadPremiumDemographics(v.id).then(d=>{
+      const el=document.getElementById('venuePremiumLive');
+      if(el)el.innerHTML=renderPremiumDemographics(d);
+    });
+  }
+}
+
+async function submitVenueCrowdAnswer(venueId,answer){
+  const box=document.getElementById('venueCrowdAnswer');
+  if(!box)return;
+  const label=answer==='men'?'👨 More Men':answer==='women'?'👩 More Women':'⚖️ 50/50';
+  box.style.display='block';
+  box.innerHTML='<b>Sending your anonymous answer…</b>';
+  try{
+    const ok=await submitCrowdAnswerToSupabase(venueId,answer);
+    box.innerHTML=ok
+      ? `<b>✓ ${label} recorded</b><div class="muted small">Thanks — your anonymous answer is helping build How Busy? venue intelligence.</div>`
+      : '<b>Could not send your answer</b><div class="muted small">Please try again.</div>';
+  }catch(e){
+    box.innerHTML='<b>Could not send your answer</b><div class="muted small">Please try again.</div>';
+  }
+}
+
 function profile(){
   var relationship="";
   var gender="";
@@ -1006,10 +1332,12 @@ function profile(){
 
   frame(`<div class="screen">
     <div class="logo">How <span class="gold">Busy?</span></div>
+    <div class="muted small">Is Your Local Venue</div>
     <h1>Your Profile</h1>
 
     <div class="card">
       <h2>About you</h2>
+      <p class="muted">Your answers help create anonymous venue intelligence.</p>
 
       <p class="muted">Relationship</p>
       <div class="profile-answer">${relationshipAnswer}</div>
@@ -1025,21 +1353,17 @@ function profile(){
         <button class="choice-btn" onclick="changeGender('female')">♀️ Female</button>
       </div>
 
-      <p class="muted small" style="margin-top:12px">You can change these answers whenever they change.</p>
+      <p class="muted small" style="margin-top:12px">Your individual answers are never shown to other users. Premium subscribers see only anonymous aggregated venue data.</p>
+    </div>
+
+    <div class="premiumLock" style="margin-top:16px">
+      <b>🔒 Your profile intelligence is part of Premium</b>
+      <p class="sub" style="margin-top:7px">Your Single/Taken and Male/Female information is combined with anonymous venue activity and displayed to Premium customers in one Venue Intelligence section.</p>
+      <button class="action" type="button" onclick="premiumSinglesScreen()">View Premium Venue Intelligence</button>
     </div>
 
   </div>${nav("profile")}`);
 }
-
-
-
-
-
-
-
-
-
-
 
 async function changeRelationship(value){
   try{ localStorage.setItem("hbRelationship",value); }catch(e){}
@@ -1152,6 +1476,15 @@ async function premiumSinglesScreen(){
     <h1>⭐ Venue Intelligence</h1>
     <p class="sub">Live anonymous venue intelligence for Newcastle. See which venues have the strongest single/taken and male/female mix.</p>
     <div id="premiumRanking" class="card"><div class="muted">Loading live venue intelligence…</div></div>
+    <div class="card">
+      <div class="row"><b>👤 Your Profile</b><span class="pill">PRIVATE</span></div>
+      <p class="muted">Your profile choices are used to contribute to anonymous venue intelligence.</p>
+      <div class="premium-stat-grid">
+        <div><span class="premium-stat-icon">💙</span><b>${(localStorage.getItem("hbRelationship")==="single")?"Single":(localStorage.getItem("hbRelationship")==="taken")?"Taken":"—"}</b><small>Relationship</small></div>
+        <div><span class="premium-stat-icon">♂️♀️</span><b>${(localStorage.getItem("hbGender")==="male")?"Male":(localStorage.getItem("hbGender")==="female")?"Female":"—"}</b><small>Gender</small></div>
+      </div>
+      <p class="small muted" style="margin-top:12px">Your individual answers remain private. Only aggregated venue percentages are shown to Premium customers.</p>
+    </div>
     <div class="card"><b>🔐 Privacy first</b><p class="muted">Premium shows aggregated percentages only. No names, profiles, device IDs or individual answers are displayed.</p></div>
   </div>${nav("home")}`);
   const candidates=venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0)).slice(0,8);
@@ -1166,12 +1499,12 @@ async function premiumSinglesScreen(){
   if(!el)return;
   el.innerHTML=results.map((r,i)=>`<div class="card premium-venue-card" style="margin:8px 0">
     <div class="row"><div><b style="font-size:18px">${i<3?["🥇","🥈","🥉"][i]:"⭐"} ${escapeHtmlSafe(r.v.name)}</b><div class="muted small">${r.total} active now</div></div><div style="text-align:right"><div class="big">${r.total>=3?r.single+"%":"—"}</div><div class="muted small">single</div></div></div>
-    <button type="button" class="action" onclick="premiumVenueDetailById(${Number(r.v.id)})">View Single / Taken + Male / Female →</button>
+    <button type="button" class="action" onclick="premiumVenueDetailById(${JSON.stringify(r.v.id)})">View Single / Taken + Male / Female →</button>
   </div>`).join("") || `<div class="muted">No live venue data yet.</div>`;
 }
 
 function premiumVenueDetailById(id){
-  const v=venues.find(x=>Number(x.id)===Number(id));
+  const v=venues.find(x=>String(x.id)===String(id));
   if(!v){ premiumPaywall("Venue intelligence"); return; }
   premiumVenueDetail(v.name);
 }
@@ -1197,8 +1530,10 @@ async function premiumVenueDetail(name){
   if(el)el.innerHTML=renderPremiumDemographics(d);
 }
 
-// Start the visual app.
-welcome();
+// Start the visual app on the redesigned Home screen.
+// The Home screen is the app front page; location permission is requested by the
+// existing geofencing engine when needed.
+try{ home(); }catch(e){ console.error("Home screen failed to load",e); welcome(); }
 </script>
 </body>
 </html>

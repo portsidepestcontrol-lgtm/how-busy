@@ -352,7 +352,6 @@ function hbLoadVenueCoordinates(){
     try{
       const staticC=HB_STATIC_COORDS[v.id];
       if(staticC){
-        localStorage.removeItem('hbVenueCoords:'+v.id);
         v.lat=Number(staticC[0]);
         v.lon=Number(staticC[1]);
         v.verified=true;
@@ -360,11 +359,21 @@ function hbLoadVenueCoordinates(){
         return;
       }
       if(v.id==='sunnyside-tavern'){
-        localStorage.removeItem('hbVenueCoords:sunnyside-tavern');
         v.lat=-32.91433;
         v.lon=151.73247;
         v.verified=true;
         v.radius=50;
+        return;
+      }
+      const cached=localStorage.getItem('hbVenueCoords:'+v.id);
+      if(cached){
+        const c=JSON.parse(cached);
+        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lon))){
+          v.lat=Number(c.lat);
+          v.lon=Number(c.lon);
+          v.verified=true;
+          v.radius=50;
+        }
       }
     }catch(e){}
   });
@@ -383,15 +392,54 @@ async function hbGeocodeVenue(v){
     v.name+', '+v.address+', Australia',
     v.name+', '+String(v.address||'')
   ];
+
+  // 1) ArcGIS World Geocoder — strong street-address coverage.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const url='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+q+'&f=json&maxLocations=1';
+      const r=await fetch(url,{headers:{'Accept':'application/json'}});
+      if(r.ok){
+        const j=await r.json();
+        const a=j && j.candidates && j.candidates[0];
+        if(a && a.location && Number.isFinite(Number(a.location.y)) && Number.isFinite(Number(a.location.x))){
+          hbSaveVenueCoordinates(v,a.location.y,a.location.x);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+
+  // 2) Photon fallback.
   for(const raw of queries){
     try{
       const q=encodeURIComponent(raw);
       const r=await fetch('https://photon.komoot.io/api/?q='+q+'&limit=1',{headers:{'Accept':'application/json'}});
-      if(!r.ok) continue;
-      const j=await r.json();
-      const f=j && j.features && j.features[0];
-      const c=f && f.geometry && f.geometry.coordinates;
-      if(c && c.length>=2){ hbSaveVenueCoordinates(v,c[1],c[0]); return true; }
+      if(r.ok){
+        const j=await r.json();
+        const f=j && j.features && j.features[0];
+        const c=f && f.geometry && f.geometry.coordinates;
+        if(c && c.length>=2 && Number.isFinite(Number(c[0])) && Number.isFinite(Number(c[1]))){
+          hbSaveVenueCoordinates(v,c[1],c[0]);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+
+  // 3) OpenStreetMap Nominatim fallback. Keep this sequential to respect public-service limits.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json','Accept-Language':'en-AU'}});
+      if(r.ok){
+        const j=await r.json();
+        const a=j && j[0];
+        if(a && Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lon))){
+          hbSaveVenueCoordinates(v,Number(a.lat),Number(a.lon));
+          return true;
+        }
+      }
     }catch(e){}
   }
   return false;
@@ -407,7 +455,7 @@ async function hbGeocodeAllVenues(){
     while(queue.length){
       const v=queue.shift();
       if(!v) return;
-      await hbGeocodeVenue(v);
+      const mapped=await hbGeocodeVenue(v);
       done++;
       hbRenderNearbyVenues();
       if(typeof renderNewcastleVenues==='function' && selectedCity==='Newcastle' && done%5===0){ try{ renderNewcastleVenues(); }catch(e){} }
@@ -416,10 +464,22 @@ async function hbGeocodeAllVenues(){
     }
   }
   await Promise.all(Array.from({length:workers},worker));
+
+  // A second pass catches temporary geocoder failures without requiring the user to do anything.
+  const retry=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
+  for(const v of retry){
+    await hbGeocodeVenue(v);
+    await new Promise(r=>setTimeout(r,1000));
+  }
+
   venues.forEach(v=>{if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))){v.radius=50;v.verified=true;}});
   hbGeocodeRunning=false;
   const mapped=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
-  hbSetGpsStatus('Venue database: '+mapped+'/'+venues.length+' venues mapped · 50m geofence');
+  const missing=venues.length-mapped;
+  hbSetGpsStatus(missing ? 'Venue database: '+mapped+'/'+venues.length+' mapped · retrying '+missing+' remaining' : 'Venue database: '+mapped+'/'+venues.length+' venues mapped · 50m geofence');
+  if(missing){
+    setTimeout(()=>{ try{ hbGeocodeAllVenues(); }catch(e){} },30000);
+  }
 }
 function hbFindVenue(lat,lon){
   let nearest=null, nearestDistance=Infinity;
@@ -795,7 +855,8 @@ hbLoadVenueCoordinates();
 hbApplyStaticVenueCoordinates();
 
 // Resume venue detection silently after a reload when the user has already enabled location.
-setTimeout(()=>{ try{ startVenueGeofencing(); }catch(e){ console.warn('Venue detection start failed',e); } }, 800);
+setTimeout(()=>{ try{ hbLoadVenueCoordinates(); hbGeocodeAllVenues(); }catch(e){ console.warn('Venue mapping start failed',e); } }, 500);
+setTimeout(()=>{ try{ startVenueGeofencing(); }catch(e){ console.warn('Venue detection start failed',e); } }, 1200);
 
 let state={page:'welcome',relationship:localStorage.hbRel||'',crowd:localStorage.hbCrowd||'',venue:null,premium:localStorage.getItem('hbPremiumDemo')==='true'};
 
@@ -890,7 +951,7 @@ function renderNewcastleVenues(){
   html+='<button class="secondary" onclick="showCityMenu()">← City</button>';
   html+='<div class="city-hero">';
   html+='<div class="city-hero-top"><div style="display:flex;gap:11px;align-items:center"><div class="city-hero-icon">🏙️</div><div><h1>Newcastle</h1><p class="sub">Live local venue guide</p></div></div><span class="city-active">● LIVE</span></div>';
-  html+='<div class="city-stat-row"><div class="city-stat"><b>'+list.length+'</b><small>venues listed</small></div><div class="city-stat"><b>'+list.filter(v=>v.verified).length+'</b><small>mapped</small></div><div class="city-stat"><b>50 m</b><small>detection zone</small></div></div><button class="action" style="margin-top:12px" onclick="hbGeocodeAllVenues();toast(&quot;Mapping all Newcastle venues…&quot;)">📍 Map all venues</button>';
+  html+='<div class="city-stat-row"><div class="city-stat"><b>'+list.length+'</b><small>venues listed</small></div><div class="city-stat"><b>'+list.filter(v=>v.verified).length+'</b><small>mapped</small></div><div class="city-stat"><b>50 m</b><small>detection zone</small></div></div><button class="action" style="margin-top:12px" onclick="hbGeocodeAllVenues();toast(&quot;Mapping all Newcastle venues…&quot;)">📍 Map / verify all venues</button>';
   html+='</div>';
   html+='<div class="city-search-wrap"><span class="city-search-icon">🔍</span><input id="newcastleVenueSearch" class="search newcastleSearch" type="search" placeholder="Search venues, suburbs or types" value="'+escapeHtmlSafe(window.hbCitySearch||'')+'" oninput="filterNewcastleVenues(this.value)" autocomplete="off"></div>';
   html+='<div class="city-filters">'+categories.map(c=>'<button class="city-filter '+(cityVenueFilter===c?'on':'')+'" onclick="setCityVenueFilter(\"'+c+'\")">'+c+'</button>').join('')+'</div>';

@@ -133,6 +133,31 @@ body{background:linear-gradient(180deg,#03111d 0%,#061b2b 100%)}
 .city-menu-hero{text-align:center;margin-top:16px;padding:24px 18px;border:1px solid #17618b;border-radius:24px;background:linear-gradient(145deg,#0b2d46,#071c2d)}.city-menu-hero-icon{font-size:46px}.city-menu-hero h1{margin:10px 0 5px}.city-menu-hero p{margin:0}.city-menu-list{gap:9px}.city-menu-button{padding:15px 16px;border-radius:17px;background:linear-gradient(145deg,#102c41,#0b2233);border-color:#1d5577}.city-menu-button span{font-size:15px}.city-menu-button small{color:#7fa8ca;font-weight:900}.city-menu-button.selected{outline:2px solid #ffd51f;background:#132e3d}.city-menu-button.selected small{color:#ffd51f}
 @media(max-width:390px){.city-stat b{font-size:16px}.city-hero h1{font-size:25px}}
 </style>
+
+<style>
+/* V49 venue + premium polish */
+.venue-hero{background:linear-gradient(145deg,#14364b,#0e2433);border:1px solid #2c536c;border-radius:24px;padding:22px;margin-top:16px;box-shadow:0 14px 40px #0004}
+.venue-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.venue-icon{width:54px;height:54px;border-radius:16px;background:#1d4860;display:flex;align-items:center;justify-content:center;font-size:27px}
+.venue-title{font-size:30px;font-weight:950;line-height:1.05;margin:0}
+.live-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:#123d2b;color:#8ff0b9;font-size:12px;font-weight:900}
+.venue-big-count{text-align:center;padding:18px 0 8px}
+.venue-big-count b{display:block;font-size:64px;line-height:1;font-weight:950}
+.venue-big-count span{color:var(--muted);font-weight:700}
+.contribute-card{background:linear-gradient(145deg,#173b50,#102b3d);border:1px solid #2c536c;border-radius:22px;padding:20px;margin:14px 0}
+.contribute-title{font-size:20px;font-weight:900}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:15px}
+.answer-grid .crowd-choice{padding:14px 8px;font-size:14px;margin:0}
+.premium-hero{background:linear-gradient(145deg,#263a4b,#172b3a);border:1px solid #476176;border-radius:24px;padding:22px;margin-top:16px}
+.premium-badge{display:inline-flex;align-items:center;gap:7px;background:#2b3b49;border:1px solid #5a6b79;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}
+.premium-feature{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.09)}
+.premium-feature:last-child{border-bottom:0}
+.premium-feature-icon{font-size:22px;width:28px}
+.intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.intel-box{background:rgba(255,255,255,.055);border-radius:15px;padding:14px}
+.intel-box b{display:block;font-size:25px;margin-top:5px}
+@media(max-width:380px){.answer-grid{grid-template-columns:1fr}.venue-title{font-size:26px}}
+</style>
 </head>
 <body>
 <div id="root"></div>
@@ -1064,39 +1089,40 @@ function openVenueSafe(index){
   var v=list[index];
   if(!v) return;
   window.hbCurrentVenue=v;
-
   var name=escapeHtmlSafe(v.name||"Venue");
   var address=escapeHtmlSafe(v.address||"Address not available");
   var busy=Number(v.busy); if(!Number.isFinite(busy)) busy=0;
-
+  var cat=cityVenueCategory(v);
+  var emoji=hbVenueEmoji(v);
+  var status=hbBusyLabel(busy);
+  var mapped=v.verified && Number.isFinite(Number(v.lat)) && Number.isFinite(Number(v.lon));
   var html='<div class="screen">';
   html+='<button class="secondary" onclick="openNewcastleVenues()">← Newcastle venues</button>';
-  html+='<div class="pill" style="margin-top:20px">📍 NEWCASTLE VENUE</div>';
-  html+='<h1>'+name+'</h1>';
-  html+='<p class="muted">📍 '+address+'</p>';
+  html+='<div class="venue-hero">';
+  html+='<div class="venue-hero-top"><div style="display:flex;gap:13px;align-items:center"><div class="venue-icon">'+emoji+'</div><div><div class="pill">NEWCASTLE · '+escapeHtmlSafe(cat)+'</div><h1 class="venue-title" style="margin-top:9px">'+name+'</h1></div></div><span class="live-pill">● LIVE</span></div>';
+  html+='<p class="muted" style="margin:16px 0 0">📍 '+address+'</p>';
+  html+='<div class="venue-live-grid">';
+  html+='<div><div class="muted small">Crowd right now</div><b style="font-size:19px">'+status+'</b></div>';
+  html+='<div><div class="muted small">Detection</div><b style="font-size:19px">'+(mapped?'✓ 50m mapped':'Location pending')+'</b></div>';
+  html+='</div></div>';
 
-  html+='<div class="card">';
-  html+='<h2>Crowd</h2>';
-  html+='<p class="sub">What is the crowd mix right now?</p>';
-  html+='<div class="crowd-choice-buttons">';
+  html+='<div class="card venue-big-count"><div class="muted small">PEOPLE NOW</div><b>'+busy+'</b><span>anonymous active presence</span></div>';
+
+  html+='<div class="contribute-card"><div class="contribute-title">👥 What’s the crowd like?</div><p class="sub">Everyone can answer. Your answer is anonymous and helps build the venue picture.</p>';
+  html+='<div class="answer-grid">';
   html+='<button class="crowd-choice" onclick="setCrowdAnswer('+index+',\'men\')">👨 More Men</button>';
   html+='<button class="crowd-choice" onclick="setCrowdAnswer('+index+',\'women\')">👩 More Women</button>';
   html+='<button class="crowd-choice" onclick="setCrowdAnswer('+index+',\'even\')">⚖️ 50/50</button>';
+  html+='</div><div id="crowd-answer-'+index+'" class="crowd-answer" style="display:none"></div></div>';
+
+  html+='<div class="card"><div class="row"><div><b>📊 Basic venue activity</b><div class="muted small">Available to everyone</div></div><span class="pill">FREE</span></div><div class="intel-grid"><div class="intel-box"><div class="muted small">Live people</div><b>'+busy+'</b></div><div class="intel-box"><div class="muted small">Crowd level</div><b>'+status+'</b></div></div></div>';
+
+  html+='<div class="premium-hero"><div class="premium-badge">⭐ VENUE INTELLIGENCE · $4.99/MONTH</div><h2 style="margin:16px 0 8px">Want to know more than just busy?</h2><p class="sub">Premium turns anonymous answers into useful venue intelligence.</p>';
+  html+='<div class="premium-feature"><span class="premium-feature-icon">💕</span><div><b>Single / Taken mix</b><div class="muted small">See the anonymous relationship balance when enough data is available.</div></div></div>';
+  html+='<div class="premium-feature"><span class="premium-feature-icon">👥</span><div><b>Male / Female mix</b><div class="muted small">See the aggregated crowd balance — never individual profiles.</div></div></div>';
+  html+='<div class="premium-feature"><span class="premium-feature-icon">🔥</span><div><b>Venue trends</b><div class="muted small">Build toward the best times and patterns for each venue.</div></div></div>';
+  html+='<button class="action" onclick="premiumPaywall(\'Venue Intelligence at '+name.replace(/'/g,"\\'")+'\')">Unlock Venue Intelligence</button></div>';
   html+='</div>';
-  html+='<div id="crowd-answer-'+index+'" class="crowd-answer" style="display:none"></div>';
-  html+='</div>';
-
-  html+='<div class="card">';
-  html+='<div class="venue-live-grid">';
-  html+='<div><div class="muted small">How busy now</div><b>🟢 '+(busy>=80?"Very busy":busy>=55?"Busy":busy>=30?"Moderate":"Quiet")+'</b></div>';
-  html+='<div><div class="muted small">Estimated people</div><b>👥 '+busy+'</b></div>';
-  html+='</div></div>';
-
-  html+='<div class="card">';
-  html+='<h2>Venue Intelligence</h2>';
-  html+='<p>📊 Venue trends</p><p>🕐 Busy times by hour</p><p>📅 Historical crowd patterns</p><p>⭐ Premium insights</p>';
-  html+='</div></div>';
-
   frame(html);
 }
 
@@ -1472,19 +1498,24 @@ async function premiumVenueData(v){
 async function premiumSinglesScreen(){
   if(!isPremium()){ premiumPaywall("Venue Intelligence"); return; }
   frame(`<div class="screen"><button class="secondary" onclick="home()">← Back</button>
-    <div class="pill" style="margin-top:20px">PREMIUM · NEWCASTLE</div>
-    <h1>⭐ Venue Intelligence</h1>
-    <p class="sub">Live anonymous venue intelligence for Newcastle. See which venues have the strongest single/taken and male/female mix.</p>
-    <div id="premiumRanking" class="card"><div class="muted">Loading live venue intelligence…</div></div>
-    <div class="card">
-      <div class="row"><b>👤 Your Profile</b><span class="pill">PRIVATE</span></div>
-      <p class="muted">Your profile choices are used to contribute to anonymous venue intelligence.</p>
+    <div class="premium-hero">
+      <div class="premium-badge">⭐ PREMIUM · NEWCASTLE</div>
+      <h1 style="margin-top:16px">Venue Intelligence</h1>
+      <p class="sub">Your premium view of Newcastle nightlife — built from anonymous live venue activity.</p>
+      <div class="premium-feature"><span class="premium-feature-icon">🔥</span><div><b>What's hot now</b><div class="muted small">Rankings use live anonymous presence.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">💕</span><div><b>Singles intelligence</b><div class="muted small">See aggregated Single / Taken patterns where enough data exists.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">👥</span><div><b>Crowd balance</b><div class="muted small">See aggregated Male / Female percentages.</div></div></div>
+    </div>
+    <div class="card"><div class="row"><b>👤 Your Profile</b><span class="pill">PRIVATE</span></div>
+      <p class="muted">Your answers help build the intelligence but are never shown individually.</p>
       <div class="premium-stat-grid">
         <div><span class="premium-stat-icon">💙</span><b>${(localStorage.getItem("hbRelationship")==="single")?"Single":(localStorage.getItem("hbRelationship")==="taken")?"Taken":"—"}</b><small>Relationship</small></div>
         <div><span class="premium-stat-icon">♂️♀️</span><b>${(localStorage.getItem("hbGender")==="male")?"Male":(localStorage.getItem("hbGender")==="female")?"Female":"—"}</b><small>Gender</small></div>
       </div>
-      <p class="small muted" style="margin-top:12px">Your individual answers remain private. Only aggregated venue percentages are shown to Premium customers.</p>
     </div>
+    <div class="city-section-title"><h2>🔥 Best opportunities right now</h2><span>Live</span></div>
+    <div id="premiumRanking" class="card"><div class="muted">Loading live venue intelligence…</div></div>
+    <div class="card"><b>📈 Coming as data grows</b><p class="muted">Historical busy times, day-by-day patterns and best times to visit will appear as How Busy? collects enough anonymous activity.</p></div>
     <div class="card"><b>🔐 Privacy first</b><p class="muted">Premium shows aggregated percentages only. No names, profiles, device IDs or individual answers are displayed.</p></div>
   </div>${nav("home")}`);
   const candidates=venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0)).slice(0,8);
@@ -1492,14 +1523,14 @@ async function premiumSinglesScreen(){
   for(const v of candidates){
     const d=await loadPremiumDemographics(v.id);
     const total=d?Number(d.total_active)||0:0;
-    results.push({v,d,total,single:d?pct(d.single_count,total):0});
+    results.push({v,d,total,single:d?pct(d.single_count,total):0,male:d?pct(d.male_count,total):0});
   }
-  results.sort((a,b)=>b.single-a.single);
   const el=document.getElementById("premiumRanking");
   if(!el)return;
   el.innerHTML=results.map((r,i)=>`<div class="card premium-venue-card" style="margin:8px 0">
-    <div class="row"><div><b style="font-size:18px">${i<3?["🥇","🥈","🥉"][i]:"⭐"} ${escapeHtmlSafe(r.v.name)}</b><div class="muted small">${r.total} active now</div></div><div style="text-align:right"><div class="big">${r.total>=3?r.single+"%":"—"}</div><div class="muted small">single</div></div></div>
-    <button type="button" class="action" onclick="premiumVenueDetailById(${JSON.stringify(r.v.id)})">View Single / Taken + Male / Female →</button>
+    <div class="row"><div><b style="font-size:18px">${i<3?["🥇","🥈","🥉"][i]:"⭐"} ${escapeHtmlSafe(r.v.name)}</b><div class="muted small">${Number(r.v.busy||0)} people now</div></div><div style="text-align:right"><div class="big">${r.total>=3?r.single+"%":"—"}</div><div class="muted small">single</div></div></div>
+    ${r.total>=3?`<div class="intel-grid"><div class="intel-box"><div class="muted small">Single / Taken</div><b>${r.single}% / ${100-r.single}%</b></div><div class="intel-box"><div class="muted small">Male / Female</div><b>${r.male}% / ${100-r.male}%</b></div></div>`:`<div class="notice" style="margin-top:10px">🔐 Need at least 3 active anonymous users for demographic intelligence.</div>`}
+    <button type="button" class="action" onclick="premiumVenueDetailById(${JSON.stringify(r.v.id)})">View full venue intelligence →</button>
   </div>`).join("") || `<div class="muted">No live venue data yet.</div>`;
 }
 
@@ -1518,12 +1549,18 @@ function premiumVenueDetailByName(name){
 async function premiumVenueDetail(name){
   if(!isPremium()){ premiumPaywall("Venue intelligence"); return; }
   const v=venues.find(x=>x.name===name) || venues[0];
-  frame(`<div class="screen"><button class="secondary" onclick="premiumSinglesScreen()">← Back</button>
-    <div class="pill" style="margin-top:20px">PREMIUM VENUE PROFILE</div>
-    <h1>${escapeHtmlSafe(v.name)}</h1><p class="sub">${escapeHtmlSafe(v.address)}</p>
-    <div class="card" style="text-align:center"><div class="muted">LIVE NOW</div><div class="big" style="font-size:58px">${Number(v.busy||0)}</div><div class="green">● Live anonymous presence</div></div>
+  frame(`<div class="screen"><button class="secondary" onclick="premiumSinglesScreen()">← Venue Intelligence</button>
+    <div class="venue-hero">
+      <div class="venue-hero-top"><div style="display:flex;gap:13px;align-items:center"><div class="venue-icon">${hbVenueEmoji(v)}</div><div><div class="premium-badge">⭐ PREMIUM VENUE PROFILE</div><h1 class="venue-title" style="margin-top:10px">${escapeHtmlSafe(v.name)}</h1></div></div><span class="live-pill">● LIVE</span></div>
+      <p class="muted" style="margin:16px 0 0">📍 ${escapeHtmlSafe(v.address)}</p>
+    </div>
+    <div class="card venue-big-count"><div class="muted small">LIVE NOW</div><b>${Number(v.busy||0)}</b><span>anonymous active presence</span></div>
     <div id="premiumDemographics"><div class="card"><div class="muted">Loading live demographics…</div></div></div>
-    <div class="card"><b>📈 What Premium will build over time</b><p class="muted">As more anonymous activity is collected, How Busy? will show venue trends by time and day, including single/taken and male/female patterns.</p></div>
+    <div class="premium-hero"><div class="premium-badge">📈 BUILDING OVER TIME</div><h2 style="margin:16px 0 8px">More data = better decisions</h2><p class="sub">As How Busy? collects enough anonymous activity, this venue can develop:</p>
+      <div class="premium-feature"><span class="premium-feature-icon">🕐</span><div><b>Best times to visit</b><div class="muted small">See when this venue is typically busiest.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">📅</span><div><b>Historical patterns</b><div class="muted small">Compare days and times once enough history exists.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">🔥</span><div><b>Trending status</b><div class="muted small">See when activity is rising or falling.</div></div></div>
+    </div>
   </div>${nav("home")}`);
   const d=await loadPremiumDemographics(v.id);
   const el=document.getElementById("premiumDemographics");

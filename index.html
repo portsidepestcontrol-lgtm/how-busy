@@ -158,6 +158,15 @@ body{background:linear-gradient(180deg,#03111d 0%,#061b2b 100%)}
 .intel-box b{display:block;font-size:25px;margin-top:5px}
 @media(max-width:380px){.answer-grid{grid-template-columns:1fr}.venue-title{font-size:26px}}
 </style>
+
+<style>
+.data-trend-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end;height:150px;margin-top:16px}
+.data-trend-day{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.data-trend-bar-wrap{height:110px;width:100%;display:flex;align-items:flex-end;background:rgba(255,255,255,.035);border-radius:8px;overflow:hidden}
+.data-trend-bar{width:100%;min-height:3px;border-radius:7px 7px 0 0;background:var(--gold)}
+.data-trend-day b{font-size:10px}.data-trend-day small{font-size:10px;color:var(--muted)}
+.data-insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.data-insight{background:rgba(255,255,255,.05);border-radius:14px;padding:13px}.data-insight b{display:block;font-size:18px;margin-top:4px}
+</style>
 </head>
 <body>
 <div id="root"></div>
@@ -1546,6 +1555,41 @@ function premiumVenueDetailByName(name){
   premiumVenueDetail(v.name);
 }
 
+async function loadVenueHistory(venueId, days=7){
+  try{
+    const u=SUPABASE_URL+"/rest/v1/rpc/get_hb_venue_history";
+    const r=await fetchWithTimeout(u,{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_venue_id:String(venueId),p_days:Number(days)||7})},8000);
+    if(!r.ok){console.warn("Venue history unavailable",r.status,await r.text());return []}
+    const rows=await r.json();
+    return Array.isArray(rows)?rows:[];
+  }catch(e){console.warn("Venue history failed",e);return []}
+}
+function renderVenueHistory(rows){
+  if(!rows || !rows.length) return `<div class="card"><b>📈 Historical intelligence</b><p class="muted">Collecting the first venue history. Once activity builds, this will show the busiest days and times.</p></div>`;
+  const max=Math.max(1,...rows.map(r=>Number(r.avg_active)||0));
+  const totalSamples=rows.reduce((a,r)=>a+Number(r.samples||0),0);
+  const peak=rows.reduce((a,b)=>(Number(b.avg_active)||0)>(Number(a.avg_active)||0)?b:a,rows[0]);
+  return `<div class="card"><div class="row"><b>📈 Last 7 days</b><span class="pill">PREMIUM</span></div>
+    <p class="muted small">Average anonymous active presence by day. History starts building automatically from live venue activity.</p>
+    <div class="data-trend-grid">${rows.map(r=>{const n=Number(r.avg_active)||0;const h=Math.max(3,Math.round(n/max*100));return `<div class="data-trend-day"><div class="data-trend-bar-wrap"><div class="data-trend-bar" style="height:${h}%"></div></div><b>${escapeHtmlSafe(String(r.day_label||''))}</b><small>${n}</small></div>`}).join('')}</div>
+    <div class="data-insight-grid"><div class="data-insight"><span class="muted small">Peak day</span><b>${escapeHtmlSafe(String(peak.day_label||'—'))}</b></div><div class="data-insight"><span class="muted small">Data samples</span><b>${totalSamples}</b></div></div>
+  </div>`;
+}
+
+async function loadVenueCrowdTrend(venueId, days=7){
+  try{
+    const u=SUPABASE_URL+"/rest/v1/rpc/get_hb_crowd_trend";
+    const r=await fetchWithTimeout(u,{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_venue_id:String(venueId),p_days:Number(days)||7})},8000);
+    if(!r.ok)return [];
+    const rows=await r.json(); return Array.isArray(rows)?rows:[];
+  }catch(e){return []}
+}
+function renderCrowdTrend(rows){
+  if(!rows||!rows.length)return '';
+  const r=rows[0];
+  return `<div class="card"><div class="row"><b>⚖️ Crowd balance trend</b><span class="pill">PREMIUM</span></div><div class="data-insight-grid"><div class="data-insight"><span class="muted small">More Men</span><b>${Number(r.men_pct||0)}%</b></div><div class="data-insight"><span class="muted small">More Women</span><b>${Number(r.women_pct||0)}%</b></div></div><p class="small muted" style="margin-top:12px">Based on anonymous crowd answers from the selected period.</p></div>`;
+}
+
 async function premiumVenueDetail(name){
   if(!isPremium()){ premiumPaywall("Venue intelligence"); return; }
   const v=venues.find(x=>x.name===name) || venues[0];
@@ -1556,6 +1600,8 @@ async function premiumVenueDetail(name){
     </div>
     <div class="card venue-big-count"><div class="muted small">LIVE NOW</div><b>${Number(v.busy||0)}</b><span>anonymous active presence</span></div>
     <div id="premiumDemographics"><div class="card"><div class="muted">Loading live demographics…</div></div></div>
+    <div id="premiumHistory"><div class="card"><div class="muted">Loading historical intelligence…</div></div></div>
+    <div id="premiumCrowdTrend"></div>
     <div class="premium-hero"><div class="premium-badge">📈 BUILDING OVER TIME</div><h2 style="margin:16px 0 8px">More data = better decisions</h2><p class="sub">As How Busy? collects enough anonymous activity, this venue can develop:</p>
       <div class="premium-feature"><span class="premium-feature-icon">🕐</span><div><b>Best times to visit</b><div class="muted small">See when this venue is typically busiest.</div></div></div>
       <div class="premium-feature"><span class="premium-feature-icon">📅</span><div><b>Historical patterns</b><div class="muted small">Compare days and times once enough history exists.</div></div></div>
@@ -1565,6 +1611,12 @@ async function premiumVenueDetail(name){
   const d=await loadPremiumDemographics(v.id);
   const el=document.getElementById("premiumDemographics");
   if(el)el.innerHTML=renderPremiumDemographics(d);
+  const history=await loadVenueHistory(v.id,7);
+  const historyEl=document.getElementById("premiumHistory");
+  if(historyEl)historyEl.innerHTML=renderVenueHistory(history);
+  const crowdTrend=await loadVenueCrowdTrend(v.id,7);
+  const trendEl=document.getElementById("premiumCrowdTrend");
+  if(trendEl)trendEl.innerHTML=renderCrowdTrend(crowdTrend);
 }
 
 // Start the visual app on the redesigned Home screen.

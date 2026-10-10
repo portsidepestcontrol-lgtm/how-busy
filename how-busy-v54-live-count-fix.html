@@ -1,0 +1,1749 @@
+<!doctype html>
+<!-- How Busy? V54 - live count display and deployment diagnostics -->
+<html lang="en">
+<head>
+<meta name="how-busy-build" content="V54-live-count-display-fix">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How Busy? — V54 Live Counts</title>
+<style>
+:root{--bg:#08131d;--card:#102536;--card2:#143148;--line:#28465b;--text:#f4f7f9;--muted:#9eb1bf;--gold:#f5c451;--green:#45d483;--red:#ff6d72}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;padding-bottom:80px}.screen{min-height:100vh;padding:28px 20px}
+.logo{font-size:34px;font-weight:900;letter-spacing:-1px}.gold{color:var(--gold)}
+h1{font-size:30px;line-height:1.05;margin:22px 0 10px}.sub{color:var(--muted);line-height:1.55}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0}
+.action{border:0;background:var(--gold);color:#121a20;font-weight:900;border-radius:14px;padding:15px 18px;width:100%;cursor:pointer;margin-top:12px}
+.secondary{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:14px;padding:14px;width:100%;cursor:pointer;margin-top:10px}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#17364a;color:#b8d2e1;font-size:12px;font-weight:800}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}.muted{color:var(--muted)}
+.venue{cursor:pointer;transition:.15s}.venue:hover{transform:translateY(-1px);border-color:#41647d}
+.big{font-size:34px;font-weight:950}.green{color:var(--green)}.red{color:var(--red)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);background:#0b1c29;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:12px 6px;z-index:10}
+.nav button{background:none;border:0;color:var(--muted);font-size:12px}.nav button.active{color:var(--gold);font-weight:900}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.choice button{background:var(--card2);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:15px;font-weight:800;cursor:pointer}.choice button.on{border-color:var(--gold);box-shadow:0 0 0 2px #f5c45133}
+.notice{background:#17364a;border-radius:14px;padding:13px;font-size:13px;line-height:1.5}
+.small{font-size:12px}.nearby-list{min-height:80px}
+.map{height:230px;border-radius:20px;background:radial-gradient(circle at 30% 35%,#315a70 0 3px,transparent 4px),radial-gradient(circle at 72% 62%,#315a70 0 3px,transparent 4px),linear-gradient(135deg,#102736,#0b1c29);border:1px solid var(--line);position:relative;overflow:hidden}.pin{position:absolute;transform:translate(-50%,-50%);font-size:28px;cursor:pointer}
+
+.ranking-list{background:#102536;border:1px solid #28465b;border-radius:22px;padding:8px 16px;margin-bottom:8px}.rank-row{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.09);cursor:pointer}.rank-row:last-child{border-bottom:0}.rank-right{text-align:right;min-width:78px}.rank-right b{display:block;font-size:20px}.rank-right .muted{display:block}
+
+.premium-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.premium-stat-grid>div{background:#182b39;border-radius:14px;padding:14px;text-align:center}.premium-stat-grid b{display:block;font-size:28px;margin-top:4px}.premium-stat-grid small{display:block;color:#9fb0bd;margin-top:4px}.premium-stat-icon{font-size:24px}
+</style>
+
+
+
+<style>
+.premium-nav-item{cursor:pointer}
+.premium-nav-item span{display:block;font-size:18px;line-height:20px}
+.premium-nav-item small{display:block}
+</style>
+
+<style>
+#city-selector{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.city-btn{cursor:pointer;min-height:44px}
+.city-btn.on{outline:2px solid currentColor}
+@media(min-width:600px){#city-selector{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+
+<style>#city-selector-card{display:none!important}</style>
+
+<style>
+.city-menu-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.city-menu-button{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;padding:16px 18px;border:1px solid #28465b;border-radius:14px;background:#102536;color:inherit;cursor:pointer}
+.city-menu-button span{font-weight:700;font-size:16px}
+.city-menu-button small{opacity:.65;font-size:11px}
+.city-menu-button.selected{outline:2px solid currentColor}
+</style>
+<style>
+.venue-data-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+.venue-data-grid>div{padding:10px;border-radius:10px;background:rgba(255,255,255,.04)}
+</style><style>
+.venue-live-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.venue-live-grid>div{padding:14px;border-radius:12px;background:rgba(255,255,255,.05)}
+.live-number{display:block;margin-top:7px;font-size:18px}
+.crowd-answer{margin-top:12px}
+.crowd-result{font-size:25px;font-weight:800;margin:8px 0}
+</style><style>
+.crowd-choice-buttons{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+.crowd-choice{width:100%;padding:15px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:rgba(255,255,255,.06);color:inherit;font-size:16px;font-weight:700;cursor:pointer}
+.crowd-choice:hover,.crowd-choice.selected{outline:2px solid currentColor;background:rgba(255,255,255,.12)}
+.crowd-result{font-size:24px;font-weight:800;margin-top:8px}
+</style><style>
+.profile-answer{font-size:24px;font-weight:800;margin:10px 0}
+</style><style>
+.backend-status{position:fixed;left:18px;right:18px;bottom:92px;z-index:10001;padding:13px 15px;border-radius:12px;font-weight:800;text-align:center;box-shadow:0 8px 30px #0008}
+.backend-status.ok{background:#163b2b;color:#9ff0c0;border:1px solid #2c805a}
+.backend-status.bad{background:#432327;color:#ffd7da;border:1px solid #9b4b53}
+</style>
+<style>
+.newcastleSearch{
+  width:100% !important;
+  min-height:58px !important;
+  padding:17px 20px !important;
+  font-size:19px !important;
+  border-radius:17px !important;
+  margin:0 !important;
+}
+</style>
+
+<style>
+/* V40 detailed mobile redesign */
+:root{--hb-blue:#071a2a;--hb-blue2:#0b2940;--hb-line:#17618b;--hb-yellow:#ffd51f;--hb-cyan:#76b9ff}
+body{background:linear-gradient(180deg,#03111d 0%,#061b2b 100%)}
+.app{max-width:560px;background:linear-gradient(180deg,#061522,#071b2c);box-shadow:0 0 50px #0008}
+.screen{padding:20px 14px 105px}
+.hb-brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.hb-brand-main{display:flex;align-items:center;gap:10px}
+.hb-beer{font-size:31px;filter:drop-shadow(0 0 8px #ffd51f66)}
+.hb-brand-title{font-size:30px;font-weight:950;letter-spacing:-1.3px}.hb-brand-sub{font-size:11px;letter-spacing:2.2px;color:#86b9e8;font-weight:800;margin-top:1px}
+.hb-premium-chip{border:1px solid #ffd51f;border-radius:999px;padding:9px 13px;color:#ffd51f;font-weight:900;background:#10253a;box-shadow:0 0 14px #ffd51f2b;cursor:pointer;white-space:nowrap}
+.hb-hero-title{text-align:center;font-size:31px;line-height:1.05;margin:22px 0 4px;font-weight:950}.hb-hero-sub{text-align:center;color:#9bc4e9;font-size:16px;margin-bottom:15px}
+.hb-summary{border:1px solid #1974a5;background:linear-gradient(145deg,#0b2b43,#071d30);border-radius:22px;padding:16px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;box-shadow:0 10px 35px #0004}
+.hb-summary>div{padding:2px 8px;text-align:center;border-right:1px solid #ffffff22}.hb-summary>div:last-child{border-right:0}.hb-summary .icon{font-size:24px}.hb-summary .num{font-size:28px;font-weight:950;color:#ffd51f}.hb-summary b{display:block;font-size:12px}.hb-summary small{color:#9bc4e9;font-size:10px;line-height:1.25}
+.hb-filters{display:flex;gap:8px;overflow:auto;padding:12px 0 7px;scrollbar-width:none}.hb-filters::-webkit-scrollbar{display:none}.hb-filter{flex:0 0 auto;border:1px solid #15577e;background:#09243a;color:#9fc9ec;border-radius:999px;padding:11px 14px;font-weight:850;font-size:12px;cursor:pointer}.hb-filter.on{background:#ffd51f;color:#09131b;border-color:#ffd51f}
+.hb-section-head{display:flex;align-items:end;justify-content:space-between;margin:14px 3px 9px}.hb-section-head h2{font-size:21px;margin:0}.hb-section-head span{font-size:11px;color:#7fa8ca}
+.hb-venue-card{border:1px solid #17618b;background:linear-gradient(145deg,#0b2a42,#071d30);border-radius:21px;padding:13px;margin:10px 0;box-shadow:0 7px 22px #0005;position:relative;overflow:hidden}
+.hb-venue-top{display:grid;grid-template-columns:62px 1fr auto;gap:11px;align-items:center}.hb-venue-icon{width:62px;height:62px;border-radius:15px;background:linear-gradient(135deg,#174c6e,#0c2639);display:flex;align-items:center;justify-content:center;font-size:29px;border:1px solid #2c729b}.hb-venue-name{font-size:18px;font-weight:950}.hb-address{font-size:10px;color:#8fb5d5;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hb-mini-trend{width:54px;height:26px;display:flex;align-items:end;gap:2px}.hb-mini-trend i{display:block;width:4px;background:#1574a9;border-radius:3px 3px 0 0}.hb-mini-trend i:nth-child(1){height:7px}.hb-mini-trend i:nth-child(2){height:12px}.hb-mini-trend i:nth-child(3){height:9px}.hb-mini-trend i:nth-child(4){height:17px}.hb-mini-trend i:nth-child(5){height:22px}.hb-mini-trend i:nth-child(6){height:16px}.hb-mini-trend i:nth-child(7){height:25px}.hb-status{display:inline-flex;align-items:center;gap:5px;border:1px solid #d9b800;color:#ffd51f;background:#382f0730;border-radius:999px;padding:5px 9px;font-size:10px;font-weight:900;margin-top:7px}.hb-status.very{border-color:#ff5b66;color:#ff7a82;background:#5c182020}.hb-status.quiet{border-color:#507a9d;color:#8eb7d8}
+.hb-live-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}.hb-live-stat{padding:8px 7px;background:#ffffff08;border-radius:12px;text-align:center}.hb-live-stat .v{display:block;font-size:18px;font-weight:950}.hb-live-stat small{color:#8eafd0;font-size:9px}.hb-basic-lock{margin-top:9px;padding:10px 11px;border-radius:12px;background:#071522;border:1px dashed #285c7e;color:#86aaca;font-size:10px;line-height:1.35}.hb-intel{margin-top:10px;background:#ffd51f;color:#111a20;border:0;border-radius:13px;padding:12px;width:100%;font-weight:950;cursor:pointer}
+.hb-premium-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.hb-premium-stat{background:#ffffff09;border-radius:11px;padding:8px;text-align:center}.hb-premium-stat b{font-size:17px}.hb-premium-stat small{display:block;color:#8eafd0;font-size:9px}.hb-crowd{margin-top:9px;border-top:1px solid #ffffff14;padding-top:8px;font-size:11px}.hb-crowd strong{color:#ffd51f}.hb-arrow{font-size:22px;color:#83bce8;cursor:pointer}
+.hb-location{margin:8px 0 2px}.hb-location button{border:1px solid #285c7e;background:#09243a;color:#d9ecff;border-radius:12px;padding:10px 12px;width:100%;font-weight:850;cursor:pointer}
+@media(max-width:390px){.hb-summary .num{font-size:23px}.hb-hero-title{font-size:27px}.hb-venue-top{grid-template-columns:54px 1fr auto}.hb-venue-icon{width:54px;height:54px}}
+</style>
+
+<style>
+/* V41 polish */
+.hb-contribute{margin:14px 0;border:1px solid #1b6b91;background:linear-gradient(145deg,#0d3048,#081d2e);border-radius:20px;padding:15px;box-shadow:0 8px 24px #0004}
+.hb-contribute-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.hb-contribute h3{margin:0;font-size:17px}.hb-contribute p{margin:6px 0 12px;color:#9fc0d8;font-size:12px;line-height:1.45}
+.hb-answer-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.hb-answer-btn{border:1px solid #285c7e;background:#09243a;color:#e7f3ff;border-radius:12px;padding:10px 5px;font-size:11px;font-weight:900;cursor:pointer}.hb-answer-btn:active{transform:scale(.98)}
+.hb-free-note{font-size:10px;color:#789bb5;margin-top:9px}.hb-live-badge{display:inline-flex;align-items:center;gap:5px;border:1px solid #2b7d5a;color:#75e3a9;background:#0b3023;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900}
+.hb-section-head h2{letter-spacing:-.3px}.hb-venue-card{transition:transform .16s ease,box-shadow .16s ease}.hb-venue-card:active{transform:scale(.992)}
+.hb-summary>div{min-width:0}.hb-summary .num{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+
+<style>
+/* V43 City redesign */
+.city-hero{margin-top:18px;padding:20px;border:1px solid #17618b;border-radius:24px;background:linear-gradient(145deg,#0b2d46,#071c2d);box-shadow:0 10px 30px #0005}
+.city-hero-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.city-hero-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#102f46;border:1px solid #2a6d94;font-size:27px}.city-hero h1{font-size:28px;margin:0}.city-hero p{margin:4px 0 0}.city-active{display:inline-flex;align-items:center;gap:6px;color:#75e3a9;font-size:11px;font-weight:900;border:1px solid #2b7d5a;background:#0b3023;border-radius:999px;padding:7px 9px;white-space:nowrap}
+.city-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:15px}.city-stat{background:#ffffff08;border-radius:13px;padding:10px;text-align:center}.city-stat b{display:block;font-size:18px}.city-stat small{color:#8fb5d5;font-size:9px}
+.city-search-wrap{position:relative;margin:14px 0 10px}.city-search-wrap .search{padding-left:46px!important}.city-search-icon{position:absolute;left:17px;top:50%;transform:translateY(-50%);font-size:20px;z-index:2}
+.city-filters{display:flex;gap:7px;overflow:auto;padding:3px 0 8px;scrollbar-width:none}.city-filters::-webkit-scrollbar{display:none}.city-filter{flex:0 0 auto;border:1px solid #15577e;background:#09243a;color:#9fc9ec;border-radius:999px;padding:9px 13px;font-size:11px;font-weight:900}.city-filter.on{background:#ffd51f;color:#09131b;border-color:#ffd51f}
+.city-section-title{display:flex;justify-content:space-between;align-items:end;margin:14px 2px 8px}.city-section-title h2{margin:0;font-size:20px}.city-section-title span{font-size:10px;color:#789fbd}
+.city-venue-card{border:1px solid #17618b;background:linear-gradient(145deg,#0b2a42,#071d30);border-radius:20px;padding:14px;margin:9px 0;box-shadow:0 7px 20px #0004}.city-venue-head{display:grid;grid-template-columns:46px 1fr auto;gap:10px;align-items:center}.city-venue-icon{width:46px;height:46px;border-radius:13px;background:#10334b;border:1px solid #2a6d94;display:flex;align-items:center;justify-content:center;font-size:22px}.city-venue-name{font-weight:950;font-size:16px}.city-venue-address{font-size:10px;color:#8fb5d5;margin-top:3px;line-height:1.3}.city-arrow{font-size:22px;color:#83bce8}.city-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.city-tag{font-size:9px;font-weight:900;color:#a9c8df;background:#ffffff08;border:1px solid #285c7e;border-radius:999px;padding:5px 8px}.city-tag.live{color:#75e3a9;border-color:#2b7d5a;background:#0b3023}.city-tag.mapped{color:#ffd51f;border-color:#8d7912}.city-empty{padding:22px;text-align:center;border:1px dashed #285c7e;border-radius:18px;color:#8faec6;background:#ffffff05}
+.city-menu-hero{text-align:center;margin-top:16px;padding:24px 18px;border:1px solid #17618b;border-radius:24px;background:linear-gradient(145deg,#0b2d46,#071c2d)}.city-menu-hero-icon{font-size:46px}.city-menu-hero h1{margin:10px 0 5px}.city-menu-hero p{margin:0}.city-menu-list{gap:9px}.city-menu-button{padding:15px 16px;border-radius:17px;background:linear-gradient(145deg,#102c41,#0b2233);border-color:#1d5577}.city-menu-button span{font-size:15px}.city-menu-button small{color:#7fa8ca;font-weight:900}.city-menu-button.selected{outline:2px solid #ffd51f;background:#132e3d}.city-menu-button.selected small{color:#ffd51f}
+@media(max-width:390px){.city-stat b{font-size:16px}.city-hero h1{font-size:25px}}
+</style>
+
+<style>
+/* V49 venue + premium polish */
+.venue-hero{background:linear-gradient(145deg,#14364b,#0e2433);border:1px solid #2c536c;border-radius:24px;padding:22px;margin-top:16px;box-shadow:0 14px 40px #0004}
+.venue-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.venue-icon{width:54px;height:54px;border-radius:16px;background:#1d4860;display:flex;align-items:center;justify-content:center;font-size:27px}
+.venue-title{font-size:30px;font-weight:950;line-height:1.05;margin:0}
+.live-pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 10px;background:#123d2b;color:#8ff0b9;font-size:12px;font-weight:900}
+.venue-big-count{text-align:center;padding:18px 0 8px}
+.venue-big-count b{display:block;font-size:64px;line-height:1;font-weight:950}
+.venue-big-count span{color:var(--muted);font-weight:700}
+.contribute-card{background:linear-gradient(145deg,#173b50,#102b3d);border:1px solid #2c536c;border-radius:22px;padding:20px;margin:14px 0}
+.contribute-title{font-size:20px;font-weight:900}
+.answer-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:15px}
+.answer-grid .crowd-choice{padding:14px 8px;font-size:14px;margin:0}
+.premium-hero{background:linear-gradient(145deg,#263a4b,#172b3a);border:1px solid #476176;border-radius:24px;padding:22px;margin-top:16px}
+.premium-badge{display:inline-flex;align-items:center;gap:7px;background:#2b3b49;border:1px solid #5a6b79;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:900}
+.premium-feature{display:flex;gap:12px;align-items:flex-start;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.09)}
+.premium-feature:last-child{border-bottom:0}
+.premium-feature-icon{font-size:22px;width:28px}
+.intel-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.intel-box{background:rgba(255,255,255,.055);border-radius:15px;padding:14px}
+.intel-box b{display:block;font-size:25px;margin-top:5px}
+@media(max-width:380px){.answer-grid{grid-template-columns:1fr}.venue-title{font-size:26px}}
+</style>
+
+<style>
+.data-trend-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;align-items:end;height:150px;margin-top:16px}
+.data-trend-day{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}
+.data-trend-bar-wrap{height:110px;width:100%;display:flex;align-items:flex-end;background:rgba(255,255,255,.035);border-radius:8px;overflow:hidden}
+.data-trend-bar{width:100%;min-height:3px;border-radius:7px 7px 0 0;background:var(--gold)}
+.data-trend-day b{font-size:10px}.data-trend-day small{font-size:10px;color:var(--muted)}
+.data-insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.data-insight{background:rgba(255,255,255,.05);border-radius:14px;padding:13px}.data-insight b{display:block;font-size:18px;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const root=document.getElementById('root');
+
+const SUPABASE_URL = "https://muabpzculmygamxanqzq.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_fWxLAiiN658fOlsCdiCZpQ_UFfIaJua";
+
+function hbDeviceId(){
+  let id=localStorage.getItem("hb_device_id");
+  if(!id){
+    if(window.crypto && crypto.randomUUID) id=crypto.randomUUID();
+    else id="hb_"+Date.now()+"_"+Math.random().toString(36).slice(2);
+    localStorage.setItem("hb_device_id",id);
+  }
+  return id;
+}
+
+async function supabaseRequest(path, options={}){
+  const headers=Object.assign({
+    "apikey":SUPABASE_ANON_KEY,
+    "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+    "Content-Type":"application/json"
+  }, options.headers||{});
+  const res=await fetch(SUPABASE_URL+path,Object.assign({},options,{headers}));
+  const text=await res.text();
+  let data=null;
+  try{ data=text?JSON.parse(text):null; }catch(e){ data=text; }
+  if(!res.ok) throw new Error((data&&data.message)||"Supabase error "+res.status);
+  return data;
+}
+
+function backendStatus(message, ok=true){
+  const old=document.getElementById("backend-status");
+  if(old) old.remove();
+  const el=document.createElement("div");
+  el.id="backend-status";
+  el.className="backend-status "+(ok?"ok":"bad");
+  el.textContent=message;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),2800);
+}
+
+async function saveProfileToSupabase(){
+  const relationship=localStorage.getItem("hbRelationship")||null;
+  const gender=localStorage.getItem("hbGender")||null;
+  if(!relationship && !gender){
+    backendStatus("Choose Single/Taken or Male/Female first.",false);
+    return;
+  }
+  try{
+    await supabaseRequest("/rest/v1/rpc/save_hb_profile", {
+      method:"POST",
+      body:JSON.stringify({
+        p_device_id:hbDeviceId(),
+        p_relationship_status:relationship,
+        p_gender:gender
+      })
+    });
+    backendStatus("✓ Profile answer saved");
+  }catch(e){
+    console.error("Profile save failed",e);
+    backendStatus("Server save failed: "+(e.message||"unknown error"),false);
+  }
+}
+
+async function submitCrowdAnswerToSupabase(venueId, answer){
+  try{
+    await supabaseRequest("/rest/v1/rpc/submit_hb_crowd_report", {
+      method:"POST",
+      body:JSON.stringify({
+        p_device_id:hbDeviceId(),
+        p_venue_id:String(venueId),
+        p_crowd_mix:answer
+      })
+    });
+    backendStatus("✓ Crowd answer sent");
+    return true;
+  }catch(e){
+    console.error("Crowd report failed",e);
+    backendStatus("Crowd upload failed: "+(e.message||"unknown error"),false);
+    return false;
+  }
+}
+
+
+const venues=[{"id":"the-lucky-hotel","name":"The Lucky Hotel","type":"Pub/Bar","address":"237 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"clarendon-hotel","name":"Clarendon Hotel","type":"Pub/Bar","address":"347 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"great-northern-hotel","name":"Great Northern Hotel","type":"Pub","address":"83-89 Scott St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"honeysuckle-hotel","name":"Honeysuckle Hotel","type":"Pub/Bar","address":"Lee Wharf C, Lot 31 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"customs-house-hotel","name":"Customs House Hotel","type":"Pub/Bar","address":"1 Bond St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"crown-anchor-hotel","name":"Crown & Anchor Hotel","type":"Pub","address":"189 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"george-darby-hotel","name":"George Darby Hotel","type":"Pub/Bar","address":"21 Darby St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-ship-inn","name":"The Ship Inn","type":"Pub/Bar","address":"102 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"newcastle-club","name":"Newcastle Club","type":"Club","address":"40 Newcomen St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"united-service-club-newcastle","name":"United Service Club Newcastle","type":"Club","address":"55 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"coal-cedar","name":"Coal & Cedar","type":"Bar","address":"380/382 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"granddad-s-bar-experience","name":"Granddad's Bar Experience","type":"Bar","address":"515 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-koutetsu","name":"The Koutetsu","type":"Bar","address":"555 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wests-city","name":"Wests City","type":"Club","address":"King St & Union St, Newcastle West NSW 2302","lat":-32.9285049,"lon":151.7665557,"radius":50,"verified":true,"active":false},{"id":"king-st-hotel","name":"King St Hotel","type":"Pub","address":"15 Steel St, Newcastle West NSW 2302","lat":-32.9277697,"lon":151.7642007,"radius":50,"verified":true,"active":false},{"id":"the-family-hotel","name":"The Family Hotel","type":"Pub","address":"635 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bar-petite","name":"Bar Petite","type":"Bar","address":"Unit 5/5 King St, Newcastle NSW 2300","lat":-32.9291171,"lon":151.7849931,"radius":50,"verified":true,"active":false},{"id":"blue-kahunas","name":"Blue Kahunas","type":"Bar","address":"Unit 3/146 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"ginger-meg-s","name":"Ginger Meg's","type":"Bar","address":"212 King St, Newcastle NSW 2300","lat":-32.9269,"lon":151.77539,"radius":50,"verified":true,"active":false},{"id":"moneypenny","name":"MoneyPenny","type":"Bar","address":"1 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"battlesticks","name":"Battlesticks","type":"Live Music/Bar","address":"200 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"charlies-rooftop","name":"Charlies Rooftop","type":"Bar","address":"Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"exchange-hotel","name":"Exchange Hotel","type":"Pub/Bar","address":"125 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"kent-hotel","name":"Kent Hotel","type":"Pub/Bar","address":"59 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"hamilton-station-hotel","name":"Hamilton Station Hotel","type":"Pub/Bar","address":"2/6 Beaumont St, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"greenroof-hotel","name":"Greenroof Hotel","type":"Pub/Bar","address":"71 Tudor St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bennett-hotel","name":"Bennett Hotel","type":"Pub/Bar","address":"146 Denison St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"good-folk-brewing","name":"Good Folk Brewing","type":"Brewery","address":"80 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"sydney-junction-hotel","name":"Sydney Junction Hotel","type":"Pub/Bar","address":"8 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"blind-monk","name":"Blind Monk","type":"Bar/Brewery","address":"Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"maryville-tavern","name":"Maryville Tavern","type":"Pub","address":"71 Lewis St, Maryville NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"seven-seas-hotel","name":"Seven Seas Hotel","type":"Pub","address":"33 Cowper St N, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"young-street-hotel","name":"Young Street Hotel","type":"Pub","address":"132 Young St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"criterion-pub-kitchen","name":"Criterion Pub & Kitchen","type":"Pub","address":"81 Bourke St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"stag-hunter-hotel","name":"Stag & Hunter Hotel","type":"Pub","address":"187 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"beauford-hotel","name":"Beauford Hotel","type":"Pub","address":"39 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mayfield-hotel","name":"Mayfield Hotel","type":"Pub","address":"117 Maitland Rd, Mayfield NSW 2304","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oak-tighes-hill","name":"Oak Tighes Hill","type":"Pub","address":"207 Maitland Rd, Tighes Hill NSW 2297","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"albion-hotel","name":"Albion Hotel","type":"Pub","address":"72 Hannell St, Wickham NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lass-o-gowrie-hotel","name":"Lass O'Gowrie Hotel","type":"Pub/Live Music","address":"14 Railway St, Wickham NSW 2293","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wickham-park-hotel","name":"Wickham Park Hotel","type":"Pub/Live Music","address":"61 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"premier-hotel","name":"Premier Hotel","type":"Pub","address":"1 Brunker Rd, Broadmeadow NSW 2292","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"sunnyside-tavern","name":"Sunnyside Tavern","type":"Pub","address":"20 Broadmeadow Rd, Broadmeadow NSW 2292","lat":-32.91433,"lon":151.73247,"radius":50,"verified":true,"active":false},{"id":"gates-hotel","name":"Gates Hotel","type":"Pub","address":"660 Glebe Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"nags-head-hotel","name":"Nags Head Hotel","type":"Pub","address":"272 Brunker Rd, Adamstown NSW 2289","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"general-roberts-hotel","name":"General Roberts Hotel","type":"Pub","address":"102 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"duke-of-wellington","name":"Duke of Wellington","type":"Pub","address":"69 Regent St, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"blackbutt-hotel","name":"Blackbutt Hotel","type":"Pub","address":"80 Orchardtown Rd, New Lambton NSW 2305","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lambton-park-hotel","name":"Lambton Park Hotel","type":"Pub","address":"19A Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"northumberland-hotel","name":"Northumberland Hotel","type":"Pub","address":"85 Elder St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"flamingos-live","name":"Flamingos Live","type":"Live Music Venue","address":"31 Morehead St, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"grainfed-brewing-company","name":"Grainfed Brewing Company","type":"Brewery","address":"1/52 Young Rd, Lambton NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"town-hall-hotel","name":"Town Hall Hotel","type":"Pub","address":"29 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"royal-hotel-waratah","name":"Royal Hotel Waratah","type":"Pub","address":"72 Station St, Waratah NSW 2298","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"shorty-hotel","name":"Shorty Hotel","type":"Pub","address":"269 Sandgate Rd, Shortland NSW 2307","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"hotel-jesmond","name":"Hotel Jesmond","type":"Pub","address":"184 Newcastle Rd & 1 Blue Gum Rd, Jesmond NSW 2299","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"colliery-inn-wallsend","name":"Colliery Inn Wallsend","type":"Pub","address":"87 Cowper St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lemon-grove-hotel","name":"Lemon Grove Hotel","type":"Pub","address":"112 Nelson St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"winners-circle-hotel","name":"Winners Circle Hotel","type":"Pub","address":"24 Kokera St, Wallsend NSW 2287","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mary-ellen-hotel","name":"Mary Ellen Hotel","type":"Pub","address":"51 Railway St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"prince-of-merewether","name":"Prince of Merewether","type":"Pub","address":"1 Morgan St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"beach-hotel","name":"Beach Hotel","type":"Pub","address":"99 Frederick St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oriental-hotel","name":"Oriental Hotel","type":"Pub","address":"53 Bull St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"commonwealth-hotel","name":"Commonwealth Hotel","type":"Pub","address":"1/35 Union St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"cricketers-arms-hotel","name":"Cricketers Arms Hotel","type":"Pub","address":"61 Bruce St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lowlands-bowling-club","name":"Lowlands Bowling Club","type":"Club","address":"98A Dawson St, Cooks Hill NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"junction-hotel","name":"Junction Hotel","type":"Pub","address":"204 Corlette St, The Junction NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bar-beach-bowling-club","name":"Bar Beach Bowling Club","type":"Club","address":"29 Kilgour Ave, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"merewether-surfhouse","name":"Merewether Surfhouse","type":"Bar/Restaurant","address":"5 Henderson Pde, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"modus-merewether","name":"Modus Merewether","type":"Brewery/Bar","address":"20 Merewether St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"earp-distilling-co","name":"Earp Distilling Co","type":"Distillery/Bar","address":"41 Darling St, Carrington NSW 2294","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"method-brewing","name":"Method Brewing","type":"Brewery","address":"18 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"grain-store-newcastle","name":"Grain Store Newcastle","type":"Bar/Pub","address":"64-66 Scott St, Newcastle East NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"queens-wharf-hotel","name":"Queens Wharf Hotel","type":"Pub","address":"Queens Wharf, 150 Wharf Rd, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-dockyard","name":"The Dockyard","type":"Pub","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mad-poet","name":"Mad Poet","type":"Bar","address":"537 Hunter St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"coyote","name":"Coyote","type":"Bar","address":"Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"peregrin","name":"Peregrin","type":"Bar/Restaurant","address":"Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"bartholomew-s","name":"Bartholomew's","type":"Bar/Restaurant","address":"145 King St, Newcastle NSW 2300","lat":-32.9274407,"lon":151.7779717,"radius":50,"verified":true,"active":false},{"id":"uptowns-bar","name":"Uptowns Bar","type":"Bar","address":"23 Watt St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"rooftop-at-qt","name":"Rooftop at QT","type":"Bar","address":"185 Hunter St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"junction-inn-hotel","name":"Junction Inn Hotel","type":"Pub","address":"The Junction NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"mattara-hotel","name":"Mattara Hotel","type":"Pub","address":"333 Charlestown Rd, Charlestown NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"central-leagues-charlestown","name":"Central Leagues Club","type":"Club","address":"8 Bula St, Charlestown NSW 2290","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"belmont-hotel","name":"Belmont Hotel","type":"Pub","address":"483 Pacific Hwy, Belmont NSW 2280","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"gunyah-hotel","name":"Gunyah Hotel","type":"Pub","address":"644 Pacific Hwy, Belmont NSW 2280","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lake-macquarie-tavern","name":"Lake Macquarie Tavern","type":"Pub/Bar","address":"66 Wilsons Rd, Mount Hutton NSW 2290","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"warners-bay-hotel","name":"Warners Bay Hotel","type":"Pub","address":"5 John St, Warners Bay NSW 2282","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"warners-at-the-bay","name":"Warners At The Bay","type":"Pub","address":"320 Hillsborough Rd, Warners Bay NSW 2282","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"pippis-at-the-point","name":"Pippi's At The Point Hotel","type":"Pub","address":"199 Main Rd, Speers Point NSW 2284","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"wests-cardiff","name":"Wests Cardiff","type":"Club","address":"18 Munibung Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"cardiff-rsl","name":"Cardiff RSL Club","type":"Club","address":"45 Macquarie Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"iron-horse-inn","name":"Iron Horse Inn","type":"Pub","address":"329 Main Rd, Cardiff NSW 2285","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"club-macquarie","name":"Club Macquarie","type":"Club","address":"458 Lake Rd, Argenton NSW 2284","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"lake-macquarie-hotel-motel","name":"Lake Macquarie Hotel-Motel","type":"Pub","address":"83 Dora St, Morisset NSW 2264","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"toronto-hotel","name":"Toronto Hotel","type":"Pub","address":"74 Victory Parade, Toronto NSW 2283","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"swansea-hotel","name":"The Swansea Hotel","type":"Pub","address":"196 Pacific Hwy, Swansea NSW 2281","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"orana-hotel","name":"The Orana Hotel","type":"Pub","address":"20 Pacific Hwy, Blacksmiths NSW 2281","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"happy-wombat","name":"The Happy Wombat","type":"Pub/Bar","address":"575 Hunter St, Newcastle West NSW 2302","lat":-32.9273196,"lon":151.7659215,"radius":50,"verified":true,"active":false},{"id":"northern-star-hotel","name":"Northern Star Hotel","type":"Pub/Bar","address":"112 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-den","name":"The Den","type":"Live Music","address":"2 Union St, Newcastle West NSW 2302","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"oceane-hotel","name":"Oceane Hotel","type":"Pub/Bar","address":"29 Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"honeysuckle-social","name":"Honeysuckle Social","type":"Bar","address":"Honeysuckle Dr, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"shout-brewing","name":"Shout Brewing","type":"Brewery","address":"21 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"foghorn-brewhouse","name":"Foghorn Brewhouse","type":"Brewery","address":"218 King St, Newcastle NSW 2300","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"newcastle-comedy-club","name":"Newcastle Comedy Club","type":"Live Music","address":"139 Maitland Rd, Islington NSW 2296","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"gallipoli-legion-club","name":"Gallipoli Legion Club","type":"Club","address":"96 Beaumont St, Hamilton NSW 2303","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"club-merewether","name":"Club Merewether","type":"Club","address":"5 Ocean St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"souths-merewether","name":"Souths Merewether","type":"Club","address":"46 Llewellyn St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false},{"id":"the-burwood-inn","name":"The Burwood Inn","type":"Pub","address":"77 Berner St, Merewether NSW 2291","lat":null,"lon":null,"radius":50,"verified":false,"active":false}];
+
+
+/* Verified seed coordinate: Sunnyside Tavern, 20 Broadmeadow Rd, Broadmeadow NSW 2292.
+   Source: OpenStreetMap-derived location reference. */
+
+// V25: locally bundled verified/checked coordinates for Newcastle + Lake Macquarie venues.
+// This prevents the Near You screen from depending on slow mobile geocoding.
+const HB_STATIC_COORDS={
+  "the-lucky-hotel":[-32.92669296,151.77720642],
+  "clarendon-hotel":[-32.927057,151.773229],
+  "great-northern-hotel":[-32.9272864369,151.784875331],
+  "honeysuckle-hotel":[-32.9251021,151.7692563],
+  "customs-house-hotel":[-32.9266007,151.7850935],
+  "crown-anchor-hotel":[-32.92666,151.77875],
+  "george-darby-hotel":[-32.9276518,151.7745756],
+  "queens-wharf-hotel":[-32.92575,151.78173],
+  "prince-of-merewether":[-32.93899,151.75429],
+  "beach-hotel":[-32.949299,151.75576],
+  "junction-hotel":[-32.938257,151.7603461],
+  "nags-head-hotel":[-32.93515,151.72553],
+  "premier-hotel":[-32.9252389,151.736967],
+  "sunnyside-tavern":[-32.91433,151.73247],
+  "happy-wombat":[-32.9273196,151.7659215],
+  "the-family-hotel":[-32.92706,151.76413],
+  "king-st-hotel":[-32.9277697,151.7642007],
+  "king-st-hotel":[-32.9277697,151.7642007],
+  "king-st-hotel":[-32.9277697,151.7642007],
+  "bar-petite":[-32.9291171,151.7849931],
+  "wests-city":[-32.9285049,151.7665557],
+  "grand-hotel":[-32.929835,151.782534],
+  "grain-store-newcastle":[-32.927475,151.7871857],
+  "kent-hotel":[-32.9209905,151.7476604],
+  "hamilton-station-hotel":[-32.9177273,151.7482448],
+  "greenroof-hotel":[-32.9246012,151.7493707],
+  "bennett-hotel":[-32.9246351,151.7439776],
+  "sydney-junction-hotel":[-32.9185363,151.7477705],
+  "albion-hotel":[-32.9215294,151.7599986],
+  "lass-o-gowrie-hotel":[-32.9222699,151.7560718],
+  "wickham-park-hotel":[-32.9183863,151.7508455],
+  "mary-ellen-hotel":[-32.9382895,151.7507199],
+  "oriental-hotel":[-32.9310982,151.7684874],
+  "commonwealth-hotel":[-32.93,151.7666667],
+  "cricketers-arms-hotel":[-32.931396,151.7687242],
+  "junction-inn-hotel":[-32.938257,151.7603461],
+  "gates-hotel":[-32.9334359,151.7212401],
+  "general-roberts-hotel":[-32.9219904,151.7153656],
+  "duke-of-wellington":[-32.9244888,151.713301],
+  "blackbutt-hotel":[-32.93458,151.70772],
+  "northumberland-hotel":[-32.9117395,151.708889],
+  "town-hall-hotel":[-32.9027692,151.7285382],
+  "royal-hotel-waratah":[-32.9026487,151.7263985],
+  "hotel-jesmond":[-32.9044507,151.690261],
+  "nags-head-hotel":[-32.93515,151.72553],
+  "stag-hunter-hotel":[-32.8973172,151.7367714],
+  "mayfield-hotel":[-32.8972126,151.7361304],
+  "lake-macquarie-hotel-motel":[-33.1084298,151.4873007],
+  "lake-macquarie-tavern":[-32.9855292,151.6734508],
+  "mattara-hotel":[-32.9608685,151.6961748],
+  "belmont-hotel":[-33.0313357,151.6612635],
+  "gunyah-hotel":[-33.0399507,151.6580964],
+  "warners-bay-hotel":[-32.9733179,151.6446862],
+  "warners-at-the-bay":[-32.9673342,151.656774],
+  "toronto-hotel":[-33.0121269,151.5960541],
+  "swansea-hotel":[-33.0903091,151.6377868],
+  "pippis-at-the-point":[-32.9647222,151.6225],
+  "wests-cardiff":[-32.9433182,151.6544368],
+  "iron-horse-inn":[-32.9396942,151.659693],
+  "orana-hotel":[-33.0771053,151.650292],
+  "club-macquarie":[-32.9413393,151.6234578],
+  "cardiff-rsl":[-32.9416597,151.6576083],
+  "central-leagues-charlestown":[-32.9723086,151.7047236]
+};
+function hbApplyStaticVenueCoordinates(){
+  for(const v of venues){
+    const c=HB_STATIC_COORDS[v.id];
+    if(c){v.lat=c[0];v.lon=c[1];v.verified=true;v.radius=50;}
+  }
+}
+hbApplyStaticVenueCoordinates();
+
+(function seedVerifiedVenueCoordinates(){
+  const v=venues.find(x=>x.id==='sunnyside-tavern');
+  if(v){
+    v.lat=-32.91433;
+    v.lon=151.73247;
+    v.radius=50;
+    v.verified=true;
+    v.active=true;
+  }
+})();
+
+/* =========================================================
+   HOW BUSY? — V27 — 50 METRE VENUE GEOFENCE ENGINE
+   - Standard radius: 50m for every participating venue.
+   - The nearest mapped venue wins when multiple 50m circles overlap.
+   - Coordinates are resolved from each venue address and cached locally.
+   - The phone performs the geofence calculation locally.
+   - Presence uploads contain only anonymous device + venue + expiry data;
+     raw GPS coordinates are NOT uploaded.
+========================================================= */
+const HB_GEOFENCE_RADIUS_METRES = 50;
+const HB_CLOSE_VENUE_RADIUS_METRES = 0;
+const HB_CLOSE_MIN_RADIUS_METRES = 50;
+const HB_CLOSE_MAX_RADIUS_METRES = 50;
+let hbGpsWatchId = null;
+let hbGpsRunning = false;
+let hbCurrentVenueId = null;
+let hbLastGps = null;
+let hbGeocodeRunning = false;
+let hbPresenceTimer = null;
+
+function hbDistanceMetres(lat1,lon1,lat2,lon2){
+  const R=6371000;
+  const p1=Number(lat1)*Math.PI/180, p2=Number(lat2)*Math.PI/180;
+  const dLat=(Number(lat2)-Number(lat1))*Math.PI/180;
+  const dLon=(Number(lon2)-Number(lon1))*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+
+function hbClamp(n,min,max){ return Math.max(min,Math.min(max,n)); }
+
+function hbVenueRadius(v){
+  return HB_GEOFENCE_RADIUS_METRES;
+}
+
+function hbLoadVenueCoordinates(){
+  venues.forEach(v=>{
+    try{
+      const staticC=HB_STATIC_COORDS[v.id];
+      if(staticC){
+        v.lat=Number(staticC[0]);
+        v.lon=Number(staticC[1]);
+        v.verified=true;
+        v.radius=50;
+        return;
+      }
+      if(v.id==='sunnyside-tavern'){
+        v.lat=-32.91433;
+        v.lon=151.73247;
+        v.verified=true;
+        v.radius=50;
+        return;
+      }
+      const cached=localStorage.getItem('hbVenueCoords:'+v.id);
+      if(cached){
+        const c=JSON.parse(cached);
+        if(Number.isFinite(Number(c.lat)) && Number.isFinite(Number(c.lon))){
+          v.lat=Number(c.lat);
+          v.lon=Number(c.lon);
+          v.verified=true;
+          v.radius=50;
+        }
+      }
+    }catch(e){}
+  });
+}
+
+function hbSaveVenueCoordinates(v,lat,lon){
+  v.lat=Number(lat); v.lon=Number(lon); v.verified=true;
+  v.radius=hbVenueRadius(v);
+  try{localStorage.setItem('hbVenueCoords:'+v.id,JSON.stringify({lat:v.lat,lon:v.lon,verified:true}));}catch(e){}
+}
+
+async function hbGeocodeVenue(v){
+  if(!v || !v.address || (Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))) return true;
+  const queries=[
+    v.address+', Australia',
+    v.name+', '+v.address+', Australia',
+    v.name+', '+String(v.address||'')
+  ];
+
+  // 1) ArcGIS World Geocoder — strong street-address coverage.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const url='https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+q+'&f=json&maxLocations=1';
+      const r=await fetch(url,{headers:{'Accept':'application/json'}});
+      if(r.ok){
+        const j=await r.json();
+        const a=j && j.candidates && j.candidates[0];
+        if(a && a.location && Number.isFinite(Number(a.location.y)) && Number.isFinite(Number(a.location.x))){
+          hbSaveVenueCoordinates(v,a.location.y,a.location.x);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+
+  // 2) Photon fallback.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const r=await fetch('https://photon.komoot.io/api/?q='+q+'&limit=1',{headers:{'Accept':'application/json'}});
+      if(r.ok){
+        const j=await r.json();
+        const f=j && j.features && j.features[0];
+        const c=f && f.geometry && f.geometry.coordinates;
+        if(c && c.length>=2 && Number.isFinite(Number(c[0])) && Number.isFinite(Number(c[1]))){
+          hbSaveVenueCoordinates(v,c[1],c[0]);
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+
+  // 3) OpenStreetMap Nominatim fallback. Keep this sequential to respect public-service limits.
+  for(const raw of queries){
+    try{
+      const q=encodeURIComponent(raw);
+      const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q='+q,{headers:{'Accept':'application/json','Accept-Language':'en-AU'}});
+      if(r.ok){
+        const j=await r.json();
+        const a=j && j[0];
+        if(a && Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lon))){
+          hbSaveVenueCoordinates(v,Number(a.lat),Number(a.lon));
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+  return false;
+}
+
+function hbNormVenueName(s){
+  return String(s||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,' ').trim().replace(/\b(the|hotel|pub|bar|club|newcastle|nsw)\b/g,' ').replace(/\s+/g,' ').trim();
+}
+async function hbMapFromOpenStreetMap(){
+  try{
+    const q='[out:json][timeout:25];(nwr[\"name\"][\"amenity\"~\"pub|bar|nightclub|brewery|social_centre|community_centre|restaurant\"](-33.2,151.45,-32.75,151.9);nwr[\"name\"][\"leisure\"~\"dance|sports_centre|stadium\"](-33.2,151.45,-32.75,151.9););out center tags;';
+    const r=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(q),{headers:{'Accept':'application/json'}});
+    if(!r.ok)return 0;
+    const j=await r.json();
+    const rows=(j&&j.elements)||[];
+    let hits=0;
+    const byName=new Map();
+    rows.forEach(e=>{const n=hbNormVenueName(e.tags&&e.tags.name); if(!n)return; const lat=e.lat!=null?e.lat:(e.center&&e.center.lat), lon=e.lon!=null?e.lon:(e.center&&e.center.lon); if(Number.isFinite(Number(lat))&&Number.isFinite(Number(lon))){byName.set(n,{lat:Number(lat),lon:Number(lon)})}});
+    venues.forEach(v=>{
+      if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))return;
+      const key=hbNormVenueName(v.name);
+      const c=byName.get(key);
+      if(c){hbSaveVenueCoordinates(v,c.lat,c.lon);hits++;}
+    });
+    return hits;
+  }catch(e){console.warn('OSM venue sweep failed',e);return 0;}
+}
+
+async function hbGeocodeAllVenues(){
+  if(hbGeocodeRunning)return;
+  hbGeocodeRunning=true;
+  hbSetGpsStatus('Venue database: mapping all venues…');
+  // First use one local OSM sweep instead of making 100+ individual requests.
+  await hbMapFromOpenStreetMap();
+  let done=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
+  hbSetGpsStatus('Venue database: '+done+'/'+venues.length+' mapped · resolving remaining');
+  hbRenderNearbyVenues();
+  try{if(typeof renderNewcastleVenues==='function' && selectedCity==='Newcastle' && document.getElementById('cityVenueResults'))renderNewcastleVenues();}catch(e){}
+
+  // Resolve the remaining exact street addresses in parallel. The old build used one worker,
+  // which made a full Newcastle sweep take many minutes and caused mobile browsers to time out.
+  const queue=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
+  const workers=Math.min(6,Math.max(2,queue.length));
+  async function worker(){
+    while(queue.length){
+      const v=queue.shift(); if(!v)return;
+      await hbGeocodeVenue(v);
+      done++;
+      if(done%3===0){hbRenderNearbyVenues();try{if(typeof renderNewcastleVenues==='function'&&selectedCity==='Newcastle'&&document.getElementById('cityVenueResults'))renderNewcastleVenues();}catch(e){}}
+      hbSetGpsStatus('Venue database: '+Math.min(done,venues.length)+'/'+venues.length+' mapped');
+      await new Promise(r=>setTimeout(r,220));
+    }
+  }
+  await Promise.all(Array.from({length:workers},worker));
+
+  // Final retry with the venue name included, useful for POIs whose street address is not indexed.
+  const retry=venues.filter(v=>!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)));
+  for(const v of retry){
+    const original=v.address;
+    try{
+      const q=encodeURIComponent(v.name+', '+original+', Australia');
+      const r=await fetch('https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?SingleLine='+q+'&f=json&maxLocations=1',{headers:{'Accept':'application/json'}});
+      if(r.ok){const j=await r.json(),a=j&&j.candidates&&j.candidates[0];if(a&&a.location&&Number.isFinite(Number(a.location.y))&&Number.isFinite(Number(a.location.x)))hbSaveVenueCoordinates(v,a.location.y,a.location.x);}
+    }catch(e){}
+    await new Promise(r=>setTimeout(r,250));
+  }
+
+  venues.forEach(v=>{if(Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))){v.radius=50;v.verified=true;}});
+  hbGeocodeRunning=false;
+  const mapped=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon))).length;
+  const missing=venues.length-mapped;
+  hbSetGpsStatus(missing ? 'Venue database: '+mapped+'/'+venues.length+' mapped · '+missing+' need manual verification' : 'Venue database: '+venues.length+'/'+venues.length+' venues mapped · 50m geofence');
+  hbRenderNearbyVenues();
+  try{if(typeof renderNewcastleVenues==='function'&&selectedCity==='Newcastle'&&document.getElementById('cityVenueResults'))renderNewcastleVenues();}catch(e){}
+}
+function hbFindVenue(lat,lon){
+  let nearest=null, nearestDistance=Infinity;
+  for(const v of venues){
+    if(!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)))continue;
+    const radius=hbVenueRadius(v);
+    v.radius=radius;
+    const d=hbDistanceMetres(lat,lon,v.lat,v.lon);
+    if(d<=radius && d<nearestDistance){ nearest={venue:v,distance:d,radius}; nearestDistance=d; }
+  }
+  return nearest;
+}
+
+function hbDeviceId(){
+  let id=localStorage.getItem('hbDeviceId');
+  if(!id){ id='hb_'+crypto.randomUUID(); localStorage.setItem('hbDeviceId',id); }
+  return id;
+}
+
+async function hbRecordPresence(venueId){
+  if(!venueId) return {ok:false,stage:'venue',error:'Missing venue id'};
+  const deviceId=hbDeviceId();
+  const result={ok:false,deviceId,venueId:String(venueId),rpc:null,activity:null,error:null};
+
+  // Single authoritative path for the new venue-presence table.
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/record_hb_presence',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_device_id:deviceId,p_venue_id:String(venueId)})
+    });
+    const body=await r.text();
+    if(r.ok){ result.rpc={ok:true,status:r.status}; result.ok=true; }
+    else { result.rpc={ok:false,status:r.status,body}; result.error='Supabase RPC rejected the presence: HTTP '+r.status+(body?' · '+body:''); }
+  }catch(e){
+    result.rpc={ok:false,error:String(e&&e.message||e)};
+    result.error='Could not reach Supabase RPC: '+(e&&e.message||e);
+  }
+
+  // Compatibility write is retained so existing activity analytics can also see the venue.
+  if(hbLastGps && Number.isFinite(hbLastGps.lat) && Number.isFinite(hbLastGps.lon)){
+    try{
+      const lat=Math.round(hbLastGps.lat*1000)/1000;
+      const lon=Math.round(hbLastGps.lon*1000)/1000;
+      const r2=await fetch(SUPABASE_URL+'/rest/v1/activity_presence',{
+        method:'POST',
+        headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({session_id:deviceId,lat,lon,expires_at:new Date(Date.now()+15*60*1000).toISOString(),venue_id:String(venueId)})
+      });
+      const body2=await r2.text();
+      result.activity={ok:r2.ok,status:r2.status,body:body2};
+      // Do NOT mark authoritative presence successful from this legacy table.
+      // Live counts read hb_venue_presence, so only record_hb_presence may set result.ok.
+    }catch(e){ result.activity={ok:false,error:String(e&&e.message||e)}; }
+  }
+  return result;
+}
+
+function hbFormatPresenceResult(result, venueName){
+  if(result && result.ok) return '✓ '+venueName+' detected — presence sent to Supabase.';
+  const rpc=result && result.rpc;
+  if(rpc && rpc.status===404) return 'Venue detected, but Supabase does not have the record_hb_presence function. Run the geofence SQL once in Supabase.';
+  if(rpc && rpc.body) return 'Venue detected, but Supabase rejected the presence: '+rpc.body;
+  if(rpc && rpc.error) return 'Venue detected, but the live-count presence RPC could not connect: '+rpc.error;
+  if(result && result.activity && result.activity.ok===false && result.activity.body) return 'Live-count presence failed; legacy activity upload also failed: '+result.activity.body;
+  if(result && result.activity && result.activity.ok) return 'Legacy activity upload worked, but live-count presence failed. Check the record_hb_presence RPC error in the browser console.';
+  return 'Venue detected, but the live-count presence could not be sent to Supabase.';
+}
+async function hbStopPresence(venueId){
+  if(!venueId)return;
+  const deviceId=hbDeviceId();
+  // End the authoritative venue-presence record immediately.
+  try{
+    await fetch(SUPABASE_URL+'/rest/v1/rpc/leave_hb_presence',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_device_id:deviceId,p_venue_id:String(venueId)})
+    });
+  }catch(e){}
+  // Also end the legacy activity row immediately when the optional RPC exists.
+  try{
+    await fetch(SUPABASE_URL+'/rest/v1/rpc/leave_hb_activity_presence',{
+      method:'POST',
+      headers:{'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'},
+      body:JSON.stringify({p_device_id:deviceId,p_venue_id:String(venueId)})
+    });
+  }catch(e){}
+}
+
+async function hbRefreshLiveCountsNow(){
+  if(hbLiveRefreshBusy)return;
+  hbLiveRefreshBusy=true;
+  try{
+    await hbLoadLiveVenueCounts();
+    hbRenderHomeRankings();
+    hbRenderNearbyVenues();
+  }finally{
+    hbLiveRefreshBusy=false;
+  }
+}
+
+function hbStartLiveRefresh(){
+  if(hbLiveRefreshTimer)clearInterval(hbLiveRefreshTimer);
+  // Live venue counts refresh automatically while How Busy? is open.
+  hbLiveRefreshTimer=setInterval(()=>{ hbRefreshLiveCountsNow(); },15000);
+  hbRefreshLiveCountsNow();
+}
+
+function hbStopLiveRefresh(){
+  if(hbLiveRefreshTimer){clearInterval(hbLiveRefreshTimer);hbLiveRefreshTimer=null;}
+}
+
+function hbStartPresenceHeartbeat(){
+  if(hbPresenceTimer)clearInterval(hbPresenceTimer);
+  // Renew well before the 15-minute Supabase expiry. Safari can delay timers,
+  // so GPS updates and page visibility also call hbRenewPresence().
+  hbPresenceTimer=setInterval(()=>{ hbRenewPresence(); },2*60*1000);
+  hbRenewPresence();
+}
+async function hbRenewPresence(force=false){
+  if(!hbCurrentVenueId || hbPresenceBusy)return;
+  if(!force && Date.now()-hbLastPresenceSentAt < 90*1000)return;
+  hbPresenceBusy=true;
+  try{
+    const result=await hbRecordPresence(hbCurrentVenueId);
+    if(result && result.ok) hbLastPresenceSentAt=Date.now();
+    await hbRefreshLiveCountsNow();
+  }catch(e){
+    console.warn('Presence renewal failed',e);
+  }finally{
+    hbPresenceBusy=false;
+  }
+}
+
+
+function hbRenderNearbyVenues(){
+  const box=document.getElementById('hbNearbyVenues');
+  if(!box)return;
+  if(!hbLastGps || !Number.isFinite(hbLastGps.lat) || !Number.isFinite(hbLastGps.lon)){
+    box.innerHTML='<div class="muted" style="padding:18px 0">Finding your location and nearby pubs…</div>';
+    return;
+  }
+  const nearby=[];
+  for(const v of venues){
+    if(!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)))continue;
+    if(!/pub/i.test(String(v.type||'')))continue;
+    const d=hbDistanceMetres(hbLastGps.lat,hbLastGps.lon,v.lat,v.lon);
+    if(d<=10000) nearby.push({v,d});
+  }
+  nearby.sort((a,b)=>a.d-b.d);
+  if(!nearby.length){
+    box.innerHTML='<div class="muted" style="padding:18px 0">No mapped pubs found near your current location yet.</div>';
+    return;
+  }
+  box.innerHTML=nearby.slice(0,5).map(({v,d})=>{
+    // Only label a venue "AT VENUE" when this is a fresh GPS fix and the
+    // calculated distance is genuinely inside the 50m production fence.
+    const fresh=hbLastGps && (Date.now()-hbLastGps.at)<120000;
+    const inside=fresh && d<=hbVenueRadius(v);
+    const distance=d<1000?Math.round(d)+' m':(d/1000).toFixed(1)+' km';
+    return `<div class="card venue" style="margin:10px 0" onclick="venue(${JSON.stringify(v.id)})">
+      <div class="row"><div><b>${escapeHtmlSafe(v.name||'Venue')}</b><div class="muted small">${escapeHtmlSafe(v.type||'Pub')} · ${escapeHtmlSafe(v.address||'')}</div></div><div style="text-align:right"><b>${distance}</b><div class="muted small">${inside?'AT VENUE':'away'}</div></div></div>
+    </div>`;
+  }).join('');
+}
+
+function hbNormalizeVenueKey(value){
+  return String(value == null ? '' : value)
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/&/g,'and')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'');
+}
+
+function hbSetV54LiveStatus(message, ok){
+  const el=document.getElementById('hbV54LiveStatus');
+  if(!el)return;
+  el.textContent=message;
+  el.style.color=ok?'#baf7d0':'#ffe0e3';
+  el.style.borderColor=ok?'#3b9b70':'#b95b65';
+  el.style.background=ok?'#123b2b':'#482127';
+}
+
+function hbUnwrapLiveCountPayload(value){
+  let result=value;
+  for(let i=0;i<10;i++){
+    if(typeof result==='string'){
+      const s=result.trim();
+      if(!s)return {};
+      try{result=JSON.parse(s);continue;}catch(e){return {};}
+    }
+    if(Array.isArray(result)){
+      if(result.length===1){result=result[0];continue;}
+      const mapped={};
+      for(const row of result){
+        if(!row||typeof row!=='object')continue;
+        const id=row.venue_id??row.id??row.venue??row.name;
+        const count=row.people??row.count??row.active_count??row.total;
+        if(id!=null&&count!=null)mapped[String(id)]=count;
+      }
+      return mapped;
+    }
+    if(result&&typeof result==='object'){
+      if(Object.prototype.hasOwnProperty.call(result,'hb_active_presence_counts')){
+        result=result.hb_active_presence_counts;continue;
+      }
+      if(Object.prototype.hasOwnProperty.call(result,'counts')){
+        result=result.counts;continue;
+      }
+      if(Object.prototype.hasOwnProperty.call(result,'data')&&Object.keys(result).length<=3){
+        result=result.data;continue;
+      }
+      return result;
+    }
+    return {};
+  }
+  return result&&typeof result==='object'&&!Array.isArray(result)?result:{};
+}
+
+async function hbLoadLiveVenueCounts(){
+  try{
+    const rawResult=await supabaseRequest('/rest/v1/rpc/hb_active_presence_counts',{method:'POST',body:'{}'});
+    const counts=hbUnwrapLiveCountPayload(rawResult);
+    const indexedCounts=new Map();
+
+    for(const [key,value] of Object.entries(counts)){
+      const normalized=hbNormalizeVenueKey(key);
+      if(normalized)indexedCounts.set(normalized,value);
+    }
+
+    let totalMatched=0;
+    for(const v of venues){
+      const id=String(v.id==null?'':v.id).trim();
+      const candidates=[id,hbNormalizeVenueKey(id),hbNormalizeVenueKey(v.name)].filter(Boolean);
+      let raw,found=false;
+
+      for(const candidate of candidates){
+        if(Object.prototype.hasOwnProperty.call(counts,candidate)){
+          raw=counts[candidate];found=true;break;
+        }
+        const normalized=hbNormalizeVenueKey(candidate);
+        if(indexedCounts.has(normalized)){
+          raw=indexedCounts.get(normalized);found=true;break;
+        }
+      }
+
+      const n=raw===null||raw===undefined?0:Number(raw);
+      v.busy=found&&Number.isFinite(n)&&n>=0?n:0;
+      if(found)totalMatched++;
+    }
+
+    const sunny=venues.find(v=>
+      hbNormalizeVenueKey(v.id)==='sunnyside-tavern' ||
+      hbNormalizeVenueKey(v.name)==='sunnyside-tavern'
+    );
+    const sunnyCount=sunny?Number(sunny.busy)||0:0;
+    const keys=Object.keys(counts);
+    hbSetV54LiveStatus(
+      'V54 live counts connected · Sunnyside: '+sunnyCount+' · matched '+totalMatched+' venue(s)',
+      true
+    );
+    console.log('[How Busy V54] RPC raw response:',rawResult);
+    console.log('[How Busy V54] parsed count keys:',keys);
+    console.log('[How Busy V54] Sunnyside:',sunny&&sunny.id,sunny&&sunny.name,sunnyCount);
+    return true;
+  }catch(e){
+    const msg=String(e&&e.message||e);
+    hbSetV54LiveStatus('V54 live counts failed: '+msg,false);
+    console.error('[How Busy V54] Live count RPC failed:',e);
+    return false;
+  }
+}
+function hbRenderHomeRankings(filter){
+  const closeBox=document.getElementById('hbClosestPubs'), busyBox=document.getElementById('hbBusiestPubs');
+  if(!closeBox||!busyBox)return;
+  let mapped=venues.filter(v=>Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)));
+  let closest=mapped.map(v=>({v,d:hbLastGps?hbDistanceMetres(hbLastGps.lat,hbLastGps.lon,v.lat,v.lon):999999})).sort((a,b)=>a.d-b.d).slice(0,5).map(x=>x.v);
+  if(!closest.length) closeBox.innerHTML='<div class="muted">We are still mapping Newcastle venues for location ranking.</div>';
+  else closeBox.innerHTML=closest.map(v=>hbDetailedVenueCard(v,isPremium())).join('');
+  let ranked=venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0));
+  if(filter==='singles' && isPremium()) ranked.sort((a,b)=>Number(b._singlePct||0)-Number(a._singlePct||0));
+  if(filter==='balance' && isPremium()) ranked.sort((a,b)=>Math.abs(50-Number(a._malePct||50))-Math.abs(50-Number(b._malePct||50)));
+  const top=ranked.slice(0,5);
+  busyBox.innerHTML=top.map(v=>hbDetailedVenueCard(v,isPremium())).join('');
+  const total=venues.reduce((s,v)=>s+Number(v.busy||0),0);
+  const busiest=ranked[0];
+  const t=document.getElementById('hbTotalPeople'),bn=document.getElementById('hbBusiestName'),bc=document.getElementById('hbBusiestCount');
+  if(t)t.textContent=total||'0';
+  if(bn)bn.textContent=busiest?busiest.name:'—';
+  if(bc)bc.textContent=busiest?(Number(busiest.busy||0)+' people'): 'Busiest venue';
+  if(isPremium()){
+    Promise.all(venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0)).slice(0,8).map(async v=>{const d=await loadPremiumDemographics(v.id);v._premiumData=d;if(d&&Number(d.total_active||0)>0){v._singlePct=pct(d.single_count,d.total_active);v._malePct=pct(d.male_count,d.total_active)}return v;})).then(()=>{
+      const best=venues.filter(v=>Number(v._singlePct||0)>0).sort((a,b)=>b._singlePct-a._singlePct)[0];
+      const el=document.getElementById('hbSinglesName'); if(el)el.textContent=best?best.name:'Collecting data';
+      if(filter==='singles'||filter==='balance') hbRenderHomeRankings(filter);
+      else { if(closeBox)closeBox.innerHTML=closest.map(v=>hbDetailedVenueCard(v,true)).join(''); if(busyBox)busyBox.innerHTML=top.map(v=>hbDetailedVenueCard(v,true)).join(''); }
+    });
+  }
+}
+
+function hbHandlePosition(position){
+  const lat=Number(position.coords.latitude), lon=Number(position.coords.longitude);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon))return;
+  const previousVenueId=hbCurrentVenueId;
+  hbLastGps={lat,lon,accuracy:Number(position.coords.accuracy)||null,at:Date.now()};
+  hbRenderNearbyVenues();
+  hbRenderHomeRankings();
+
+  const hit=hbFindVenue(lat,lon);
+  const newId=hit?hit.venue.id:null;
+
+  if(newId===previousVenueId && newId){
+    // Stay alive while the user remains inside the same venue. This is the
+    // primary renewal path when Safari is actively delivering GPS updates.
+    hbRenewPresence();
+  }
+
+  if(newId!==previousVenueId){
+    hbCurrentVenueId=newId;
+    try{localStorage.setItem('hbCurrentVenueId',newId||'');}catch(e){}
+
+    // Leaving: immediately end the old venue presence and refresh counts.
+    if(previousVenueId){
+      hbStopPresence(previousVenueId).finally(()=>hbRefreshLiveCountsNow());
+    }
+
+    // Entering: immediately record the new venue and refresh the live rankings.
+    if(hit){
+      hbRecordPresence(hit.venue.id).then(result=>{
+        if(result && result.ok) hbLastPresenceSentAt=Date.now();
+        return hbRefreshLiveCountsNow();
+      });
+      hbSetGpsStatus('📍 At '+hit.venue.name+' · '+Math.round(hit.distance)+'m · '+hit.radius+'m geofence');
+    }else{
+      hbSetGpsStatus('📍 No participating venue within 50m');
+    }
+  }
+}
+
+function hbHandleGpsError(err){
+  const msg=err && err.code===1?'Location permission is off.':err && err.code===2?'Location position unavailable right now.':'Location timed out — trying again.';
+  hbSetGpsStatus('⚠️ '+msg);
+}
+
+function hbSetGpsStatus(text){
+  // Intentionally silent in the user interface. Venue detection is a background feature.
+  try{ console.debug('[How Busy venue detection]',text); }catch(e){}
+}
+
+async function hbTestLocationNow(){
+  try{ localStorage.removeItem('hbSunnysideCalibrated'); }catch(e){}
+  const out=document.getElementById('hbLocationTestResult');
+  if(out) out.textContent='Testing venue detection…';
+  hbLoadVenueCoordinates();
+  // Venue coordinates are fixed in the build; no user calibration is used.
+  if(!navigator.geolocation){
+    if(out) out.textContent='Location is not available in this browser.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async position=>{
+    const lat=Number(position.coords.latitude), lon=Number(position.coords.longitude);
+    const accuracy=Number(position.coords.accuracy)||null;
+    hbHandlePosition(position);
+    const hit=hbFindVenue(lat,lon);
+    if(hit){
+      const saved=await hbRecordPresence(hit.venue.id);
+      hbCurrentVenueId=hit.venue.id;
+      if(out) out.textContent=hbFormatPresenceResult(saved,hit.venue.name);
+      return;
+    }
+
+    // V18 diagnostic: never show coordinates or raw GPS accuracy.
+    // We only report a distance band so we can distinguish a bad venue pin
+    // from an iPhone/Safari location that is too approximate for a 50m fence.
+    let nearest=null;
+    for(const v of venues){
+      if(!Number.isFinite(Number(v.lat))||!Number.isFinite(Number(v.lon)))continue;
+      const d=hbDistanceMetres(lat,lon,v.lat,v.lon);
+      if(!nearest || d<nearest.distance) nearest={venue:v,distance:d};
+    }
+
+    if(accuracy && accuracy>25){
+      if(out) out.textContent='Your phone is returning an approximate location, so the 50m venue fence cannot reliably match. Turn on Precise Location for Safari, then test again.';
+      return;
+    }
+    if(nearest && nearest.distance<=25){
+      if(out) out.textContent='Very close to a participating venue, but outside the 50m fence. The venue pin likely needs moving to the correct entrance/position.';
+      return;
+    }
+    if(nearest && nearest.distance<=50){
+      if(out) out.textContent='Within about 50m of a participating venue. The phone location is working, but the venue pin needs checking for a 50m fence.';
+      return;
+    }
+    if(nearest && nearest.distance<=100){
+      if(out) out.textContent='Within about 100m of a participating venue. The location is too far away for the 50m production fence; we need to check the venue pin or phone location setting.';
+      return;
+    }
+    if(out) out.textContent='Location was received, but no participating venue is nearby enough to diagnose a 50m match.';
+  },err=>{
+    let msg='Location could not be read.';
+    if(err && err.code===1) msg='Safari did not provide location permission to this page.';
+    else if(err && err.code===2) msg='The phone could not determine its location right now.';
+    else if(err && err.code===3) msg='The location request timed out. Try again.';
+    if(out) out.textContent=msg;
+  },{enableHighAccuracy:true,maximumAge:0,timeout:20000});
+}
+
+function hbRequestFreshVenueLocation(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(
+    hbHandlePosition,
+    hbHandleGpsError,
+    {enableHighAccuracy:true,maximumAge:0,timeout:15000}
+  );
+}
+
+function hbRequestFreshVenueLocation(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+}
+
+function hbRequestFreshVenueLocation(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+}
+
+function startVenueGeofencing(){
+  if(hbGpsRunning)return;
+  hbLoadVenueCoordinates();
+  if(!navigator.geolocation){hbSetGpsStatus('GPS is not supported on this device/browser.');return;}
+  hbGpsRunning=true;
+  try{localStorage.setItem('hb_location_enabled_v1','true');}catch(e){}
+  hbSetGpsStatus('Requesting location permission');
+  hbGpsWatchId=navigator.geolocation.watchPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
+  hbStartPresenceHeartbeat();
+  hbStartLiveRefresh();
+  // Immediately request a fresh fix so venue entry does not wait for a later watch event.
+  navigator.geolocation.getCurrentPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+  // Static coordinates are used immediately. Any remaining venue addresses are
+  // geocoded in the background so the phone does not have to rely on missing pins.
+  setTimeout(()=>{ try{ hbGeocodeAllVenues(); }catch(e){} },1200);
+}
+
+function stopVenueGeofencing(){
+  if(hbGpsWatchId!==null && navigator.geolocation){navigator.geolocation.clearWatch(hbGpsWatchId);}
+  hbGpsWatchId=null; hbGpsRunning=false;
+  hbStopLiveRefresh();
+  if(hbPresenceTimer){clearInterval(hbPresenceTimer);hbPresenceTimer=null;}
+  const leavingVenue=hbCurrentVenueId;
+  hbCurrentVenueId=null;
+  if(leavingVenue)hbStopPresence(leavingVenue);
+}
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ hbStopLiveRefresh(); }
+  else {
+    if(hbGpsRunning) hbStartLiveRefresh();
+    hbRequestFreshVenueLocation();
+  }
+});
+
+hbLoadVenueCoordinates();
+hbApplyStaticVenueCoordinates();
+
+// Resume venue detection silently after a reload when the user has already enabled location.
+setTimeout(()=>{ try{ hbLoadVenueCoordinates(); hbGeocodeAllVenues(); }catch(e){ console.warn('Venue mapping start failed',e); } }, 500);
+setTimeout(()=>{ try{ startVenueGeofencing(); }catch(e){ console.warn('Venue detection start failed',e); } }, 1200);
+
+let state={page:'welcome',relationship:localStorage.hbRel||'',crowd:localStorage.hbCrowd||'',venue:null,premium:localStorage.getItem('hbPremiumDemo')==='true'};
+
+function save(){localStorage.hbRel=state.relationship;localStorage.hbCrowd=state.crowd}
+function frame(body){root.innerHTML=`<div class="app">${body}</div>`}
+function nav(active){return `<div class="nav"><button class="${active==='home'?'active':''}" onclick="home()">🏠<br>Home</button><button class="${active==='venues'?'active':''}" onclick="showCityMenu()">📍<br>City</button><button class="${active==='profile'?'active':''}" onclick="profile()">👤<br>Profile</button>
+<button class="nav-item premium-nav-item" onclick="premiumSinglesScreen()">
+  <span>⭐</span><small>Premium</small>
+</button></div>`}
+
+
+
+
+
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    hbRefreshLiveCountsNow();
+    hbRenewPresence(true);
+    if(!hbGpsRunning) startVenueGeofencing();
+  }
+});
+window.addEventListener('pageshow',()=>{
+  hbRefreshLiveCountsNow();
+  hbRenewPresence(true);
+});
+
+function welcome(){frame(`<div class="screen"><div class="logo">How <span class="gold">Busy?</span></div><div class="muted small">Is Your Local Venue</div><h1>Know before you go.</h1><p class="sub">See how busy venues are, who's around and what the crowd is like — using anonymous venue presence data.</p><div class="card"><span class="pill">18+ APP</span><h2>Built around location</h2><p class="sub">How Busy? uses your phone's location to automatically work out which participating venue you're at. Your precise location is used on your phone to match a participating venue rather than stored as a movement trail.</p></div><button class="action" onclick="startVenueGeofencing();home()">Enable location & continue</button><p class="small muted">How Busy? uses your phone location to detect participating venues. Your raw GPS trail is not displayed to other users.</p></div>`)}
+
+
+// ---------- CITY CATEGORIES ----------
+const HOW_BUSY_CITIES=["Newcastle","Sydney","Brisbane","Melbourne","Darwin","Canberra","Perth","Hobart","Cairns","Townsville","Gold Coast","South Australia"];
+let savedCity="Newcastle";
+try{ savedCity=localStorage.getItem("hbCity")||"Newcastle"; }catch(e){}
+let selectedCity=HOW_BUSY_CITIES.includes(savedCity)?savedCity:"Newcastle";
+
+
+function showCityMenu(){
+  const cities=HOW_BUSY_CITIES;
+  frame(`<div class="screen">
+    <button class="secondary" onclick="home()">← Back to Home</button>
+    <div class="city-menu-hero">
+      <div class="city-menu-hero-icon">📍</div>
+      <div class="pill">HOW BUSY? · CITY GUIDE</div>
+      <h1>Choose your City</h1>
+      <p class="sub">Find participating venues and live activity in your area.</p>
+    </div>
+    <div class="city-section-title"><h2>Available cities</h2><span>${cities.length} locations planned</span></div>
+    <div class="city-menu-list">
+      ${cities.map(c=>`<button type="button" class="city-menu-button ${c===selectedCity?'selected':''}" onclick="selectCity('${c.replace(/'/g,"\\'")}')">
+        <span>📍 ${c}</span>
+        <small>${c==="Newcastle"?"● LIVE":"COMING SOON"}</small>
+      </button>`).join("")}
+    </div>
+  </div>${nav("venues")}`);
+}
+
+function selectCity(city){
+  if(!HOW_BUSY_CITIES.includes(city)) return;
+  selectedCity=city;
+  try{ localStorage.setItem("hbCity",city); }catch(e){}
+  document.querySelectorAll(".city-btn").forEach(b=>b.classList.toggle("on",b.textContent.trim()===city));
+  if(city!=="Newcastle"){ showCityComingSoon(city); return; }
+  openNewcastleVenues();
+}
+
+let cityVenueFilter="All";
+function cityVenueCategory(v){
+  const t=String(v.type||'').toLowerCase();
+  if(t.includes('club')) return 'Clubs';
+  if(t.includes('bar')) return 'Bars';
+  if(t.includes('music')) return 'Live Music';
+  return 'Pubs';
+}
+function setCityVenueFilter(filter){
+  cityVenueFilter=filter;
+  renderNewcastleVenues();
+}
+function filterNewcastleVenues(query){
+  window.hbCitySearch=String(query||'').trim().toLowerCase();
+  /* Do NOT rebuild the whole City page while typing. Rebuilding the input
+     element on every keystroke makes iPhone Safari lose focus after the
+     first character. Update only the results/count so typing stays smooth. */
+  const list=Array.isArray(venues)?venues:[];
+  const q=window.hbCitySearch||'';
+  const filtered=list.filter(v=>{
+    const text=(String(v.name||'')+' '+String(v.address||'')+' '+String(v.type||'')).toLowerCase();
+    const cat=cityVenueCategory(v);
+    return (!q||text.includes(q)) && (cityVenueFilter==='All'||cat===cityVenueFilter);
+  });
+  const results=document.getElementById('cityVenueResults');
+  const count=document.getElementById('cityVenueCount');
+  if(count) count.textContent=filtered.length+' shown';
+  if(!results) return renderNewcastleVenues();
+  results.innerHTML=filtered.length ? filtered.map(v=>{
+    const idx=list.indexOf(v);
+    const name=escapeHtmlSafe(v.name||'Venue');
+    const address=escapeHtmlSafe(v.address||'Address not available');
+    const cat=cityVenueCategory(v);
+    const busy=Number(v.busy);
+    const c=Number.isFinite(busy)?busy:0;
+    const status=c>=80?'Very busy':c>=55?'Busy':c>=30?'Moderate':'Quiet';
+    const icon=cat==='Clubs'?'🎉':cat==='Bars'?'🍸':cat==='Live Music'?'🎵':'🍻';
+    return '<div class="city-venue-card venue" data-venue-name="'+name.toLowerCase()+'" onclick="openVenueSafe('+idx+')">'+
+      '<div class="city-venue-head"><div class="city-venue-icon">'+icon+'</div><div><div class="city-venue-name">'+name+'</div><div class="city-venue-address">📍 '+address+'</div></div><div class="city-arrow">›</div></div>'+
+      '<div class="city-meta"><span class="city-tag">'+cat+'</span><span class="city-tag">'+status+'</span><span class="city-tag">👥 '+c+' now</span>'+(v.verified?'<span class="city-tag mapped">✓ 50m mapped</span>':'<span class="city-tag">📍 Mapping…</span>')+'</div>'+
+      '</div>';
+  }).join('') : '<div class="city-empty">No venues match that search.<br><button class="secondary" onclick="clearCitySearch()">Show all venues</button></div>';
+}
+function clearCitySearch(){
+  window.hbCitySearch='';
+  const input=document.getElementById('newcastleVenueSearch');
+  if(input) input.value='';
+  filterNewcastleVenues('');
+}
+function renderNewcastleVenues(){
+  const list=Array.isArray(venues)?venues:[];
+  const q=window.hbCitySearch||'';
+  const filtered=list.filter(v=>{
+    const text=(String(v.name||'')+' '+String(v.address||'')+' '+String(v.type||'')).toLowerCase();
+    const cat=cityVenueCategory(v);
+    return (!q||text.includes(q)) && (cityVenueFilter==='All'||cat===cityVenueFilter);
+  });
+  const categories=['All','Pubs','Bars','Clubs','Live Music'];
+  let html='<div class="screen">';
+  html+='<button class="secondary" onclick="showCityMenu()">← City</button>';
+  html+='<div class="city-hero">';
+  html+='<div class="city-hero-top"><div style="display:flex;gap:11px;align-items:center"><div class="city-hero-icon">🏙️</div><div><h1>Newcastle</h1><p class="sub">Live local venue guide</p></div></div><span class="city-active">● LIVE</span></div>';
+  html+='<div class="city-stat-row"><div class="city-stat"><b>'+list.length+'</b><small>venues listed</small></div><div class="city-stat"><b>'+list.filter(v=>v.verified).length+'</b><small>mapped</small></div><div class="city-stat"><b>50 m</b><small>detection zone</small></div></div><button class="action" style="margin-top:12px" onclick="hbGeocodeAllVenues();toast(&quot;Mapping all Newcastle venues…&quot;)">📍 Map / verify all venues</button>';
+  html+='</div>';
+  html+='<div class="city-search-wrap"><span class="city-search-icon">🔍</span><input id="newcastleVenueSearch" class="search newcastleSearch" type="search" placeholder="Search venues, suburbs or types" value="'+escapeHtmlSafe(window.hbCitySearch||'')+'" oninput="filterNewcastleVenues(this.value)" autocomplete="off"></div>';
+  html+='<div class="city-filters">'+categories.map(c=>'<button class="city-filter '+(cityVenueFilter===c?'on':'')+'" onclick="setCityVenueFilter(\"'+c+'\")">'+c+'</button>').join('')+'</div>';
+  html+='<div class="city-section-title"><h2>Newcastle venues</h2><span id="cityVenueCount">'+filtered.length+' shown</span></div>';
+  html+='<div id="cityVenueResults">';
+  if(!filtered.length){
+    html+='<div class="city-empty">No venues match that search.<br><button class="secondary" onclick="clearCitySearch()">Show all venues</button></div>';
+  }else{
+    filtered.forEach(v=>{
+      const idx=list.indexOf(v);
+      const name=escapeHtmlSafe(v.name||'Venue');
+      const address=escapeHtmlSafe(v.address||'Address not available');
+      const cat=cityVenueCategory(v);
+      const busy=Number(v.busy);
+      const count=Number.isFinite(busy)?busy:0;
+      const status=count>=80?'Very busy':count>=55?'Busy':count>=30?'Moderate':'Quiet';
+      const icon=cat==='Clubs'?'🎉':cat==='Bars'?'🍸':cat==='Live Music'?'🎵':'🍻';
+      html+='<div class="city-venue-card venue" data-venue-name="'+name.toLowerCase()+'" onclick="openVenueSafe('+idx+')">';
+      html+='<div class="city-venue-head"><div class="city-venue-icon">'+icon+'</div><div><div class="city-venue-name">'+name+'</div><div class="city-venue-address">📍 '+address+'</div></div><div class="city-arrow">›</div></div>';
+      html+='<div class="city-meta"><span class="city-tag">'+cat+'</span><span class="city-tag">'+status+'</span><span class="city-tag">👥 '+count+' now</span>'+(v.verified?'<span class="city-tag mapped">✓ 50m mapped</span>':'<span class="city-tag">📍 Mapping…</span>')+'</div>';
+      html+='</div>';
+    });
+  }
+  html+='</div>';
+  html+='</div>';
+  frame(html);
+}
+
+function openNewcastleVenues(){
+  selectedCity="Newcastle";
+  try{localStorage.setItem("hbCity","Newcastle");}catch(e){}
+  renderNewcastleVenues();
+}
+
+function escapeHtmlSafe(value){
+  return String(value).replace(/[&<>"']/g,function(ch){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch];
+  });
+}
+
+function openVenueSafe(index){
+  var list=Array.isArray(venues)?venues:[];
+  var v=list[index];
+  if(!v) return;
+  window.hbCurrentVenue=v;
+  var name=escapeHtmlSafe(v.name||"Venue");
+  var address=escapeHtmlSafe(v.address||"Address not available");
+  var busy=Number(v.busy); if(!Number.isFinite(busy)) busy=0;
+  var cat=cityVenueCategory(v);
+  var emoji=hbVenueEmoji(v);
+  var status=hbBusyLabel(busy);
+  var mapped=v.verified && Number.isFinite(Number(v.lat)) && Number.isFinite(Number(v.lon));
+  var html='<div class="screen">';
+  html+='<button class="secondary" onclick="openNewcastleVenues()">← Newcastle venues</button>';
+  html+='<div class="venue-hero">';
+  html+='<div class="venue-hero-top"><div style="display:flex;gap:13px;align-items:center"><div class="venue-icon">'+emoji+'</div><div><div class="pill">NEWCASTLE · '+escapeHtmlSafe(cat)+'</div><h1 class="venue-title" style="margin-top:9px">'+name+'</h1></div></div><span class="live-pill">● LIVE</span></div>';
+  html+='<p class="muted" style="margin:16px 0 0">📍 '+address+'</p>';
+  html+='<div class="venue-live-grid">';
+  html+='<div><div class="muted small">Crowd right now</div><b style="font-size:19px">'+status+'</b></div>';
+  html+='<div><div class="muted small">Detection</div><b style="font-size:19px">'+(mapped?'✓ 50m mapped':'Location pending')+'</b></div>';
+  html+='</div></div>';
+
+  html+='<div class="card venue-big-count"><div class="muted small">PEOPLE NOW</div><b>'+busy+'</b><span>anonymous active presence</span></div>';
+
+  html+='<div class="contribute-card"><div class="contribute-title">👥 What’s the crowd like?</div><p class="sub">Everyone can answer. Your answer is anonymous and helps build the venue picture.</p>';
+  html+='<div class="answer-grid">';
+  html+='<button class="crowd-choice" onclick="setCrowdAnswer('+index+',\'men\')">👨 More Men</button>';
+  html+='<button class="crowd-choice" onclick="setCrowdAnswer('+index+',\'women\')">👩 More Women</button>';
+  html+='<button class="crowd-choice" onclick="setCrowdAnswer('+index+',\'even\')">⚖️ 50/50</button>';
+  html+='</div><div id="crowd-answer-'+index+'" class="crowd-answer" style="display:none"></div></div>';
+
+  html+='<div class="card"><div class="row"><div><b>📊 Basic venue activity</b><div class="muted small">Available to everyone</div></div><span class="pill">FREE</span></div><div class="intel-grid"><div class="intel-box"><div class="muted small">Live people</div><b>'+busy+'</b></div><div class="intel-box"><div class="muted small">Crowd level</div><b>'+status+'</b></div></div></div>';
+
+  html+='<div class="premium-hero"><div class="premium-badge">⭐ VENUE INTELLIGENCE · $4.99/MONTH</div><h2 style="margin:16px 0 8px">Want to know more than just busy?</h2><p class="sub">Premium turns anonymous answers into useful venue intelligence.</p>';
+  html+='<div class="premium-feature"><span class="premium-feature-icon">💕</span><div><b>Single / Taken mix</b><div class="muted small">See the anonymous relationship balance when enough data is available.</div></div></div>';
+  html+='<div class="premium-feature"><span class="premium-feature-icon">👥</span><div><b>Male / Female mix</b><div class="muted small">See the aggregated crowd balance — never individual profiles.</div></div></div>';
+  html+='<div class="premium-feature"><span class="premium-feature-icon">🔥</span><div><b>Venue trends</b><div class="muted small">Build toward the best times and patterns for each venue.</div></div></div>';
+  html+='<button class="action" onclick="premiumPaywall(\'Venue Intelligence at '+name.replace(/'/g,"\\'")+'\')">Unlock Venue Intelligence</button></div>';
+  html+='</div>';
+  frame(html);
+}
+
+async function setCrowdAnswer(index,answer){
+  var box=document.getElementById("crowd-answer-"+index);
+  if(!box) return;
+  var text=answer==="men"?"👨 More Men":answer==="women"?"👩 More Women":"⚖️ 50/50";
+  box.style.display="block";
+  box.innerHTML="<b>Sending crowd answer…</b>";
+  var list=Array.isArray(venues)?venues:[];
+  var v=list[index];
+  var ok=await submitCrowdAnswerToSupabase(v?v.id:index,answer);
+  box.innerHTML=ok
+    ? "<b>Current crowd answer</b><div class='crowd-result'>"+text+"</div><div class='muted small'>Your anonymous answer has been added to the venue data.</div>"
+    : "<b>Not sent</b><div class='muted small'>Your answer was not uploaded. Try again.</div>";
+  var buttons=document.querySelectorAll(".crowd-choice");
+  buttons.forEach(function(b){{b.classList.remove("selected");}});
+  var selected=answer==="men"?0:answer==="women"?1:2;
+  if(buttons[selected]) buttons[selected].classList.add("selected");
+}
+
+function escapeHtmlSafe(value){
+  return String(value).replace(/[&<>"']/g,function(ch){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch];
+  });
+}
+
+function showCityComingSoon(city){
+  frame(`<div class="screen">
+    <button class="secondary" onclick="selectCity('Newcastle')">← Newcastle</button>
+    <div style="text-align:center;margin-top:34px">
+      <div style="font-size:54px">📍</div>
+      <div class="pill" style="margin-top:18px">HOW BUSY?</div>
+      <h1 style="margin-top:18px">${city}</h1>
+      <h2>Coming Soon</h2>
+      <p class="sub">Newcastle is our first fully built city. We're getting it right before expanding How Busy? to ${city}.</p>
+    </div>
+    <div class="card" style="margin-top:24px">
+      <b>What we're building</b>
+      <p>📍 Local venue database</p>
+      <p>📌 Exact venue addresses</p>
+      <p>📍 50 m venue detection</p>
+      <p>👥 Live crowd information</p>
+      <p>📊 Venue history and trends</p>
+      <p>❤️ Premium venue insights</p>
+    </div>
+    <button class="action" onclick="selectCity('Newcastle')">Go to Newcastle</button>
+  </div>${nav("home")}`);
+}
+
+
+
+function hbVenueEmoji(v){
+  const t=String(v.type||'').toLowerCase();
+  if(t.includes('club')) return '🎉';
+  if(t.includes('bar')) return '🍸';
+  if(t.includes('brew')) return '🍺';
+  if(t.includes('music')) return '🎵';
+  return '🍻';
+}
+function hbBusyLabel(n){n=Number(n||0);return n>=100?'Very Busy':n>=60?'Busy':n>=25?'Moderate':'Quiet'}
+function hbTrendClass(n){n=Number(n||0);return n>=100?'very':n<25?'quiet':''}
+function hbPremiumCard(v){
+  const d=v._premiumData;
+  if(!d || Number(d.total_active||0)<3) return `<div class="hb-basic-lock">🔒 <b>Premium Venue Intelligence</b><br>Live Single/Taken and Male/Female data appears here for Premium subscribers when enough anonymous data is available.</div>`;
+  const total=Number(d.total_active)||0;
+  return `<div class="hb-premium-grid">
+    <div class="hb-premium-stat"><b>💙 ${pct(d.single_count,total)}%</b><small>Single</small></div>
+    <div class="hb-premium-stat"><b>❤️ ${pct(d.taken_count,total)}%</b><small>Taken</small></div>
+    <div class="hb-premium-stat"><b>♂️ ${pct(d.male_count,total)}%</b><small>Male</small></div>
+    <div class="hb-premium-stat"><b>♀️ ${pct(d.female_count,total)}%</b><small>Female</small></div>
+  </div>`;
+}
+function hbDetailedVenueCard(v, premium){
+  const n=Number(v.busy||0), label=hbBusyLabel(n), cls=hbTrendClass(n);
+  const distance=(hbLastGps && Number.isFinite(Number(v.lat))&&Number.isFinite(Number(v.lon)))?hbDistanceMetres(hbLastGps.lat,hbLastGps.lon,v.lat,v.lon):null;
+  const inside=distance!==null && (Date.now()-hbLastGps.at)<120000 && distance<=hbVenueRadius(v);
+  return `<div class="hb-venue-card" onclick="venue(${JSON.stringify(v.id)})">
+    <div class="hb-venue-top">
+      <div class="hb-venue-icon">${hbVenueEmoji(v)}</div>
+      <div><div class="hb-venue-name">${escapeHtmlSafe(v.name||'Venue')}</div><div class="hb-address">📍 ${escapeHtmlSafe(v.address||'')}</div><span class="hb-status ${cls}">👥 ${label}</span></div>
+      <div style="text-align:right"><div class="hb-mini-trend"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="hb-arrow">›</div></div>
+    </div>
+    <div class="hb-live-row">
+      <div class="hb-live-stat"><span class="v">${n}</span><small>ACTIVE NOW</small></div>
+      <div class="hb-live-stat"><span class="v">${inside?'📍 HERE':distance!==null?(distance<1000?Math.round(distance)+'m':(distance/1000).toFixed(1)+'km'):'—'}</span><small>${inside?'AT VENUE':'DISTANCE'}</small></div>
+      <div class="hb-live-stat"><span class="v">${v.active?'● Live':'○ Live feed'}</span><small>VENUE STATUS</small></div>
+    </div>
+    ${premium?hbPremiumCard(v):`<div class="hb-basic-lock">🔒 <b>Premium Venue Intelligence</b><br>Unlock anonymous Single/Taken, Male/Female, crowd balance and venue trends.</div>`}
+    <button class="hb-intel" onclick="event.stopPropagation();${premium?'premiumVenueDetailById('+JSON.stringify(v.id)+')':'premiumPaywall(\'Venue Intelligence\')'}">${premium?'👑 View Venue Intelligence →':'👑 Unlock Venue Intelligence →'}</button>
+  </div>`;
+}
+function home(){
+  if(window.hbVenueDetailCountTimer){clearInterval(window.hbVenueDetailCountTimer);window.hbVenueDetailCountTimer=null;}
+  if(!hbGpsRunning) startVenueGeofencing();
+  setTimeout(()=>{hbRequestFreshVenueLocation();hbStartLiveRefresh();},150);
+  const premium=isPremium();
+  frame(`<div class="screen">
+    <div class="hb-brand"><div class="hb-brand-main"><div class="hb-beer">🍻</div><div><div class="hb-brand-title">How <span class="gold">Busy?</span></div><div class="hb-brand-sub">IS YOUR LOCAL VENUE</div></div></div><button class="hb-premium-chip" onclick="premiumSinglesScreen()">👑 PREMIUM</button></div>
+    <div class="hb-hero-title">Where’s The Party At</div><div class="hb-hero-sub">Live venue activity · Newcastle · <strong>V54</strong></div><div id="hbV54LiveStatus" role="status" aria-live="polite" style="margin-top:8px;padding:8px 10px;border-radius:10px;background:#102536;border:1px solid #28465b;color:#9eb1bf;font-size:12px">V54: checking live counts…</div>
+    <div class="hb-summary"><div><div class="icon">👥</div><div class="num" id="hbTotalPeople">—</div><b>people out now</b><small>live Newcastle activity</small></div><div><div class="icon">🔥</div><div class="num" id="hbBusiestName" style="font-size:15px;color:#fff">—</div><b id="hbBusiestCount">Busiest venue</b><small>right now</small></div><div><div class="icon">⭐</div><div class="num" id="hbSinglesName" style="font-size:15px;color:#fff">Premium</div><b>best singles data</b><small>anonymous intelligence</small></div></div>
+    <div class="hb-filters"><button class="hb-filter on" onclick="hbSetHomeFilter('closest',this)">📍 Closest</button><button class="hb-filter" onclick="hbSetHomeFilter('busy',this)">📊 Busiest</button><button class="hb-filter" onclick="hbSetHomeFilter('singles',this)">👥 Most Singles</button><button class="hb-filter" onclick="hbSetHomeFilter('balance',this)">⚖️ Best Balance</button></div>
+    <div class="hb-location"><button onclick="hbRequestFreshVenueLocation()">📍 Refresh My Location</button></div>
+    <div class="hb-contribute">
+      <div class="hb-contribute-head"><h3>👋 Help build How Busy?</h3><span class="hb-live-badge">ANONYMOUS</span></div>
+      <p>Tell us what the crowd looks like. Everyone can answer — Premium members get the deeper anonymous venue intelligence built from these answers.</p>
+      <div class="hb-answer-row">
+        <button class="hb-answer-btn" onclick="hbQuickCrowdAnswer('men')">👨 More Men</button>
+        <button class="hb-answer-btn" onclick="hbQuickCrowdAnswer('women')">👩 More Women</button>
+        <button class="hb-answer-btn" onclick="hbQuickCrowdAnswer('even')">⚖️ 50/50</button>
+      </div>
+      <div id="hbQuickAnswer" class="hb-free-note">You can answer for the venue you are currently at.</div>
+    </div>
+    <div class="hb-section-head"><h2>Venues Near You</h2><span>5 closest mapped venues</span></div><div id="hbClosestPubs"><div class="muted">Finding your location…</div></div>
+    <div class="hb-section-head"><h2>Where’s The Party At</h2><span>Live Newcastle ranking</span></div><div id="hbBusiestPubs"><div class="muted">Loading live venue activity…</div></div>
+  </div>${nav('home')}`);
+  hbRenderHomeRankings();
+}
+
+async function hbQuickCrowdAnswer(answer){
+  const box=document.getElementById('hbQuickAnswer');
+  if(!box)return;
+  const label=answer==='men'?'👨 More Men':answer==='women'?'👩 More Women':'⚖️ 50/50';
+  const venue=(typeof hbCurrentVenue!=='undefined' ? hbCurrentVenue : null) || (state&&state.venue ? state.venue : null);
+  if(!venue){ box.textContent='Open a venue and answer the crowd question there.'; return; }
+  box.textContent='Sending your anonymous answer…';
+  try{
+    const ok=await submitCrowdAnswerToSupabase(venue.id,answer);
+    box.textContent=ok?('✓ '+label+' recorded anonymously for '+(venue.name||'this venue')+'.'):'Could not send the answer. Try again.';
+  }catch(e){ box.textContent='Could not send the answer. Try again.'; }
+}
+
+function hbSetHomeFilter(filter,btn){
+  document.querySelectorAll('.hb-filter').forEach(x=>x.classList.remove('on')); if(btn)btn.classList.add('on');
+  hbRenderHomeRankings(filter);
+}
+
+function venueCard(v){
+  return `<div class="card venue" onclick="venue(${JSON.stringify(v.id)})">
+    <div class="row">
+      <div><b>${escapeHtmlSafe(v.name||"Venue")}</b><div class="muted small">${escapeHtmlSafe(v.type||"Venue")} · ${escapeHtmlSafe(v.address||"")}</div></div>
+      <div style="text-align:right"><div class="big">${Number(v.busy||0)}</div><div class="muted small">people now</div></div>
+    </div>
+    <div style="margin-top:12px" class="small"><span class="green">● ${Number(v.busy||0)>75?"Very busy":Number(v.busy||0)>55?"Busy":"Moderate"}</span> · Anonymous crowd answers help build Premium Venue Intelligence</div>
+  </div>`
+}
+
+function venuesPage(){frame(`<div class="screen"><div class="logo">Newcastle</div><p class="sub">Participating venues</p>${venues.map(v=>venueCard(v)).join('')}</div>${nav('venues')}`)}
+function venue(id){
+  let v=venues.find(x=>x.id===id);
+  if(!v)return;
+  state.venue=v;
+  window.hbCurrentVenue=v;
+  const premium=isPremium();
+  const busy=Number(v.busy||0);
+  const status=busy>=100?'Very busy':busy>=60?'Busy':busy>=25?'Moderate':'Quiet';
+  const statusClass=busy>=100?'very':busy<25?'quiet':'';
+  frame(`<div class="screen">
+    <button class="secondary" onclick="home()">← Back</button>
+    <div class="hb-brand" style="margin-top:18px"><div class="hb-brand-main"><div class="hb-beer">${hbVenueEmoji(v)}</div><div><div class="hb-brand-title" style="font-size:24px">How <span class="gold">Busy?</span></div><div class="hb-brand-sub">IS YOUR LOCAL VENUE</div></div></div></div>
+    <div class="pill" style="margin-top:16px">📍 NEWCASTLE VENUE</div>
+    <h1 style="margin-bottom:4px">${escapeHtmlSafe(v.name)}</h1>
+    <p class="sub">${escapeHtmlSafe(v.address||'')}</p>
+
+    <div class="hb-summary" style="margin-top:16px;grid-template-columns:1fr 1fr">
+      <div><div class="icon">👥</div><div class="num" id="hbVenuePeopleNow">${busy}</div><b>people out now</b><small>live anonymous presence</small></div>
+      <div><div class="icon">${status==='Very busy'?'🔥':status==='Busy'?'🟠':status==='Moderate'?'🟡':'🟢'}</div><div class="num" style="font-size:22px">${status}</div><b>venue activity</b><small>updated live</small></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>👋 What's the crowd like?</h2>
+      <p class="sub">Everyone can answer. Your response is anonymous and helps build the venue data.</p>
+      <div class="crowd-choice-buttons">
+        <button class="crowd-choice" onclick="submitVenueCrowdAnswer(${JSON.stringify(v.id)},'men')">👨 More Men</button>
+        <button class="crowd-choice" onclick="submitVenueCrowdAnswer(${JSON.stringify(v.id)},'women')">👩 More Women</button>
+        <button class="crowd-choice" onclick="submitVenueCrowdAnswer(${JSON.stringify(v.id)},'even')">⚖️ 50/50</button>
+      </div>
+      <div id="venueCrowdAnswer" class="crowd-answer" style="display:none"></div>
+    </div>
+
+    ${premium ? `<div id="venuePremiumLive"><div class="card"><div class="muted">Loading Premium venue intelligence…</div></div></div>` : `
+    <div class="card" style="border-color:#6e5d13;background:linear-gradient(145deg,#172a31,#0b1d29)">
+      <div class="row"><b>👑 Venue Intelligence</b><span class="pill">PREMIUM</span></div>
+      <p class="muted">Premium members can see the anonymous data built from everyone's answers:</p>
+      <div class="premium-stat-grid">
+        <div><span class="premium-stat-icon">💙</span><b>Single %</b><small>relationship mix</small></div>
+        <div><span class="premium-stat-icon">❤️</span><b>Taken %</b><small>relationship mix</small></div>
+        <div><span class="premium-stat-icon">♂️</span><b>Male %</b><small>gender mix</small></div>
+        <div><span class="premium-stat-icon">♀️</span><b>Female %</b><small>gender mix</small></div>
+      </div>
+      <button class="action" style="margin-top:12px" onclick="premiumVenueDetailById(${JSON.stringify(v.id)})">👑 View Premium Venue Intelligence →</button>
+    </div>`}
+
+    <div class="card">
+      <b>🔒 Privacy</b>
+      <p class="muted">Individual answers are never shown. How Busy? only uses anonymous, aggregated information to build venue intelligence.</p>
+    </div>
+  </div>${nav('home')}`);
+
+  // Refresh the selected venue count immediately and keep it updated on the detail screen.
+  const venueIdForRefresh=String(v.id);
+  const refreshVenueDetailCount=async()=>{
+    try{
+      await hbLoadLiveVenueCounts();
+      hbRenderHomeRankings();
+      const countEl=document.getElementById('hbVenuePeopleNow');
+      if(countEl && window.hbCurrentVenue &&
+         hbNormalizeVenueKey(window.hbCurrentVenue.id)===hbNormalizeVenueKey(venueIdForRefresh)){
+        countEl.textContent=String(Number(v.busy)||0);
+        const statusEl=countEl.parentElement && countEl.parentElement.nextElementSibling;
+        if(statusEl){
+          const n=Number(v.busy)||0;
+          const label=n>=100?'Very busy':n>=60?'Busy':n>=25?'Moderate':'Quiet';
+          const icon=n>=100?'🔥':n>=60?'🟠':n>=25?'🟡':'🟢';
+          const num=statusEl.querySelector('.num');
+          const iconEl=statusEl.querySelector('.icon');
+          if(num)num.textContent=label;
+          if(iconEl)iconEl.textContent=icon;
+        }
+      }
+    }catch(e){console.warn('Venue detail count refresh failed',e);}
+  };
+  refreshVenueDetailCount();
+  if(window.hbVenueDetailCountTimer) clearInterval(window.hbVenueDetailCountTimer);
+  window.hbVenueDetailCountTimer=setInterval(refreshVenueDetailCount,15000);
+
+  if(premium){
+    loadPremiumDemographics(v.id).then(d=>{
+      const el=document.getElementById('venuePremiumLive');
+      if(el)el.innerHTML=renderPremiumDemographics(d);
+    });
+  }
+}
+
+async function submitVenueCrowdAnswer(venueId,answer){
+  const box=document.getElementById('venueCrowdAnswer');
+  if(!box)return;
+  const label=answer==='men'?'👨 More Men':answer==='women'?'👩 More Women':'⚖️ 50/50';
+  box.style.display='block';
+  box.innerHTML='<b>Sending your anonymous answer…</b>';
+  try{
+    const ok=await submitCrowdAnswerToSupabase(venueId,answer);
+    box.innerHTML=ok
+      ? `<b>✓ ${label} recorded</b><div class="muted small">Thanks — your anonymous answer is helping build How Busy? venue intelligence.</div>`
+      : '<b>Could not send your answer</b><div class="muted small">Please try again.</div>';
+  }catch(e){
+    box.innerHTML='<b>Could not send your answer</b><div class="muted small">Please try again.</div>';
+  }
+}
+
+function profile(){
+  var relationship="";
+  var gender="";
+  try{
+    relationship=localStorage.getItem("hbRelationship")||"";
+    gender=localStorage.getItem("hbGender")||"";
+  }catch(e){}
+
+  var relationshipAnswer=relationship==="single"?"💙 Single":relationship==="taken"?"❤️ Taken":"Not answered";
+  var genderAnswer=gender==="male"?"♂️ Male":gender==="female"?"♀️ Female":"Not answered";
+
+  frame(`<div class="screen">
+    <div class="logo">How <span class="gold">Busy?</span></div>
+    <div class="muted small">Is Your Local Venue</div>
+    <h1>Your Profile</h1>
+
+    <div class="card">
+      <h2>About you</h2>
+      <p class="muted">Your answers help create anonymous venue intelligence.</p>
+
+      <p class="muted">Relationship</p>
+      <div class="profile-answer">${relationshipAnswer}</div>
+      <div class="choice" style="margin-top:10px">
+        <button class="choice-btn" onclick="changeRelationship('single')">💙 Single</button>
+        <button class="choice-btn" onclick="changeRelationship('taken')">❤️ Taken</button>
+      </div>
+
+      <p class="muted" style="margin-top:20px">Gender</p>
+      <div class="profile-answer">${genderAnswer}</div>
+      <div class="choice" style="margin-top:10px">
+        <button class="choice-btn" onclick="changeGender('male')">♂️ Male</button>
+        <button class="choice-btn" onclick="changeGender('female')">♀️ Female</button>
+      </div>
+
+      <p class="muted small" style="margin-top:12px">Your individual answers are never shown to other users. Premium subscribers see only anonymous aggregated venue data.</p>
+    </div>
+
+    <div class="premiumLock" style="margin-top:16px">
+      <b>🔒 Your profile intelligence is part of Premium</b>
+      <p class="sub" style="margin-top:7px">Your Single/Taken and Male/Female information is combined with anonymous venue activity and displayed to Premium customers in one Venue Intelligence section.</p>
+      <button class="action" type="button" onclick="premiumSinglesScreen()">View Premium Venue Intelligence</button>
+    </div>
+
+  </div>${nav("profile")}`);
+}
+
+async function changeRelationship(value){
+  try{ localStorage.setItem("hbRelationship",value); }catch(e){}
+  profile();
+  await saveProfileToSupabase();
+}
+
+async function changeGender(value){
+  try{ localStorage.setItem("hbGender",value); }catch(e){}
+  profile();
+  await saveProfileToSupabase();
+}
+
+async function testSupabaseConnection(){
+  try{
+    const result=await supabaseRequest("/rest/v1/rpc/test_hb_backend",{method:"POST",body:"{}"});
+    backendStatus("✓ Supabase is connected");
+    console.log("Supabase test:",result);
+  }catch(e){
+    console.error("Supabase test failed:",e);
+    backendStatus("Supabase test failed: "+(e.message||"unknown error"),false);
+  }
+}
+
+// ---------- PREMIUM PAYWALL ----------
+const PREMIUM_PRICE_AUD="$4.99/month";
+
+function premiumPaywall(featureTitle="Best Newcastle venues for singles tonight"){
+  const existing=document.getElementById("premium-paywall");
+  if(existing) existing.remove();
+  const el=document.createElement("div");
+  el.id="premium-paywall";
+  el.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px";
+  el.innerHTML=`<div style="max-width:430px;width:100%;background:#102536;border:1px solid #28465b;border-radius:24px;padding:24px;box-shadow:0 24px 70px #0009">
+    <span class="pill">HOW BUSY? PREMIUM</span>
+    <h2 style="margin:18px 0 8px">${featureTitle}</h2>
+    <p class="sub">Unlock live Newcastle insights based on recent anonymous venue activity.</p>
+    <div class="card">
+      <div class="row"><b>Premium includes</b><span class="gold">${PREMIUM_PRICE_AUD}</span></div>
+      <p>❤️ Best Newcastle venues for singles</p>
+      <p>🔥 Trending venues tonight</p>
+      <p>⚥ Crowd balance insights</p>
+      <p>🕘 Best time to go</p>
+      <p>📈 Live crowd trends</p>
+    </div>
+    <button class="action" onclick="activatePremiumDemo()">Unlock Premium — ${PREMIUM_PRICE_AUD}</button>
+    <button class="secondary" onclick="document.getElementById('premium-paywall').remove()">Maybe later</button>
+    <p class="small muted" style="margin-top:12px">Demo paywall for the visual build. Real App Store / Google Play billing will be connected in the native release.</p>
+  </div>`;
+  document.body.appendChild(el);
+}
+
+function activatePremiumDemo(){
+  state.premium=true;
+  localStorage.setItem("hbPremiumDemo","true");
+  const popup=document.getElementById("premium-paywall");
+  if(popup) popup.remove();
+  home();
+}
+
+function isPremium(){
+  return state.premium || localStorage.getItem("hbPremiumDemo")==="true";
+}
+
+async function loadPremiumDemographics(venueId){
+  if(!SUPABASE_URL||!SUPABASE_ANON_KEY)return null;
+  try{
+    const u=SUPABASE_URL+"/rest/v1/rpc/get_hb_premium_demographics";
+    const r=await fetchWithTimeout(u,{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_venue_id:String(venueId)})},8000);
+    if(!r.ok){console.error("Premium demographics error",r.status,await r.text());return null;}
+    const rows=await r.json();
+    return Array.isArray(rows)&&rows.length?rows[0]:null;
+  }catch(e){console.error("Premium demographics failed",e);return null;}
+}
+
+function pct(part,total){return total?Math.round(Number(part||0)/Number(total)*100):0;}
+
+function renderPremiumDemographics(d){
+  if(!d) return `<div class="notice">Premium live demographic data is temporarily unavailable.</div>`;
+  const total=Number(d.total_active)||0;
+  if(total<3){
+    return `<div class="card"><b>🔐 Live demographic data</b><p class="muted">Not enough active Premium data yet. The breakdown appears once at least 3 anonymous active users are detected at this venue.</p><p class="small muted">No individual users are shown.</p></div>`;
+  }
+  const single=pct(d.single_count,total), taken=pct(d.taken_count,total), male=pct(d.male_count,total), female=pct(d.female_count,total);
+  return `<div class="card">
+    <div class="row"><b>💕 Relationship</b><span class="pill">LIVE</span></div>
+    <div class="premium-stat-grid">
+      <div><span class="premium-stat-icon">💙</span><b>${single}%</b><small>Single</small></div>
+      <div><span class="premium-stat-icon">❤️</span><b>${taken}%</b><small>Taken</small></div>
+    </div>
+    <div class="row" style="margin-top:18px"><b>👥 Gender</b><span class="pill">LIVE</span></div>
+    <div class="premium-stat-grid">
+      <div><span class="premium-stat-icon">♂️</span><b>${male}%</b><small>Male</small></div>
+      <div><span class="premium-stat-icon">♀️</span><b>${female}%</b><small>Female</small></div>
+    </div>
+    <p class="small muted" style="margin-top:14px">Based on ${total} anonymous active users. Percentages are rounded and individual users are never displayed.</p>
+  </div>`;
+}
+
+async function premiumVenueData(v){
+  const d=await loadPremiumDemographics(v.id);
+  const live=Number(v.busy||0);
+  return {live, demographics:d};
+}
+
+async function premiumSinglesScreen(){
+  if(!isPremium()){ premiumPaywall("Venue Intelligence"); return; }
+  frame(`<div class="screen"><button class="secondary" onclick="home()">← Back</button>
+    <div class="premium-hero">
+      <div class="premium-badge">⭐ PREMIUM · NEWCASTLE</div>
+      <h1 style="margin-top:16px">Venue Intelligence</h1>
+      <p class="sub">Your premium view of Newcastle nightlife — built from anonymous live venue activity.</p>
+      <div class="premium-feature"><span class="premium-feature-icon">🔥</span><div><b>What's hot now</b><div class="muted small">Rankings use live anonymous presence.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">💕</span><div><b>Singles intelligence</b><div class="muted small">See aggregated Single / Taken patterns where enough data exists.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">👥</span><div><b>Crowd balance</b><div class="muted small">See aggregated Male / Female percentages.</div></div></div>
+    </div>
+    <div class="card"><div class="row"><b>👤 Your Profile</b><span class="pill">PRIVATE</span></div>
+      <p class="muted">Your answers help build the intelligence but are never shown individually.</p>
+      <div class="premium-stat-grid">
+        <div><span class="premium-stat-icon">💙</span><b>${(localStorage.getItem("hbRelationship")==="single")?"Single":(localStorage.getItem("hbRelationship")==="taken")?"Taken":"—"}</b><small>Relationship</small></div>
+        <div><span class="premium-stat-icon">♂️♀️</span><b>${(localStorage.getItem("hbGender")==="male")?"Male":(localStorage.getItem("hbGender")==="female")?"Female":"—"}</b><small>Gender</small></div>
+      </div>
+    </div>
+    <div class="city-section-title"><h2>🔥 Best opportunities right now</h2><span>Live</span></div>
+    <div id="premiumRanking" class="card"><div class="muted">Loading live venue intelligence…</div></div>
+    <div class="card"><b>📈 Coming as data grows</b><p class="muted">Historical busy times, day-by-day patterns and best times to visit will appear as How Busy? collects enough anonymous activity.</p></div>
+    <div class="card"><b>🔐 Privacy first</b><p class="muted">Premium shows aggregated percentages only. No names, profiles, device IDs or individual answers are displayed.</p></div>
+  </div>${nav("home")}`);
+  const candidates=venues.slice().sort((a,b)=>Number(b.busy||0)-Number(a.busy||0)).slice(0,8);
+  const results=[];
+  for(const v of candidates){
+    const d=await loadPremiumDemographics(v.id);
+    const total=d?Number(d.total_active)||0:0;
+    results.push({v,d,total,single:d?pct(d.single_count,total):0,male:d?pct(d.male_count,total):0});
+  }
+  const el=document.getElementById("premiumRanking");
+  if(!el)return;
+  el.innerHTML=results.map((r,i)=>`<div class="card premium-venue-card" style="margin:8px 0">
+    <div class="row"><div><b style="font-size:18px">${i<3?["🥇","🥈","🥉"][i]:"⭐"} ${escapeHtmlSafe(r.v.name)}</b><div class="muted small">${Number(r.v.busy||0)} people now</div></div><div style="text-align:right"><div class="big">${r.total>=3?r.single+"%":"—"}</div><div class="muted small">single</div></div></div>
+    ${r.total>=3?`<div class="intel-grid"><div class="intel-box"><div class="muted small">Single / Taken</div><b>${r.single}% / ${100-r.single}%</b></div><div class="intel-box"><div class="muted small">Male / Female</div><b>${r.male}% / ${100-r.male}%</b></div></div>`:`<div class="notice" style="margin-top:10px">🔐 Need at least 3 active anonymous users for demographic intelligence.</div>`}
+    <button type="button" class="action" onclick="premiumVenueDetailById(${JSON.stringify(r.v.id)})">View full venue intelligence →</button>
+  </div>`).join("") || `<div class="muted">No live venue data yet.</div>`;
+}
+
+function premiumVenueDetailById(id){
+  const v=venues.find(x=>String(x.id)===String(id));
+  if(!v){ premiumPaywall("Venue intelligence"); return; }
+  premiumVenueDetail(v.name);
+}
+
+function premiumVenueDetailByName(name){
+  const v=venues.find(x=>x.name===String(name));
+  if(!v){ premiumPaywall("Venue intelligence"); return; }
+  premiumVenueDetail(v.name);
+}
+
+async function loadVenueHistory(venueId, days=7){
+  try{
+    const u=SUPABASE_URL+"/rest/v1/rpc/get_hb_venue_history";
+    const r=await fetchWithTimeout(u,{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_venue_id:String(venueId),p_days:Number(days)||7})},8000);
+    if(!r.ok){console.warn("Venue history unavailable",r.status,await r.text());return []}
+    const rows=await r.json();
+    return Array.isArray(rows)?rows:[];
+  }catch(e){console.warn("Venue history failed",e);return []}
+}
+function renderVenueHistory(rows){
+  if(!rows || !rows.length) return `<div class="card"><b>📈 Historical intelligence</b><p class="muted">Collecting the first venue history. Once activity builds, this will show the busiest days and times.</p></div>`;
+  const max=Math.max(1,...rows.map(r=>Number(r.avg_active)||0));
+  const totalSamples=rows.reduce((a,r)=>a+Number(r.samples||0),0);
+  const peak=rows.reduce((a,b)=>(Number(b.avg_active)||0)>(Number(a.avg_active)||0)?b:a,rows[0]);
+  return `<div class="card"><div class="row"><b>📈 Last 7 days</b><span class="pill">PREMIUM</span></div>
+    <p class="muted small">Average anonymous active presence by day. History starts building automatically from live venue activity.</p>
+    <div class="data-trend-grid">${rows.map(r=>{const n=Number(r.avg_active)||0;const h=Math.max(3,Math.round(n/max*100));return `<div class="data-trend-day"><div class="data-trend-bar-wrap"><div class="data-trend-bar" style="height:${h}%"></div></div><b>${escapeHtmlSafe(String(r.day_label||''))}</b><small>${n}</small></div>`}).join('')}</div>
+    <div class="data-insight-grid"><div class="data-insight"><span class="muted small">Peak day</span><b>${escapeHtmlSafe(String(peak.day_label||'—'))}</b></div><div class="data-insight"><span class="muted small">Data samples</span><b>${totalSamples}</b></div></div>
+  </div>`;
+}
+
+async function loadVenueCrowdTrend(venueId, days=7){
+  try{
+    const u=SUPABASE_URL+"/rest/v1/rpc/get_hb_crowd_trend";
+    const r=await fetchWithTimeout(u,{method:"POST",headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Content-Type":"application/json"},body:JSON.stringify({p_venue_id:String(venueId),p_days:Number(days)||7})},8000);
+    if(!r.ok)return [];
+    const rows=await r.json(); return Array.isArray(rows)?rows:[];
+  }catch(e){return []}
+}
+function renderCrowdTrend(rows){
+  if(!rows||!rows.length)return '';
+  const r=rows[0];
+  return `<div class="card"><div class="row"><b>⚖️ Crowd balance trend</b><span class="pill">PREMIUM</span></div><div class="data-insight-grid"><div class="data-insight"><span class="muted small">More Men</span><b>${Number(r.men_pct||0)}%</b></div><div class="data-insight"><span class="muted small">More Women</span><b>${Number(r.women_pct||0)}%</b></div></div><p class="small muted" style="margin-top:12px">Based on anonymous crowd answers from the selected period.</p></div>`;
+}
+
+async function premiumVenueDetail(name){
+  if(!isPremium()){ premiumPaywall("Venue intelligence"); return; }
+  const v=venues.find(x=>x.name===name) || venues[0];
+  frame(`<div class="screen"><button class="secondary" onclick="premiumSinglesScreen()">← Venue Intelligence</button>
+    <div class="venue-hero">
+      <div class="venue-hero-top"><div style="display:flex;gap:13px;align-items:center"><div class="venue-icon">${hbVenueEmoji(v)}</div><div><div class="premium-badge">⭐ PREMIUM VENUE PROFILE</div><h1 class="venue-title" style="margin-top:10px">${escapeHtmlSafe(v.name)}</h1></div></div><span class="live-pill">● LIVE</span></div>
+      <p class="muted" style="margin:16px 0 0">📍 ${escapeHtmlSafe(v.address)}</p>
+    </div>
+    <div class="card venue-big-count"><div class="muted small">LIVE NOW</div><b>${Number(v.busy||0)}</b><span>anonymous active presence</span></div>
+    <div id="premiumDemographics"><div class="card"><div class="muted">Loading live demographics…</div></div></div>
+    <div id="premiumHistory"><div class="card"><div class="muted">Loading historical intelligence…</div></div></div>
+    <div id="premiumCrowdTrend"></div>
+    <div class="premium-hero"><div class="premium-badge">📈 BUILDING OVER TIME</div><h2 style="margin:16px 0 8px">More data = better decisions</h2><p class="sub">As How Busy? collects enough anonymous activity, this venue can develop:</p>
+      <div class="premium-feature"><span class="premium-feature-icon">🕐</span><div><b>Best times to visit</b><div class="muted small">See when this venue is typically busiest.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">📅</span><div><b>Historical patterns</b><div class="muted small">Compare days and times once enough history exists.</div></div></div>
+      <div class="premium-feature"><span class="premium-feature-icon">🔥</span><div><b>Trending status</b><div class="muted small">See when activity is rising or falling.</div></div></div>
+    </div>
+  </div>${nav("home")}`);
+  const d=await loadPremiumDemographics(v.id);
+  const el=document.getElementById("premiumDemographics");
+  if(el)el.innerHTML=renderPremiumDemographics(d);
+  const history=await loadVenueHistory(v.id,7);
+  const historyEl=document.getElementById("premiumHistory");
+  if(historyEl)historyEl.innerHTML=renderVenueHistory(history);
+  const crowdTrend=await loadVenueCrowdTrend(v.id,7);
+  const trendEl=document.getElementById("premiumCrowdTrend");
+  if(trendEl)trendEl.innerHTML=renderCrowdTrend(crowdTrend);
+}
+
+// Start the visual app on the redesigned Home screen.
+// The Home screen is the app front page; location permission is requested by the
+// existing geofencing engine when needed.
+try{ home(); }catch(e){ console.error("Home screen failed to load",e); welcome(); }
+</script>
+</body>
+</html>

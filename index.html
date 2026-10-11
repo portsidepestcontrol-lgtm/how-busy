@@ -1,11 +1,11 @@
 <!doctype html>
-<!-- How Busy? V69 - native iPhone location bridge -->
+<!-- How Busy? V70 - iOS + Android native location bridge -->
 <html lang="en">
 <head>
-<meta name="how-busy-build" content="V69-native-location-bridge">
+<meta name="how-busy-build" content="V70-ios-android-native-location-bridge">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How Busy? — V69 Native Location Bridge</title>
+<title>How Busy? — V70 Mobile Location Bridge</title>
 <style>
 :root{--bg:#08131d;--card:#102536;--card2:#143148;--line:#28465b;--text:#f4f7f9;--muted:#9eb1bf;--gold:#f5c451;--green:#45d483;--red:#ff6d72}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -696,7 +696,21 @@ function hbStartPresenceHeartbeat(){
   hbRenewPresence();
 }
 async function hbRenewPresence(force=false){
+  // A heartbeat must never renew presence from stale GPS. Native apps must keep
+  // sending location fixes; server-side expiry remains the final safety net.
   if(!hbCurrentVenueId || hbPresenceBusy)return;
+  const gpsAge = hbLastGps ? Date.now() - hbLastGps.at : Infinity;
+  if(gpsAge > 120000){
+    console.warn('[How Busy] Skipping presence renewal: GPS fix is stale.');
+    return;
+  }
+  const currentVenue = venues.find(v => String(v.id) === String(hbCurrentVenueId));
+  if(!currentVenue || !hbHasValidCoordinates(currentVenue))return;
+  const distance = hbDistanceMetres(hbLastGps.lat, hbLastGps.lon, currentVenue.lat, currentVenue.lon);
+  if(distance > hbVenueRadius(currentVenue)){
+    console.warn('[How Busy] Skipping presence renewal: device is outside the venue geofence.');
+    return;
+  }
   if(!force && Date.now()-hbLastPresenceSentAt < 90*1000)return;
   hbPresenceBusy=true;
   try{
@@ -1034,15 +1048,25 @@ async function hbTestLocationNow(){
   },{enableHighAccuracy:true,maximumAge:0,timeout:20000});
 }
 
+function hbIsNativeMobile(){
+  return !!((window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.howBusyLocation) ||
+    (window.HowBusyAndroid && typeof window.HowBusyAndroid.postMessage === 'function'));
+}
+function hbNativeLocationCommand(command){
+  try{
+    const ios = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.howBusyLocation;
+    if(ios){ ios.postMessage(command); return true; }
+    if(window.HowBusyAndroid && typeof window.HowBusyAndroid.postMessage === 'function'){
+      window.HowBusyAndroid.postMessage(command); return true;
+    }
+  }catch(e){ console.warn('[How Busy] Native location command failed', e); }
+  return false;
+}
 function hbRequestFreshVenueLocation(){
-  // In the native iOS wrapper, ask Core Location for a fresh fix first.
-  // The Swift bridge returns it through the howBusyNativeLocation event below.
-  const nativeHandler = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.howBusyLocation;
-  if(nativeHandler){
-    try { nativeHandler.postMessage('refreshLocation'); } catch(e) { console.warn('Native location request failed', e); }
+  if(hbIsNativeMobile()){
+    hbNativeLocationCommand('refreshLocation');
     return;
   }
-  // Keep the existing browser/Safari location path for the website.
   if(!navigator.geolocation){
     hbSetGpsStatus('GPS is not supported on this device/browser.');
     return;
@@ -1050,63 +1074,75 @@ function hbRequestFreshVenueLocation(){
   navigator.geolocation.getCurrentPosition(
     hbHandlePosition,
     hbHandleGpsError,
-    {enableHighAccuracy:true,maximumAge:0,timeout:15000}
+    {enableHighAccuracy:true,maximumAge:0,timeout:20000}
   );
 }
-
-// Receive GPS coordinates from ContentView.swift and run the same existing
-// distance, venue-geofence, and venue-card refresh logic used by browser GPS.
-window.addEventListener('howBusyNativeLocation', function(event){
-  const detail = event && event.detail ? event.detail : {};
-  const lat = Number(detail.latitude);
-  const lon = Number(detail.longitude);
-  if(!Number.isFinite(lat) || !Number.isFinite(lon)){
+function hbReceiveNativeLocation(detail){
+  detail = detail || {};
+  const lat = Number(detail.latitude), lon = Number(detail.longitude);
+  const accuracy = Number(detail.accuracy);
+  const timestamp = Number(detail.timestamp);
+  // Native timestamps are Unix seconds. Reject stale cached Android/iOS fixes.
+  if(Number.isFinite(timestamp) && timestamp > 0 && (Date.now()/1000 - timestamp) > 120){
+    hbSetGpsStatus('Native location fix is stale; waiting for a fresh GPS update.');
+    return;
+  }
+  if(!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat)>90 || Math.abs(lon)>180){
     hbSetGpsStatus('Native location returned invalid coordinates.');
     return;
   }
-  hbHandlePosition({coords:{latitude:lat, longitude:lon, accuracy:Number(detail.accuracy)||10}});
-});
+  hbHandlePosition({coords:{latitude:lat, longitude:lon, accuracy:Number.isFinite(accuracy)?accuracy:null}});
+}
+window.addEventListener('howBusyNativeLocation', event => hbReceiveNativeLocation(event && event.detail));
+window.hbReceiveNativeLocation = hbReceiveNativeLocation;
+window.hbNativeLocationError = function(message){
+  hbSetGpsStatus('⚠️ Native location: '+String(message || 'unavailable'));
+};
 
 function startVenueGeofencing(){
   if(hbGpsRunning)return;
   hbLoadVenueCoordinates();
   hbGpsRunning=true;
   try{localStorage.setItem('hb_location_enabled_v1','true');}catch(e){}
-  hbSetGpsStatus('Requesting location permission');
-  hbStartPresenceHeartbeat();
+  hbSetGpsStatus('Starting mobile location tracking');
   hbStartLiveRefresh();
 
-  const nativeHandler = window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.howBusyLocation;
-  if(nativeHandler){
-    // Native iOS GPS is requested via the bridge; each returned fix refreshes
-    // the same website distance and 50m venue-presence logic.
+  if(hbIsNativeMobile()){
+    // Native wrapper starts continuous location tracking; refreshLocation is
+    // also supported for app-resume and explicit one-shot refreshes.
+    hbNativeLocationCommand('startLocation');
     hbRequestFreshVenueLocation();
   } else if(navigator.geolocation){
-    hbGpsWatchId=navigator.geolocation.watchPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:5000,timeout:15000});
-    navigator.geolocation.getCurrentPosition(hbHandlePosition,hbHandleGpsError,{enableHighAccuracy:true,maximumAge:0,timeout:15000});
+    hbGpsWatchId=navigator.geolocation.watchPosition(
+      hbHandlePosition,hbHandleGpsError,
+      {enableHighAccuracy:true,maximumAge:5000,timeout:20000}
+    );
+    navigator.geolocation.getCurrentPosition(
+      hbHandlePosition,hbHandleGpsError,
+      {enableHighAccuracy:true,maximumAge:0,timeout:20000}
+    );
   } else {
     hbSetGpsStatus('GPS is not supported on this device/browser.');
   }
-
-  // Static coordinates are used immediately. Any remaining venue addresses are
-  // geocoded in the background so the phone does not have to rely on missing pins.
   setTimeout(()=>{ try{ hbGeocodeAllVenues(); }catch(e){} },1200);
 }
-
 function stopVenueGeofencing(){
-  if(hbGpsWatchId!==null && navigator.geolocation){navigator.geolocation.clearWatch(hbGpsWatchId);}
-  hbGpsWatchId=null; hbGpsRunning=false;
+  if(hbGpsWatchId!==null && navigator.geolocation)navigator.geolocation.clearWatch(hbGpsWatchId);
+  hbGpsWatchId=null;
+  hbGpsRunning=false;
+  if(hbIsNativeMobile())hbNativeLocationCommand('stopLocation');
   hbStopLiveRefresh();
   if(hbPresenceTimer){clearInterval(hbPresenceTimer);hbPresenceTimer=null;}
   const leavingVenue=hbCurrentVenueId;
   hbCurrentVenueId=null;
+  try{localStorage.removeItem('hbCurrentVenueId');}catch(e){}
   if(leavingVenue)hbStopPresence(leavingVenue);
 }
-
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){ hbStopLiveRefresh(); }
-  else {
-    if(hbGpsRunning) hbStartLiveRefresh();
+  if(document.hidden){
+    hbStopLiveRefresh();
+  }else{
+    if(hbGpsRunning)hbStartLiveRefresh();
     hbRequestFreshVenueLocation();
   }
 });

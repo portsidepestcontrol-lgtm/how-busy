@@ -1,11 +1,11 @@
 <!doctype html>
-<!-- How Busy? V68 - coordinate mapping fix -->
+<!-- How Busy? V76 - Android bridge + expanded Premium paywall -->
 <html lang="en">
 <head>
-<meta name="how-busy-build" content="V68-coordinate-mapping-fix">
+<meta name="how-busy-build" content="V76-android-bridge-expanded-premium">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How Busy? — V68 Venue Mapping</title>
+<title>How Busy? — V76 Android Bridge + Premium</title>
 <style>
 :root{--bg:#08131d;--card:#102536;--card2:#143148;--line:#28465b;--text:#f4f7f9;--muted:#9eb1bf;--gold:#f5c451;--green:#45d483;--red:#ff6d72}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -1458,7 +1458,7 @@ function home(){
   const premium=isPremium();
   frame(`<div class="screen">
     <div class="hb-brand"><div class="hb-brand-main"><div class="hb-beer">🍻</div><div><div class="hb-brand-title">How <span class="gold">Busy?</span></div><div class="hb-brand-sub">IS YOUR LOCAL VENUE</div></div></div><button class="hb-premium-chip" onclick="premiumSinglesScreen()">👑 PREMIUM</button></div>
-    <div class="hb-hero-title">Where’s The Party At</div><div class="hb-hero-sub">Live venue activity · Newcastle · <strong>V72</strong></div><div id="hbV59LiveStatus" role="status" aria-live="polite" style="margin-top:8px;padding:8px 10px;border-radius:10px;background:#102536;border:1px solid #28465b;color:#9eb1bf;font-size:12px">V72: waiting for live count refresh…</div>
+    <div class="hb-hero-title">Where’s The Party At</div><div class="hb-hero-sub">Live venue activity · Newcastle · <strong>V75</strong></div><div id="hbV59LiveStatus" role="status" aria-live="polite" style="margin-top:8px;padding:8px 10px;border-radius:10px;background:#102536;border:1px solid #28465b;color:#9eb1bf;font-size:12px">V75: waiting for live count refresh…</div>
     <div class="hb-summary"><div><div class="icon">👥</div><div class="num" id="hbTotalPeople">—</div><b>people out now</b><small>live Newcastle activity</small></div><div><div class="icon">🔥</div><div class="num" id="hbBusiestName" style="font-size:15px;color:#fff">—</div><b id="hbBusiestCount">Busiest venue</b><small>right now</small></div><div><div class="icon">⭐</div><div class="num" id="hbSinglesName" style="font-size:15px;color:#fff">Premium</div><b>best singles data</b><small>anonymous intelligence</small></div></div>
     <div class="hb-filters"><button class="hb-filter on" onclick="hbSetHomeFilter('closest',this)">📍 Closest</button><button class="hb-filter" onclick="hbSetHomeFilter('busy',this)">📊 Busiest</button><button class="hb-filter" onclick="hbSetHomeFilter('singles',this)">👥 Most Singles</button><button class="hb-filter" onclick="hbSetHomeFilter('balance',this)">⚖️ Best Balance</button></div>
     <div class="hb-location"><button onclick="hbRequestFreshVenueLocation()">📍 Refresh My Location</button></div>
@@ -1531,7 +1531,13 @@ async function hbQuickCrowdAnswer(answer){
 }
 
 function hbSetHomeFilter(filter,btn){
-  document.querySelectorAll('.hb-filter').forEach(x=>x.classList.remove('on')); if(btn)btn.classList.add('on');
+  // V75: Advanced ranking filters are Premium-only. Keep the free live venue rankings available.
+  if((filter==='singles'||filter==='balance')&&!isPremium()){
+    premiumPaywall(filter==='singles'?'Most Singles — Venue Intelligence':'Best Crowd Balance — Venue Intelligence');
+    return;
+  }
+  document.querySelectorAll('.hb-filter').forEach(x=>x.classList.remove('on'));
+  if(btn)btn.classList.add('on');
   hbRenderHomeRankings(filter);
 }
 
@@ -1745,28 +1751,38 @@ async function testSupabaseConnection(){
 // ---------- PREMIUM PAYWALL ----------
 const PREMIUM_PRICE_AUD="$4.99/month";
 
-function premiumPaywall(featureTitle="Best Newcastle venues for singles tonight"){
+function premiumPaywall(featureTitle="Venue Intelligence"){
+  if(isPremium()){
+    showPremiumBillingNotice("Your Premium subscription is active.");
+    return;
+  }
   const existing=document.getElementById("premium-paywall");
   if(existing) existing.remove();
   const el=document.createElement("div");
   el.id="premium-paywall";
-  el.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px";
-  el.innerHTML=`<div style="max-width:430px;width:100%;background:#102536;border:1px solid #28465b;border-radius:24px;padding:24px;box-shadow:0 24px 70px #0009">
-    <span class="pill">HOW BUSY? PREMIUM</span>
-    <h2 style="margin:18px 0 8px">${featureTitle}</h2>
-    <p class="sub">Unlock live Newcastle insights based on recent anonymous venue activity.</p>
-    <div class="card">
-      <div class="row"><b>Premium includes</b><span class="gold">${PREMIUM_PRICE_AUD}</span></div>
-      <p>❤️ Best Newcastle venues for singles</p>
-      <p>🔥 Trending venues tonight</p>
-      <p>⚥ Crowd balance insights</p>
-      <p>🕘 Best time to go</p>
-      <p>📈 Live crowd trends</p>
+  el.setAttribute("role","dialog");
+  el.setAttribute("aria-modal","true");
+  el.setAttribute("aria-labelledby","hbPremiumPaywallTitle");
+  el.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.84);z-index:10000;display:flex;align-items:center;justify-content:center;padding:14px;overflow-y:auto;box-sizing:border-box";
+  const safeFeatureTitle=escapeHtmlSafe(featureTitle);
+  el.innerHTML=`<div style="max-width:460px;width:100%;max-height:calc(100dvh - 28px);overflow-y:auto;box-sizing:border-box;background:#102536;border:1px solid #d4a72c;border-radius:24px;padding:22px;box-shadow:0 24px 70px #0009;margin:auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span class="pill">👑 HOW BUSY? PREMIUM</span><span class="gold" style="font-weight:900">ONE PLAN · ALL PREMIUM</span></div>
+    <h2 id="hbPremiumPaywallTitle" style="margin:18px 0 8px">${safeFeatureTitle}</h2>
+    <p class="sub">Go beyond busy or quiet. Unlock Venue Intelligence for Newcastle nightlife.</p>
+    <div class="card" style="border-color:#806b1b;background:#132b39">
+      <div class="row" style="align-items:center"><b style="font-size:17px">Premium monthly</b><span class="gold" style="font-size:19px;font-weight:900">${PREMIUM_PRICE_AUD}</span></div>
+      <p>💕 <b>Singles intelligence</b><br><span class="muted small">Aggregated Single/Taken mix when enough anonymous data exists.</span></p>
+      <p>⚖️ <b>Crowd balance</b><br><span class="muted small">Detailed crowd reports and Male/Female percentages where available.</span></p>
+      <p>🔥 <b>Most Singles &amp; Best Balance rankings</b><br><span class="muted small">Compare venues using available aggregated crowd information.</span></p>
+      <p>📈 <b>Venue history and trends</b><br><span class="muted small">Review historical activity and crowd trends as the data builds.</span></p>
+      <p>🕘 <b>Best time to go</b><br><span class="muted small">Use recorded activity patterns to help choose when to visit.</span></p>
+      <p>👑 <b>Full Premium venue profiles</b><br><span class="muted small">One subscription unlocks the available Premium intelligence across venues.</span></p>
     </div>
-    <button class="action" onclick="requestPremiumPurchase()">Subscribe — ${PREMIUM_PRICE_AUD}</button>
+    <div class="notice" style="margin-top:12px">Free access stays available for venue browsing, basic live crowd estimates, location-based nearby venues and anonymous crowd contributions. Premium insights depend on sufficient data and may not be available for every venue yet.</div>
+    <button class="action" style="margin-top:14px" onclick="requestPremiumPurchase()">Unlock all Premium — ${PREMIUM_PRICE_AUD}</button>
     <button class="secondary" onclick="restorePremiumPurchases()">Restore Purchases</button>
     <button class="secondary" onclick="document.getElementById('premium-paywall').remove()">Maybe later</button>
-    <p class="small muted" style="margin-top:12px">Your subscription will be processed by Apple. The final price and billing terms are shown in Apple’s purchase confirmation before you approve payment.</p>
+    <p class="small muted" style="margin-top:12px">Apple will show the final subscription price and billing terms before you confirm. Subscription access is only enabled after Apple verifies your purchase.</p>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px">
       <button type="button" class="secondary" onclick="showLegalDocument('terms')">Terms &amp; Conditions</button>
       <button type="button" class="secondary" onclick="showLegalDocument('privacy')">Privacy Policy</button>
@@ -1779,21 +1795,32 @@ function premiumPaywall(featureTitle="Best Newcastle venues for singles tonight"
 // V72: These are deliberate bridge hooks, not simulated purchases.
 // The iOS app must verify the StoreKit transaction and set the entitlement.
 function requestPremiumPurchase(){
-  const bridge=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.howBusyPurchase;
-  if(bridge){
-    try{bridge.postMessage({action:"purchasePremium",productId:"howbusy_premium_monthly"});return;}
-    catch(e){console.error("Premium purchase bridge failed",e);}
+  const request={action:"purchasePremium",productId:"howbusy_premium_monthly"};
+  const ios=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.howBusyPurchase;
+  if(ios){
+    try{ios.postMessage(request);return;}
+    catch(e){console.error("iOS Premium purchase bridge failed",e);}
   }
-  showPremiumBillingNotice("Apple subscription billing is not connected yet. Your Premium access has not changed.");
+  // Android's @JavascriptInterface accepts strings, so send JSON text rather than a JS object.
+  if(window.HowBusyAndroid&&typeof window.HowBusyAndroid.postMessage==='function'){
+    try{window.HowBusyAndroid.postMessage(JSON.stringify(request));return;}
+    catch(e){console.error("Android Premium purchase bridge failed",e);}
+  }
+  showPremiumBillingNotice("Premium purchases are available in the installed iPhone or Android app. Your Premium access has not changed.");
 }
 
 function restorePremiumPurchases(){
-  const bridge=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.howBusyPurchase;
-  if(bridge){
-    try{bridge.postMessage({action:"restorePurchases"});return;}
-    catch(e){console.error("Restore purchases bridge failed",e);}
+  const request={action:"restorePurchases"};
+  const ios=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.howBusyPurchase;
+  if(ios){
+    try{ios.postMessage(request);return;}
+    catch(e){console.error("iOS restore purchases bridge failed",e);}
   }
-  showPremiumBillingNotice("Restore Purchases will be available after Apple billing is connected.");
+  if(window.HowBusyAndroid&&typeof window.HowBusyAndroid.postMessage==='function'){
+    try{window.HowBusyAndroid.postMessage(JSON.stringify(request));return;}
+    catch(e){console.error("Android restore purchases bridge failed",e);}
+  }
+  showPremiumBillingNotice("Restore Purchases is available in the installed iPhone or Android app.");
 }
 
 function showPremiumBillingNotice(message){

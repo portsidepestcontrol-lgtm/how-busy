@@ -508,7 +508,43 @@ function hbLoadVenueCoordinates(){
   });
 }
 function hbSaveVenueCoordinates(v,lat,lon){
-<!-- How Busy? V94 - Venue Information Build -->
+function hbSaveVenueCoordinates(v, lat, lon) {
+  lat = Number(lat);
+  lon = Number(lon);
+
+  if (
+    !v ||
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    lat < -90 || lat > 90 ||
+    lon < -180 || lon > 180 ||
+    (lat === 0 && lon === 0)
+  ) return false;
+
+  // Keep coordinates within the Newcastle / Lake Macquarie region.
+  if (
+    lat < -33.25 || lat > -32.65 ||
+    lon < 151.35 || lon > 152.05
+  ) return false;
+
+  v.lat = lat;
+  v.lon = lon;
+  v.verified = true;
+  v.radius = hbVenueRadius(v);
+
+  try {
+    localStorage.setItem(
+      'hbVenueCoordsV2:' + v.id,
+      JSON.stringify({
+        lat: v.lat,
+        lon: v.lon,
+        verified: true
+      })
+    );
+  } catch (e) {}
+
+  return true;
+}
 <html lang="en">
 <head>
 <meta name="how-busy-build" content="V94-venue-information-build">
